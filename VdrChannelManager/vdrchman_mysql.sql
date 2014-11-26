@@ -46,8 +46,11 @@ create table ttransponder (
 
 create table ttransp_seqno (
 	transp_id int(11) not null primary key,
+	user_id int(11) not null,
 	seqno int(11) not null,
-	foreign key (transp_id) references ttransponder (id) on delete cascade
+	unique (user_id, seqno),
+	foreign key (transp_id) references ttransponder (id) on delete cascade,
+	foreign key (user_id) references tuser (id) on delete cascade
 	) engine=InnoDB;
 
 create table tchannel (
@@ -71,8 +74,11 @@ create table tchannel (
 
 create table tchannel_seqno (
 	channel_id int(11) not null primary key,
+	user_id int(11) not null,
 	seqno int(11) not null,
-	foreign key (channel_id) references tchannel (id) on delete cascade
+	unique (user_id, seqno),
+	foreign key (channel_id) references tchannel (id) on delete cascade,
+	foreign key (user_id) references tuser (id) on delete cascade
 	) engine=InnoDB;
 
 create table tgroup (

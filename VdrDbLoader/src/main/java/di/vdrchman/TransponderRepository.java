@@ -24,7 +24,7 @@ public class TransponderRepository {
 		TranspSeqno transpSeqno;
 
 		query = em
-				.createQuery("select max(ts.seqno) from TranspSeqno ts, Transponder t, Source s where t.id = ts.transpId and s.id = t.sourceId and s.userId = :userId");
+				.createQuery("select max(ts.seqno) from TranspSeqno ts where ts.userId = :userId");
 		query.setParameter("userId", userId);
 		queryResult = (Integer) query.getSingleResult();
 
