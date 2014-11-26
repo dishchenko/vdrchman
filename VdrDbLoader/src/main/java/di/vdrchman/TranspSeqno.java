@@ -13,8 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @XmlRootElement
 @Table(name = "ttransp_seqno", uniqueConstraints = {
-		@UniqueConstraint(columnNames = "transp_id"),
-		@UniqueConstraint(columnNames = { "user_id", "seqno" }) })
+		@UniqueConstraint(columnNames = "transp_id") })
 public class TranspSeqno implements Serializable {
 
 	private static final long serialVersionUID = 6136014657774985023L;
@@ -22,10 +21,6 @@ public class TranspSeqno implements Serializable {
 	@Id
 	@Column(name = "transp_id")
 	private Integer transpId;
-
-	@NotNull
-	@Column(name = "user_id")
-	private Integer userId;
 
 	@NotNull
 	private Integer seqno;
@@ -37,15 +32,6 @@ public class TranspSeqno implements Serializable {
 
 	public void setTranspId(Integer transpId) {
 		this.transpId = transpId;
-	}
-
-	public Integer getUserId() {
-
-		return userId;
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = userId;
 	}
 
 	public Integer getSeqno() {

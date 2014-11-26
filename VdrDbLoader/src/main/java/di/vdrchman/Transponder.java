@@ -18,8 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @Table(name = "ttransponder", uniqueConstraints = {
 		@UniqueConstraint(columnNames = "id"),
-		@UniqueConstraint(columnNames = { "user_id", "source_id", "frequency",
-				"polarity" }) })
+		@UniqueConstraint(columnNames = { "source_id", "frequency", "polarity" }) })
 public class Transponder implements Serializable {
 
 	private static final long serialVersionUID = 8792144048918228648L;
@@ -27,10 +26,6 @@ public class Transponder implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-
-	@NotNull
-	@Column(name = "user_id")
-	private Integer userId;
 
 	@NotNull
 	@Column(name = "source_id")
@@ -53,6 +48,12 @@ public class Transponder implements Serializable {
 	@Column(name = "symbol_rate")
 	private Integer symbolRate;
 
+	@Digits(fraction = 0, integer = 5)
+	private Integer nid;
+
+	@Digits(fraction = 0, integer = 5)
+	private Integer tid;
+
 	@NotNull
 	@Column(columnDefinition = "BIT", length = 1)
 	private Boolean ignored;
@@ -64,15 +65,6 @@ public class Transponder implements Serializable {
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public Integer getUserId() {
-
-		return userId;
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = userId;
 	}
 
 	public Integer getSourceId() {
@@ -118,6 +110,24 @@ public class Transponder implements Serializable {
 
 	public void setSymbolRate(Integer symbolRate) {
 		this.symbolRate = symbolRate;
+	}
+
+	public Integer getNid() {
+
+		return nid;
+	}
+
+	public void setNid(Integer nid) {
+		this.nid = nid;
+	}
+
+	public Integer getTid() {
+
+		return tid;
+	}
+
+	public void setTid(Integer tid) {
+		this.tid = tid;
 	}
 
 	public Boolean getIgnored() {

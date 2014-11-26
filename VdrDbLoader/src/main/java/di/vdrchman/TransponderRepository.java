@@ -24,7 +24,7 @@ public class TransponderRepository {
 		TranspSeqno transpSeqno;
 
 		query = em
-				.createQuery("select max(ts.seqno) from TranspSeqno ts where ts.userId = :userId");
+				.createQuery("select max(ts.seqno) from TranspSeqno ts, Transponder t, Source s where t.id = ts.transpId and s.id = t.sourceId and s.userId = :userId");
 		query.setParameter("userId", userId);
 		queryResult = (Integer) query.getSingleResult();
 
@@ -50,7 +50,6 @@ public class TransponderRepository {
 			splitLine = line.split("\\s+");
 
 			transponder = new Transponder();
-			transponder.setUserId(userId);
 			transponder.setSourceId(sourceId);
 			transponder.setDvbsGen(Integer.parseInt(splitLine[0].substring(1)));
 			transponder.setFrequency(Integer.parseInt(splitLine[1]) / 1000);
@@ -62,7 +61,6 @@ public class TransponderRepository {
 
 			transpSeqno = new TranspSeqno();
 			transpSeqno.setTranspId(transponder.getId());
-			transpSeqno.setUserId(userId);
 			transpSeqno.setSeqno(seqno);
 			em.persist(transpSeqno);
 			em.flush();
