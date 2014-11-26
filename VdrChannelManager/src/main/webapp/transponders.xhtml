@@ -118,6 +118,16 @@
 								value="#{transponderVar.symbolRate}" />
 						</h:column>
 						<h:column>
+							<f:facet name="header">NID</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{transponderVar.nid}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">TID</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{transponderVar.tid}" />
+						</h:column>
+						<h:column>
 							<f:facet name="header">Ignored</f:facet>
 							<h:outputText styleClass="preformattedtext, red"
 								value="#{transponderVar.ignored ? '#' : ''}" />
@@ -235,6 +245,12 @@
 							</h:inputText>
 							<rich:message for="symbolRateInput" />
 						</h:panelGrid>
+						<h:outputLabel value="NID:" styleClass="preformattedtext" />
+						<h:inputText value="#{transpondersManager.editedTransponder.nid}"
+							maxlength="5" size="5" />
+						<h:outputLabel value="TID:" styleClass="preformattedtext" />
+						<h:inputText value="#{transpondersManager.editedTransponder.tid}"
+							maxlength="5" size="5" />
 						<h:outputLabel value="Ignored:" styleClass="preformattedtext" />
 						<h:selectBooleanCheckbox
 							value="#{transpondersManager.editedTransponder.ignored}" />
