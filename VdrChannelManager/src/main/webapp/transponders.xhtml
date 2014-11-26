@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j"
+	template="/WEB-INF/templates/default.xhtml">
+	<ui:define name="content">
+		<h:outputScript library="javax.faces" name="jsf.js" target="head" />
+		<h:outputScript library="js" name="jsf_fix.js" target="head" />
+		<h:outputScript library="js" name="transponders.js" target="head" />
+		#{transpondersManager.clearTransponderCheckboxes()}
+		<h:panelGroup id="transpondersContent">
+			<h1>Transponders</h1>
+			<h:form id="transpondersForm">
+				<h:panelGrid columns="8">
+					<a4j:commandButton id="addOnTopButton" value="Add on top..."
+						action="#{transpondersBacking.intendAddTransponderOnTop()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:frequencyInput').focus();document.getElementById('transpondersForm:addOnTopButton').disabled=false"
+						render="transpondersContent, editPanel" />
+					<a4j:commandButton id="addAfterButton" value="Add after..."
+						action="#{transpondersBacking.intendAddTransponderAfter()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:frequencyInput').focus();document.getElementById('transpondersForm:addAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked()"
+						render="transpondersContent, editPanel" />
+					<a4j:commandButton id="removeButton" value="Remove..."
+						action="#{transpondersBacking.intendRemoveTransponders()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('removePanel')}.show();document.getElementById('removePanelForm:okButton').focus();document.getElementById('transpondersForm:removeButton').disabled=!isAtLeastOneTransponderCheckboxChecked()"
+						render="transpondersContent, removePanel" />
+					<a4j:commandButton id="copyButton" value="Copy"
+						action="#{transpondersBacking.copyTransponder()}"
+						onclick="this.disabled=true"
+						oncomplete="document.getElementById('transpondersForm:copyButton').disabled=!isExactlyOneTransponderCheckboxChecked()"
+						render="transpondersContent" />
+					<a4j:commandButton id="pasteOnTopButton" value="Paste on top..."
+						rendered="#{not empty transpondersManager.copiedTransponder}"
+						action="#{transpondersBacking.intendPasteTransponderOnTop()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:frequencyInput').focus();document.getElementById('transpondersForm:pasteOnTopButton').disabled=false"
+						render="transpondersContent, editPanel" />
+					<a4j:commandButton id="pasteAfterButton" value="Paste after..."
+						rendered="#{not empty transpondersManager.copiedTransponder}"
+						action="#{transpondersBacking.intendPasteTransponderAfter()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:frequencyInput').focus();document.getElementById('transpondersForm:pasteAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked()"
+						render="transpondersContent, editPanel" />
+					<a4j:commandButton id="moveOnTopButton" value="Move on top"
+						rendered="#{not empty transpondersManager.copiedTransponder}"
+						action="#{transpondersBacking.moveTransponderOnTop()}"
+						onclick="this.disabled=true"
+						oncomplete="document.getElementById('transpondersForm:moveOnTopButton').disabled=false"
+						render="transpondersContent" />
+					<a4j:commandButton id="moveAfterButton" value="Move after"
+						rendered="#{not empty transpondersManager.copiedTransponder}"
+						action="#{transpondersBacking.moveTransponderAfter()}"
+						onclick="this.disabled=true"
+						oncomplete="document.getElementById('transpondersForm:moveAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked()"
+						render="transpondersContent" />
+				</h:panelGrid>
+				<h:panelGrid columns="3">
+					<h:outputText styleClass="preformattedtext" value="Filter by:" />
+					<h:outputLabel styleClass="preformattedtext" value="Source" />
+					<h:selectOneMenu value="#{transpondersManager.filteredSourceId}"
+						valueChangeListener="#{transpondersBacking.onSourceMenuSelection}"
+						onchange="document.getElementById('transpondersForm').submit()">
+						<f:selectItem itemValue="-1" itemLabel="--" />
+						<f:selectItems value="#{sourcesManager.sources}" var="sourceVar"
+							itemValue="#{sourceVar.id}"
+							itemLabel="#{sourceVar.name} (#{sourceVar.description})" />
+					</h:selectOneMenu>
+				</h:panelGrid>
+				<h:panelGroup rendered="#{empty transpondersManager.transponders}">
+					<em>No transponders defined.</em>
+				</h:panelGroup>
+				<h:panelGroup
+					rendered="#{not empty transpondersManager.transponders}">
+					<h:dataTable var="transponderVar"
+						value="#{transpondersManager.transponders}"
+						styleClass="simpletablestyle" id="transpondersTable"
+						rows="#{transpondersManager.rowsPerPage}">
+						<h:column>
+							<f:facet name="header" />
+							<h:selectBooleanCheckbox id="transponderCheckbox"
+								value="#{transpondersManager.transponderCheckboxes[transponderVar.id]}"
+								styleClass="preformattedtext"
+								onclick="document.getElementById('transpondersForm:removeButton').disabled=!isAtLeastOneTransponderCheckboxChecked();document.getElementById('transpondersForm:addAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();document.getElementById('transpondersForm:copyButton').disabled=!isExactlyOneTransponderCheckboxChecked();document.getElementById('transpondersForm:pasteAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();document.getElementById('transpondersForm:moveAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked()" />
+							<h:outputText styleClass="preformattedtext" value="C"
+								rendered="#{not empty transpondersManager.copiedTransponder and transpondersManager.copiedTransponder.id eq transponderVar.id}" />
+						</h:column>
+						<h:column rendered="#{transpondersManager.filteredSourceId lt 0}">
+							<f:facet name="header">Source</f:facet>
+							<ui:param name="sourceParam"
+								value="#{sourceRepository.findById(transponderVar.sourceId)}">
+							</ui:param>
+							<h:outputText styleClass="preformattedtext"
+								value="#{sourceParam.name} (#{sourceParam.description})" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Frequency and Polarity</f:facet>
+							<a4j:commandLink styleClass="preformattedtext"
+								value="#{transponderVar.frequency} #{transponderVar.polarity}"
+								onclick="this.setAttribute('onclick', 'return false')"
+								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:frequencyInput').focus()"
+								action="#{transpondersBacking.intendUpdateTransponder(transponderVar)}"
+								render="transpondersContent, editPanel" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">DVB-S Generation</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{transponderVar.dvbsGen==1 ? 'S' : 'S2'}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Symbol Rate</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{transponderVar.symbolRate}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Ignored</f:facet>
+							<h:outputText styleClass="preformattedtext, red"
+								value="#{transponderVar.ignored ? '#' : ''}" />
+						</h:column>
+					</h:dataTable>
+					<rich:dataScroller for="transpondersTable" maxPages="5"
+						fastStep="5" page="#{transpondersManager.scrollerPage}"
+						render="transpondersContent"
+						scrollListener="#{transpondersBacking.onDataTableScroll}" />
+				</h:panelGroup>
+			</h:form>
+			<h:outputScript library="js">
+					document.getElementById('transpondersForm:removeButton').disabled=!isAtLeastOneTransponderCheckboxChecked();
+					document.getElementById('transpondersForm:addAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
+					document.getElementById('transpondersForm:copyButton').disabled=!isExactlyOneTransponderCheckboxChecked();
+					document.getElementById('transpondersForm:pasteAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
+					document.getElementById('transpondersForm:moveAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
+			</h:outputScript>
+		</h:panelGroup>
+		<h:panelGrid columns="2">
+			<h:form id="editPanelForm" styleClass="zerosize"
+				onkeypress="return editPanelFormKeyPressHandler(event)">
+				<rich:popupPanel id="editPanel" modal="true" autosized="true"
+					domElementAttachment="form">
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText
+								value="#{empty transpondersManager.editedTransponder.id ? 'Add' : 'Edit'} Transponder"></h:outputText>
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<h:commandLink value="Close" immediate="true"
+								onclick="#{rich:component('editPanel')}.hide()"
+								action="#{formResetter.resetForm(rich:findComponent('editPanelForm'))}" />
+						</h:panelGroup>
+					</f:facet>
+					<h:panelGrid columns="2">
+						<rich:message for="sourceFrequencyPolarityValidator" />
+						<br />
+					</h:panelGrid>
+					<h:inputHidden id="sourceFrequencyPolarityValidator" value="true">
+						<f:validator
+							binding="#{transponderSourceFrequencyPolarityUniquenessValidator}" />
+						<f:attribute name="source" value="editPanelForm:sourcesMenu" />
+						<f:attribute name="frequency" value="editPanelForm:frequencyInput" />
+						<f:attribute name="polarity" value="editPanelForm:polarityMenu" />
+					</h:inputHidden>
+					<h:panelGrid columns="2">
+						<h:outputLabel value="Source:" styleClass="preformattedtext" />
+						<h:panelGrid columns="2">
+							<ui:fragment
+								rendered="#{empty transpondersManager.editedTransponder.id and transpondersManager.filteredSourceId lt 0}">
+								<h:selectOneMenu id="sourcesMenu"
+									value="#{transpondersManager.editedTransponder.sourceId}">
+									<f:selectItems value="#{sourcesManager.sources}"
+										var="sourceVar" itemValue="#{sourceVar.id}"
+										itemLabel="#{sourceVar.name} (#{sourceVar.description})" />
+								</h:selectOneMenu>
+							</ui:fragment>
+							<ui:fragment
+								rendered="#{empty transpondersManager.editedTransponder.id and transpondersManager.filteredSourceId ge 0}">
+								<ui:param name="sourceParam"
+									value="#{sourceRepository.findById(transpondersManager.filteredSourceId)}">
+								</ui:param>
+								<h:outputLabel
+									value="#{sourceParam.name} (#{sourceParam.description})"
+									styleClass="preformattedtext" />
+							</ui:fragment>
+							<ui:fragment
+								rendered="#{not empty transpondersManager.editedTransponder.id}">
+								<ui:param name="sourceParam"
+									value="#{sourceRepository.findById(transpondersManager.editedTransponder.sourceId)}">
+								</ui:param>
+								<h:outputLabel
+									value="#{sourceParam.name} (#{sourceParam.description})"
+									styleClass="preformattedtext" />
+							</ui:fragment>
+							<h:outputText
+								value="                                             "
+								styleClass="preformattedtext" />
+						</h:panelGrid>
+						<h:outputLabel value="Frequency:" styleClass="preformattedtext" />
+						<h:panelGrid columns="2">
+							<h:inputText id="frequencyInput"
+								value="#{transpondersManager.editedTransponder.frequency}"
+								maxlength="5" size="5"
+								converterMessage="Frequency must be a number">
+								<rich:validator />
+							</h:inputText>
+							<rich:message for="frequencyInput" />
+						</h:panelGrid>
+						<h:outputLabel value="Polarity:" styleClass="preformattedtext" />
+						<h:selectOneMenu id="polarityMenu"
+							value="#{transpondersManager.editedTransponder.polarity}">
+							<f:selectItem itemValue="H" />
+							<f:selectItem itemValue="V" />
+							<f:selectItem itemValue="L" />
+							<f:selectItem itemValue="R" />
+						</h:selectOneMenu>
+						<h:outputLabel value="DVB-S Generation:"
+							styleClass="preformattedtext" />
+						<h:selectOneMenu
+							value="#{transpondersManager.editedTransponder.dvbsGen}">
+							<f:selectItem itemValue="1" itemLabel="S" />
+							<f:selectItem itemValue="2" itemLabel="S2" />
+						</h:selectOneMenu>
+						<h:outputLabel value="Symbol Rate:" styleClass="preformattedtext" />
+						<h:panelGrid columns="2">
+							<h:inputText id="symbolRateInput"
+								value="#{transpondersManager.editedTransponder.symbolRate}"
+								maxlength="5" size="5"
+								converterMessage="Symbol Rate must be a number">
+								<rich:validator />
+							</h:inputText>
+							<rich:message for="symbolRateInput" />
+						</h:panelGrid>
+						<h:outputLabel value="Ignored:" styleClass="preformattedtext" />
+						<h:selectBooleanCheckbox
+							value="#{transpondersManager.editedTransponder.ignored}" />
+					</h:panelGrid>
+					<h:panelGrid columns="2">
+						<a4j:commandButton id="okAddButton" value="OK"
+							rendered="#{empty transpondersManager.editedTransponder.id}"
+							onclick="this.disabled=true"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();document.getElementById('editPanelForm:okAddButton').disabled=false"
+							action="#{transpondersBacking.doAddTransponder()}"
+							render="transpondersContent" />
+						<a4j:commandButton id="okEditButton" value="OK"
+							rendered="#{not empty transpondersManager.editedTransponder.id}"
+							onclick="this.disabled=true"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();document.getElementById('editPanelForm:okEditButton').disabled=false"
+							action="#{transpondersBacking.doUpdateTransponder()}"
+							render="transpondersContent" />
+						<a4j:commandButton id="cancelButton" value="Cancel"
+							immediate="true"
+							action="#{formResetter.resetForm(rich:findComponent('editPanelForm'))}"
+							onclick="#{rich:component('editPanel')}.hide()" />
+					</h:panelGrid>
+				</rich:popupPanel>
+			</h:form>
+			<h:form id="removePanelForm" styleClass="zerosize"
+				onkeypress="return removePanelFormKeyPressHandler(event)">
+				<rich:popupPanel id="removePanel" modal="true" autosized="true"
+					domElementAttachment="form">
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Remove Transponder(s)"></h:outputText>
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<h:commandLink value="Close" immediate="true"
+								onclick="#{rich:component('removePanel')}.hide()"
+								action="#{formResetter.resetForm(rich:findComponent('removePanelForm'))}" />
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText
+						value="Are you sure you want to remove the following transponder(s)"></h:outputText>
+					<br />
+					<h:outputText value="along with all their channels?"></h:outputText>
+					<br />
+					<br />
+					<ui:repeat value="#{transpondersManager.checkedTransponders}"
+						var="transponderVar" varStatus="loopVar">
+				            #{transponderVar.frequency} #{transponderVar.polarity}
+						<ui:param name="sourceParam"
+							value="#{sourceRepository.findById(transponderVar.sourceId)}">
+						</ui:param>
+							at #{sourceParam.name} (#{sourceParam.description})
+				        <ui:fragment rendered="#{!loopVar.last}">
+							<br />
+						</ui:fragment>
+						<ui:fragment rendered="#{loopVar.last}">
+							<br />
+							<br />
+						</ui:fragment>
+					</ui:repeat>
+					<h:panelGrid columns="2">
+						<a4j:commandButton id="okButton" value="OK"
+							onclick="this.disabled=true"
+							oncomplete="#{rich:component('removePanel')}.hide();document.getElementById('removePanelForm:okButton').disabled=false"
+							action="#{transpondersBacking.doRemoveTransponders()}"
+							render="transpondersContent" />
+						<a4j:commandButton id="cancelButton" value="Cancel"
+							onclick="#{rich:component('removePanel')}.hide()" />
+					</h:panelGrid>
+				</rich:popupPanel>
+			</h:form>
+		</h:panelGrid>
+	</ui:define>
+</ui:composition>

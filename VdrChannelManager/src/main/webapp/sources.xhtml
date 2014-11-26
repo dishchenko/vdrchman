@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j"
+	template="/WEB-INF/templates/default.xhtml">
+	<ui:define name="content">
+		<h:outputScript library="javax.faces" name="jsf.js" target="head" />
+		<h:outputScript library="js" name="jsf_fix.js" target="head" />
+		<h:outputScript library="js" name="sources.js" target="head" />
+		#{sourcesManager.clearSourceCheckboxes()}
+		<h:panelGroup id="sourcesContent">
+			<h1>Sources</h1>
+			<h:form id="sourcesForm">
+				<h:panelGrid columns="4">
+					<a4j:commandButton id="addButton" value="Add..."
+						action="#{sourcesBacking.intendAddSource()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('sourcesForm:addButton').disabled=false"
+						render="sourcesContent, editPanel" />
+					<a4j:commandButton id="removeButton" value="Remove..."
+						action="#{sourcesBacking.intendRemoveSources()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('removePanel')}.show();document.getElementById('removePanelForm:okButton').focus();document.getElementById('sourcesForm:removeButton').disabled=!isAtLeastOneSourceCheckboxChecked()"
+						render="sourcesContent, removePanel" />
+					<a4j:commandButton id="copyButton" value="Copy"
+						action="#{sourcesBacking.copySource()}"
+						onclick="this.disabled=true"
+						oncomplete="document.getElementById('sourcesForm:copyButton').disabled=!isExactlyOneSourceCheckboxChecked()"
+						render="sourcesContent" />
+					<a4j:commandButton id="pasteButton" value="Paste..."
+						rendered="#{not empty sourcesManager.copiedSource}"
+						action="#{sourcesBacking.intendPasteSource()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('sourcesForm:pasteButton').disabled=false"
+						render="sourcesContent, editPanel" />
+				</h:panelGrid>
+				<h:panelGroup rendered="#{empty sourcesManager.sources}">
+					<em>No sources defined.</em>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{not empty sourcesManager.sources}">
+					<h:dataTable var="sourceVar" value="#{sourcesManager.sources}"
+						styleClass="simpletablestyle" id="sourcesTable"
+						rows="#{sourcesManager.rowsPerPage}">
+						<h:column>
+							<f:facet name="header" />
+							<h:selectBooleanCheckbox id="sourceCheckbox"
+								value="#{sourcesManager.sourceCheckboxes[sourceVar.id]}"
+								styleClass="preformattedtext"
+								onclick="document.getElementById('sourcesForm:removeButton').disabled=!isAtLeastOneSourceCheckboxChecked();document.getElementById('sourcesForm:copyButton').disabled=!isExactlyOneSourceCheckboxChecked()" />
+							<h:outputText styleClass="preformattedtext" value="C"
+								rendered="#{not empty sourcesManager.copiedSource and sourcesManager.copiedSource.id eq sourceVar.id}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Name</f:facet>
+							<a4j:commandLink styleClass="preformattedtext"
+								value="#{sourceVar.name}"
+								onclick="this.setAttribute('onclick', 'return false')"
+								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus()"
+								action="#{sourcesBacking.intendUpdateSource(sourceVar)}"
+								render="sourcesContent, editPanel" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Description</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{sourceVar.description}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Lo V<br />Hi V<br />Lo H<br />Hi H</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{sourceVar.loV}" />
+							<br />
+							<h:outputText styleClass="preformattedtext"
+								value="#{sourceVar.hiV}" />
+							<br />
+							<h:outputText styleClass="preformattedtext"
+								value="#{sourceVar.loH}" />
+							<br />
+							<h:outputText styleClass="preformattedtext"
+								value="#{sourceVar.hiH}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Rotor</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{sourceVar.rotor}" />
+						</h:column>
+					</h:dataTable>
+					<rich:dataScroller for="sourcesTable" maxPages="5" fastStep="5"
+						page="#{sourcesManager.scrollerPage}" render="sourcesContent"
+						scrollListener="#{sourcesBacking.onDataTableScroll}" />
+				</h:panelGroup>
+			</h:form>
+			<h:outputScript library="js">
+				document.getElementById('sourcesForm:removeButton').disabled=!isAtLeastOneSourceCheckboxChecked();
+				document.getElementById('sourcesForm:copyButton').disabled=!isExactlyOneSourceCheckboxChecked();
+			</h:outputScript>
+		</h:panelGroup>
+		<h:panelGrid columns="2">
+			<h:form id="editPanelForm" styleClass="zerosize"
+				onkeypress="return editPanelFormKeyPressHandler(event)">
+				<rich:popupPanel id="editPanel" modal="true" autosized="true"
+					domElementAttachment="form">
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText
+								value="#{empty sourcesManager.editedSource.id ? 'Add' : 'Edit'} Source"></h:outputText>
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<h:commandLink value="Close" immediate="true"
+								onclick="#{rich:component('editPanel')}.hide()"
+								action="#{formResetter.resetForm(rich:findComponent('editPanelForm'))}" />
+						</h:panelGroup>
+					</f:facet>
+					<br />
+					<h:panelGrid columns="2">
+						<h:outputLabel value="Name:" styleClass="preformattedtext" />
+						<h:panelGrid columns="2">
+							<h:inputText id="nameInput"
+								value="#{sourcesManager.editedSource.name}" maxlength="20"
+								size="20">
+								<rich:validator />
+								<f:validator binding="#{sourceNameUniquenessValidator}" />
+							</h:inputText>
+							<rich:message for="nameInput" />
+						</h:panelGrid>
+						<h:outputLabel value="Description:" styleClass="preformattedtext" />
+						<h:panelGrid columns="2">
+							<h:inputText id="descriptionInput"
+								value="#{sourcesManager.editedSource.description}"
+								maxlength="50" size="50">
+								<rich:validator />
+							</h:inputText>
+							<rich:message for="descriptionInput" />
+						</h:panelGrid>
+						<h:outputLabel value="Lower-band Vertical polarization setup:"
+							styleClass="preformattedtext" />
+						<h:inputText value="#{sourcesManager.editedSource.loV}"
+							maxlength="100" size="100" />
+						<h:outputLabel value="Higher-band Vertical polarization setup:"
+							styleClass="preformattedtext" />
+						<h:inputText value="#{sourcesManager.editedSource.hiV}"
+							maxlength="100" size="100" />
+						<h:outputLabel value="Lower-band Horizontal polarization setup:"
+							styleClass="preformattedtext" />
+						<h:inputText value="#{sourcesManager.editedSource.loH}"
+							maxlength="100" size="100" />
+						<h:outputLabel value="Higher-band Horizontal polarization setup:"
+							styleClass="preformattedtext" />
+						<h:inputText value="#{sourcesManager.editedSource.hiH}"
+							maxlength="100" size="100" />
+						<h:outputLabel value="Rotor position:"
+							styleClass="preformattedtext" />
+						<h:panelGrid columns="2">
+							<h:inputText id="rotorInput"
+								value="#{sourcesManager.editedSource.rotor}" maxlength="3"
+								size="3" converterMessage="Rotor position must be a number">
+								<rich:validator />
+								<f:validator binding="#{sourceRotorUniquenessValidator}" />
+							</h:inputText>
+							<rich:message for="rotorInput" />
+						</h:panelGrid>
+					</h:panelGrid>
+					<h:panelGrid columns="2">
+						<a4j:commandButton id="okAddButton" value="OK"
+							rendered="#{empty sourcesManager.editedSource.id}"
+							onclick="this.disabled=true"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();document.getElementById('editPanelForm:okAddButton').disabled=false"
+							action="#{sourcesBacking.doAddSource()}" render="sourcesContent" />
+						<a4j:commandButton id="okEditButton" value="OK"
+							rendered="#{not empty sourcesManager.editedSource.id}"
+							onclick="this.disabled=true"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();document.getElementById('editPanelForm:okEditButton').disabled=false"
+							action="#{sourcesBacking.doUpdateSource()}"
+							render="sourcesContent" />
+						<a4j:commandButton id="cancelButton" value="Cancel"
+							immediate="true"
+							action="#{formResetter.resetForm(rich:findComponent('editPanelForm'))}"
+							onclick="#{rich:component('editPanel')}.hide()" />
+					</h:panelGrid>
+				</rich:popupPanel>
+			</h:form>
+			<h:form id="removePanelForm" styleClass="zerosize"
+				onkeypress="return removePanelFormKeyPressHandler(event)">
+				<rich:popupPanel id="removePanel" modal="true" autosized="true"
+					domElementAttachment="form">
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Remove Source(s)"></h:outputText>
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<h:commandLink value="Close" immediate="true"
+								onclick="#{rich:component('removePanel')}.hide()"
+								action="#{formResetter.resetForm(rich:findComponent('removePanelForm'))}" />
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText
+						value="Are you sure you want to remove the following source(s)"></h:outputText>
+					<br />
+					<h:outputText
+						value="along with all their transponders and channels?"></h:outputText>
+					<br />
+					<br />
+					<ui:repeat value="#{sourcesManager.checkedSources}" var="sourceVar"
+						varStatus="loopVar">
+				            #{sourceVar.name} (#{sourceVar.description})
+				        <ui:fragment rendered="#{!loopVar.last}">
+							<br />
+						</ui:fragment>
+						<ui:fragment rendered="#{loopVar.last}">
+							<br />
+							<br />
+						</ui:fragment>
+					</ui:repeat>
+					<h:panelGrid columns="2">
+						<a4j:commandButton id="okButton" value="OK"
+							onclick="this.disabled=true"
+							oncomplete="#{rich:component('removePanel')}.hide();document.getElementById('removePanelForm:okButton').disabled=false"
+							action="#{sourcesBacking.doRemoveSources()}"
+							render="sourcesContent" />
+						<a4j:commandButton id="cancelButton" value="Cancel"
+							onclick="#{rich:component('removePanel')}.hide()" />
+					</h:panelGrid>
+				</rich:popupPanel>
+			</h:form>
+		</h:panelGrid>
+	</ui:define>
+</ui:composition>
