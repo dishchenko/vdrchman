@@ -21,30 +21,30 @@ public class TranspSeqno implements Serializable {
 
 	@Id
 	@Column(name = "transp_id")
-	private Integer transpId;
+	private Long transpId;
 
 	@NotNull
 	@Column(name = "user_id")
-	private Integer userId;
+	private Long userId;
 
 	@NotNull
 	private Integer seqno;
 
-	public Integer getTranspId() {
+	public Long getTranspId() {
 
 		return transpId;
 	}
 
-	public void setTranspId(Integer transpId) {
+	public void setTranspId(Long transpId) {
 		this.transpId = transpId;
 	}
 
-	public Integer getUserId() {
+	public Long getUserId() {
 
 		return userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 

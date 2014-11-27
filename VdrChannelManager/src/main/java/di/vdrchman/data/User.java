@@ -11,15 +11,15 @@ public class User implements Serializable {
 
 	private static final long serialVersionUID = 5646515466286495465L;
 
-	private Integer id;
+	private Long id;
 	private String name;
 
-	public Integer getId() {
+	public Long getId() {
 
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

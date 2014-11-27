@@ -27,7 +27,7 @@ public class SourcesManager implements Serializable {
 	private final int rowsPerPage = 5;
 	private int scrollerPage = 1;
 
-	private Map<Integer, Boolean> sourceCheckboxes = new HashMap<Integer, Boolean>();
+	private Map<Long, Boolean> sourceCheckboxes = new HashMap<Long, Boolean>();
 	private List<Source> checkedSources = new ArrayList<Source>();
 
 	private Source editedSource = new Source();
@@ -97,7 +97,7 @@ public class SourcesManager implements Serializable {
 		this.scrollerPage = scrollerPage;
 	}
 
-	public Map<Integer, Boolean> getSourceCheckboxes() {
+	public Map<Long, Boolean> getSourceCheckboxes() {
 
 		return sourceCheckboxes;
 	}

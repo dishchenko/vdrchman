@@ -27,14 +27,14 @@ public class TransponderSourceFrequencyPolarityUniquenessValidator implements
 	public void validate(FacesContext context, UIComponent component,
 			Object value) throws ValidatorException {
 		Object sourceAttrValue;
-		Integer newSourceId;
+		Long newSourceId;
 		Object frequencyAttrValue;
 		Integer newFrequency;
 		Object polarityAttrValue;
 		String newPolarity;
 		Transponder editedTransponder;
 		Transponder foundTransponder;
-		Integer editedTransponderId;
+		Long editedTransponderId;
 
 		editedTransponder = transpondersManager.getEditedTransponder();
 
@@ -43,9 +43,9 @@ public class TransponderSourceFrequencyPolarityUniquenessValidator implements
 				.getSubmittedValue();
 		if (sourceAttrValue != null) {
 			try {
-				newSourceId = Integer.valueOf((String) sourceAttrValue);
+				newSourceId = Long.valueOf((String) sourceAttrValue);
 			} catch (NumberFormatException ex) {
-				newSourceId = -1;
+				newSourceId = -1L;
 			}
 		} else {
 			if (editedTransponder.getSourceId() != null) {

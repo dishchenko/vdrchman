@@ -143,7 +143,7 @@ public class TranspondersBacking {
 
 	public void onSourceMenuSelection(ValueChangeEvent event) {
 		Transponder lastPageTopTransponder;
-		int filteredSourceId;
+		long filteredSourceId;
 		Transponder copiedTransponder;
 
 		lastPageTopTransponder = null;
@@ -152,7 +152,7 @@ public class TranspondersBacking {
 					(transpondersManager.getScrollerPage() - 1)
 							* transpondersManager.getRowsPerPage());
 		}
-		filteredSourceId = (Integer) event.getNewValue();
+		filteredSourceId = (Long) event.getNewValue();
 		if (filteredSourceId >= 0) {
 			copiedTransponder = transpondersManager.getCopiedTransponder();
 			if (copiedTransponder != null) {

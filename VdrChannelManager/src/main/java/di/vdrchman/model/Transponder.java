@@ -25,12 +25,13 @@ public class Transponder implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Long id;
 
 	@NotNull
 	@Column(name = "source_id")
-	private Integer sourceId;
+	private Long sourceId;
 
+	// 1 - S, 2 - S2
 	@NotNull
 	@Column(name = "dvbs_gen")
 	private Integer dvbsGen;
@@ -63,8 +64,8 @@ public class Transponder implements Serializable {
 	}
 
 	public Transponder(Transponder transponder) {
-		this.id = transponder.id != null ? new Integer(transponder.id) : null;
-		this.sourceId = transponder.sourceId != null ? new Integer(
+		this.id = transponder.id != null ? new Long(transponder.id) : null;
+		this.sourceId = transponder.sourceId != null ? new Long(
 				transponder.sourceId) : null;
 		this.dvbsGen = transponder.dvbsGen != null ? new Integer(
 				transponder.dvbsGen) : null;
@@ -80,21 +81,21 @@ public class Transponder implements Serializable {
 				transponder.ignored) : null;
 	}
 
-	public Integer getId() {
+	public Long getId() {
 
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public Integer getSourceId() {
+	public Long getSourceId() {
 
 		return sourceId;
 	}
 
-	public void setSourceId(Integer sourceId) {
+	public void setSourceId(Long sourceId) {
 		this.sourceId = sourceId;
 	}
 

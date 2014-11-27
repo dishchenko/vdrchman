@@ -26,7 +26,7 @@ public class SourceNameUniquenessValidator implements Validator {
 			Object value) throws ValidatorException {
 		String newName;
 		Source foundSource;
-		Integer editedSourceId;
+		Long editedSourceId;
 
 		newName = (String) value;
 		if (newName != null) {

@@ -26,7 +26,7 @@ public class SourceRotorUniquenessValidator implements Validator {
 			Object value) throws ValidatorException {
 		Integer newRotor;
 		Source foundSource;
-		Integer editedSourceId;
+		Long editedSourceId;
 
 		newRotor = (Integer) value;
 		if (newRotor != null) {

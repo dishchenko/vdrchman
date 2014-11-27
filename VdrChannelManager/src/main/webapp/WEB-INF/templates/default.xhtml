@@ -14,9 +14,32 @@
 <h:body>
 	<div id="menu">
 		<rich:toolbar height="26" itemSeparator="grid">
-			<h:link value="Sources" outcome="sources"></h:link>
-			<h:link value="Transponders" outcome="transponders"></h:link>
-			<h:link value="Channels" outcome="channels"></h:link>
+			<rich:menuItem onclick="document.location.href='sources.jsf'">
+				<h:outputText value="Sources" />
+			</rich:menuItem>
+			<rich:menuItem onclick="document.location.href='transponders.jsf'">
+				<h:outputText value="Transponders" />
+			</rich:menuItem>
+			<rich:dropDownMenu mode="client">
+				<f:facet name="label">
+					<h:outputText value="Channels" />
+				</f:facet>
+				<rich:menuItem onclick="document.location.href='channels.jsf'">
+					<h:outputText value="Main list" />
+				</rich:menuItem>
+				<rich:menuItem onclick="document.location.href='ignored_channels.jsf'">
+					<h:outputText value="Ignored" />
+				</rich:menuItem>
+				<rich:menuItem onclick="document.location.href='scanned_channels.jsf'">
+					<h:outputText value="Scanned" />
+				</rich:menuItem>
+			</rich:dropDownMenu>
+			<rich:menuItem onclick="document.location.href='groups.jsf'">
+				<h:outputText value="Groups" />
+			</rich:menuItem>
+			<rich:menuItem onclick="document.location.href='user.jsf'">
+				<h:outputText value="User" />
+			</rich:menuItem>
 		</rich:toolbar>
 	</div>
 	<div id="container">

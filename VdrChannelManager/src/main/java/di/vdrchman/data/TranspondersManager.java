@@ -26,14 +26,14 @@ public class TranspondersManager implements Serializable {
 	@Inject
 	private TransponderRepository transponderRepository;
 
-	private int filteredSourceId = -1;
+	private long filteredSourceId = -1;
 
 	private List<Transponder> transponders;
 
 	private final int rowsPerPage = 15;
 	private int scrollerPage = 1;
 
-	private Map<Integer, Boolean> transponderCheckboxes = new HashMap<Integer, Boolean>();
+	private Map<Long, Boolean> transponderCheckboxes = new HashMap<Long, Boolean>();
 	private List<Transponder> checkedTransponders = new ArrayList<Transponder>();
 
 	private Transponder editedTransponder = new Transponder();
@@ -42,7 +42,7 @@ public class TranspondersManager implements Serializable {
 
 	private Transponder copiedTransponder = null;
 
-	public void collectCheckedTransponders(int sourceId) {
+	public void collectCheckedTransponders(long sourceId) {
 		List<Transponder> transponders;
 
 		transponders = transponderRepository.findAll(sourceId);
@@ -117,12 +117,12 @@ public class TranspondersManager implements Serializable {
 		transponders = transponderRepository.findAll(filteredSourceId);
 	}
 
-	public int getFilteredSourceId() {
+	public long getFilteredSourceId() {
 
 		return filteredSourceId;
 	}
 
-	public void setFilteredSourceId(int filteredSourceId) {
+	public void setFilteredSourceId(long filteredSourceId) {
 		this.filteredSourceId = filteredSourceId;
 	}
 
@@ -145,7 +145,7 @@ public class TranspondersManager implements Serializable {
 		this.scrollerPage = scrollerPage;
 	}
 
-	public Map<Integer, Boolean> getTransponderCheckboxes() {
+	public Map<Long, Boolean> getTransponderCheckboxes() {
 
 		return transponderCheckboxes;
 	}

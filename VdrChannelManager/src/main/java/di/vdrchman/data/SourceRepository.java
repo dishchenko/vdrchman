@@ -101,11 +101,11 @@ public class SourceRepository {
 		return result;
 	}
 
-	public Source findById(int id) {
+	public Source findById(long id) {
 		return em.find(Source.class, id);
 	}
 
-	public Source findPrevious(int id) {
+	public Source findPrevious(long id) {
 		Source result;
 		Source previous;
 		List<Source> sources;

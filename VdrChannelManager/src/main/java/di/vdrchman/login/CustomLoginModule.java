@@ -53,7 +53,7 @@ public class CustomLoginModule extends DatabaseServerLoginModule {
 				ps.setString(1, username);
 				rs = ps.executeQuery();
 				rs.next();
-				user.setId(rs.getInt(1));
+				user.setId(rs.getLong(1));
 				user.setName(username);
 			}
 

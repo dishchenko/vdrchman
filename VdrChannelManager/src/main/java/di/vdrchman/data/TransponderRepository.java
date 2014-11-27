@@ -28,7 +28,7 @@ public class TransponderRepository {
 	@Inject
 	private User user;
 
-	public List<Transponder> findAll(int sourceId) {
+	public List<Transponder> findAll(long sourceId) {
 		List<Transponder> result;
 		Query query;
 		List<?> queryResult;
@@ -55,7 +55,7 @@ public class TransponderRepository {
 		return result;
 	}
 
-	public Transponder findBySourceFrequencyPolarity(int sourceId,
+	public Transponder findBySourceFrequencyPolarity(long sourceId,
 			int frequency, String polarity) {
 		Transponder result;
 		CriteriaBuilder cb;
@@ -82,7 +82,7 @@ public class TransponderRepository {
 		return result;
 	}
 
-	public Integer findMaxSeqno(int sourceId) {
+	public Integer findMaxSeqno(long sourceId) {
 		Query query;
 
 		if (sourceId < 0) {
@@ -171,7 +171,7 @@ public class TransponderRepository {
 	}
 
 	public void delete(Transponder transponder) {
-		int transpId;
+		long transpId;
 		TranspSeqno transpSeqno;
 		int seqno;
 		Query query;
