@@ -13,7 +13,7 @@ public class TransponderRepository {
 		this.em = em;
 	}
 
-	public void load(Integer userId, Integer sourceId, Scanner sourceFreq) {
+	public void load(Long userId, Long sourceId, Scanner sourceFreq) {
 		Query query;
 		Integer queryResult;
 		int seqno;

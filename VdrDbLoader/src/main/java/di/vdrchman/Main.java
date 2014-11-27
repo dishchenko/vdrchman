@@ -69,14 +69,14 @@ public class Main {
 		}
 	}
 
-	private static void cleanDb(EntityManager em, Integer userId) {
+	private static void cleanDb(EntityManager em, Long userId) {
 		SourceRepository sr;
 
 		sr = new SourceRepository(em);
 		sr.clean(userId);
 	}
 
-	private static void loadSources(EntityManager em, Integer userId)
+	private static void loadSources(EntityManager em, Long userId)
 			throws FileNotFoundException, IOException {
 		Scanner sourcesConf;
 		Scanner diseqcConf;
@@ -109,7 +109,7 @@ public class Main {
 		}
 	}
 
-	private static void loadTransponders(EntityManager em, Integer userId,
+	private static void loadTransponders(EntityManager em, Long userId,
 			String sourceName) throws FileNotFoundException, IOException {
 		SourceRepository sr;
 		Source source;

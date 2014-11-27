@@ -25,11 +25,11 @@ public class Source implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Long id;
 
 	@NotNull
 	@Column(name = "user_id")
-	private Integer userId;
+	private Long userId;
 
 	@NotNull(message = "Source Name must be defined")
 	@Size(max = 20)
@@ -58,21 +58,21 @@ public class Source implements Serializable {
 	@Digits(fraction = 0, integer = 3)
 	private Integer rotor;
 
-	public Integer getId() {
+	public Long getId() {
 
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public Integer getUserId() {
+	public Long getUserId() {
 
 		return userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 

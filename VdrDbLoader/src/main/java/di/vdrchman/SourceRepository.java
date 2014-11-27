@@ -17,7 +17,7 @@ public class SourceRepository {
 		this.em = em;
 	}
 
-	public void clean(Integer userId) {
+	public void clean(Long userId) {
 		Query query;
 
 		query = em.createQuery("delete from Source s where s.userId = :userId");
@@ -25,7 +25,7 @@ public class SourceRepository {
 		query.executeUpdate();
 	}
 
-	public void load(Integer userId, Scanner sourcesConf, Scanner diseqcConf,
+	public void load(Long userId, Scanner sourcesConf, Scanner diseqcConf,
 			Scanner rotorConf) {
 		String line;
 		String[] splitLine;
@@ -102,7 +102,7 @@ public class SourceRepository {
 		}
 	}
 
-	public Source findByName(Integer userId, String name) {
+	public Source findByName(Long userId, String name) {
 		Source result;
 
 		CriteriaBuilder cb;

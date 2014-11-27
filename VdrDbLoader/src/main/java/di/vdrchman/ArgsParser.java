@@ -3,7 +3,7 @@ package di.vdrchman;
 public class ArgsParser {
 
 	private Command command;
-	private Integer userId;
+	private Long userId;
 	private String sourceName;
 
 	public void parse(String[] args) {
@@ -11,7 +11,7 @@ public class ArgsParser {
 
 		if (args.length > 1) {
 			argCommand = args[0];
-			userId = Integer.parseInt(args[1]);
+			userId = Long.parseLong(args[1]);
 
 			if (args.length == 2) {
 				if (argCommand.equals("cleanDb")) {
@@ -37,7 +37,7 @@ public class ArgsParser {
 		return command;
 	}
 
-	public Integer getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 

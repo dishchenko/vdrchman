@@ -25,11 +25,11 @@ public class Transponder implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Long id;
 
 	@NotNull
 	@Column(name = "source_id")
-	private Integer sourceId;
+	private Long sourceId;
 
 	@NotNull
 	@Column(name = "dvbs_gen")
@@ -58,21 +58,21 @@ public class Transponder implements Serializable {
 	@Column(columnDefinition = "BIT", length = 1)
 	private Boolean ignored;
 
-	public Integer getId() {
+	public Long getId() {
 
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public Integer getSourceId() {
+	public Long getSourceId() {
 
 		return sourceId;
 	}
 
-	public void setSourceId(Integer sourceId) {
+	public void setSourceId(Long sourceId) {
 		this.sourceId = sourceId;
 	}
 
