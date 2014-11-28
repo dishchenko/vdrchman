@@ -17,7 +17,9 @@ import org.jboss.security.auth.spi.DatabaseServerLoginModule;
 
 import di.vdrchman.data.User;
 
-public class CustomLoginModule extends DatabaseServerLoginModule {
+// Customized login module which saves ID of the logged in user
+// in the User bean
+public class UserInjectingLoginModule extends DatabaseServerLoginModule {
 
 	@Override
 	public boolean login() throws LoginException {

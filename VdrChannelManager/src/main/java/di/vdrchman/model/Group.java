@@ -60,6 +60,7 @@ public class Group implements Serializable {
 	}
 
 	public Long getId() {
+
 		return id;
 	}
 
@@ -68,6 +69,7 @@ public class Group implements Serializable {
 	}
 
 	public Long getUserId() {
+
 		return userId;
 	}
 
@@ -76,6 +78,7 @@ public class Group implements Serializable {
 	}
 
 	public String getName() {
+
 		return name;
 	}
 
@@ -84,6 +87,7 @@ public class Group implements Serializable {
 	}
 
 	public Integer getStartChannelNo() {
+
 		return startChannelNo;
 	}
 
@@ -92,6 +96,7 @@ public class Group implements Serializable {
 	}
 
 	public String getDescription() {
+
 		return description;
 	}
 

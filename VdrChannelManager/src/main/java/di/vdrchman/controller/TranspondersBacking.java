@@ -19,6 +19,8 @@ public class TranspondersBacking {
 	@Inject
 	private TransponderRepository transponderRepository;
 
+	// The user is going to add a new Transponder on top of
+	// the current transponder list
 	public void intendAddTransponderOnTop() {
 		Transponder transponder;
 
@@ -29,6 +31,8 @@ public class TranspondersBacking {
 				.calculateOnTopSeqno());
 	}
 
+	// The user is going to add a new Transponder and place it right after
+	// the checked transponder in the list
 	public void intendAddTransponderAfter() {
 		Transponder transponder;
 
@@ -43,6 +47,7 @@ public class TranspondersBacking {
 								.get(0)) + 1);
 	}
 
+	// Really adding a new Transponder to the place specified
 	public void doAddTransponder() {
 		transponderRepository.add(transpondersManager.getEditedTransponder(),
 				transpondersManager.getEditedTransponderSeqno());
@@ -53,10 +58,12 @@ public class TranspondersBacking {
 				.getEditedTransponder());
 	}
 
+	// The user is going to update a Transponder
 	public void intendUpdateTransponder(Transponder transponder) {
 		transpondersManager.setEditedTransponder(new Transponder(transponder));
 	}
 
+	// Really updating the Transponder
 	public void doUpdateTransponder() {
 		transponderRepository
 				.update(transpondersManager.getEditedTransponder());
@@ -65,11 +72,13 @@ public class TranspondersBacking {
 		transpondersManager.clearTransponderCheckboxes();
 	}
 
+	// Going to remove some checked Transponders
 	public void intendRemoveTransponders() {
 		transpondersManager.collectCheckedTransponders(transpondersManager
 				.getFilteredSourceId());
 	}
 
+	// Do that removal
 	public void doRemoveTransponders() {
 		for (Transponder transponder : transpondersManager
 				.getCheckedTransponders()) {
@@ -80,6 +89,7 @@ public class TranspondersBacking {
 		transpondersManager.clearTransponderCheckboxes();
 	}
 
+	// Let's put the checked Transponder's data on the "clipboard"
 	public void copyTransponder() {
 		transpondersManager.collectCheckedTransponders(transpondersManager
 				.getFilteredSourceId());
@@ -89,6 +99,8 @@ public class TranspondersBacking {
 		transpondersManager.clearTransponderCheckboxes();
 	}
 
+	// The user's gonna add a new Transponder on top of the list
+	// using data from the "clipboard"
 	public void intendPasteTransponderOnTop() {
 		transpondersManager.setEditedTransponder(new Transponder(
 				transpondersManager.getCopiedTransponder()));
@@ -97,6 +109,8 @@ public class TranspondersBacking {
 				.calculateOnTopSeqno());
 	}
 
+	// The user is going to add a new Transponder using data from the "clipboard"
+	// and place it right after the checked transponder in the list
 	public void intendPasteTransponderAfter() {
 		transpondersManager.collectCheckedTransponders(transpondersManager
 				.getFilteredSourceId());
@@ -109,6 +123,8 @@ public class TranspondersBacking {
 								.get(0)) + 1);
 	}
 
+	// Remember the Transponder put on the "clipboard"?
+	// Move the original one on top of the current list
 	public void moveTransponderOnTop() {
 		transponderRepository.move(transpondersManager.getCopiedTransponder(),
 				transpondersManager.calculateOnTopSeqno());
@@ -119,6 +135,8 @@ public class TranspondersBacking {
 				.getCopiedTransponder());
 	}
 
+	// Now move the Transponder copied to the "clipboard" right after
+	// the checked transponder in the list
 	public void moveTransponderAfter() {
 		int curSeqno;
 		int newSeqno;
@@ -141,6 +159,10 @@ public class TranspondersBacking {
 				.getCopiedTransponder());
 	}
 
+	// On changing the Source Filter selection clear the "clipboard"
+	// if a Source is selected and it is not the one copied Transponder
+	// belongs to. Also try to stay on the scroller page which includes
+	// the previous shown page top transponder 
 	public void onSourceMenuSelection(ValueChangeEvent event) {
 		Transponder lastPageTopTransponder;
 		long filteredSourceId;
@@ -187,6 +209,7 @@ public class TranspondersBacking {
 		}
 	}
 
+	// Well this method is called when the user changes the table scroller page
 	public void onDataTableScroll(DataScrollEvent event) {
 		transpondersManager.clearCheckedTransponders();
 		transpondersManager.clearTransponderCheckboxes();

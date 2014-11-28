@@ -32,6 +32,7 @@ public class ChannelGroup implements Serializable {
 	private Long groupId;
 
 	public Long getId() {
+
 		return id;
 	}
 
@@ -40,6 +41,7 @@ public class ChannelGroup implements Serializable {
 	}
 
 	public Long getChannelId() {
+
 		return channelId;
 	}
 
@@ -48,6 +50,7 @@ public class ChannelGroup implements Serializable {
 	}
 
 	public Long getGroupId() {
+
 		return groupId;
 	}
 

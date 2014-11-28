@@ -28,6 +28,18 @@ public class TransponderRepository {
 	@Inject
 	private User user;
 
+	/**
+	 * Builds a full or partial list of Transponders belonging to
+	 * the current application user depending on the value of
+	 * the sourceId parameter.
+	 * Transponders are added to the list in ascending sequence number order.
+	 * 
+	 * @param sourceId the ID of the Source which Transponders are added to
+	 *                 the list, if SourceId is negative then all current user's
+	 *                 Transponders are added
+	 * @return the list of Transponders found for the current application user
+	 *         and given Source ID
+	 */
 	public List<Transponder> findAll(long sourceId) {
 		List<Transponder> result;
 		Query query;
@@ -55,6 +67,15 @@ public class TransponderRepository {
 		return result;
 	}
 
+	/**
+	 * Finds a Transponder by the combination of Source ID, frequency and polarity given
+	 * among the Transponders belonging to the current application user.
+	 * 
+	 * @param sourceId  the Source ID to find a Transponder on
+	 * @param frequency the frequency of Transponder to find
+	 * @param polarity  the polarity of Transponder to find
+	 * @return the Transponder found or null if no Transponders found
+	 */
 	public Transponder findBySourceFrequencyPolarity(long sourceId,
 			int frequency, String polarity) {
 		Transponder result;
@@ -82,6 +103,15 @@ public class TransponderRepository {
 		return result;
 	}
 
+	/**
+	 * Finds maximum sequence number of Transponder belonging to
+	 * the Source with ID given.
+	 * 
+	 * @param sourceId the Source ID to find a Transponder's maximum sequence
+	 *                 number
+	 * @return the maximum Transponder sequence number or
+	 *         null if no Transponders found
+	 */
 	public Integer findMaxSeqno(long sourceId) {
 		Query query;
 
@@ -99,6 +129,12 @@ public class TransponderRepository {
 		return (Integer) query.getSingleResult();
 	}
 
+	/**
+	 * Returns a sequence number of the Transponder given.
+	 * 
+	 * @param transponder the Transponder to get the sequence number for
+	 * @return the sequence number or null if Transponder not found
+	 */
 	public Integer getSeqno(Transponder transponder) {
 		Integer result;
 		TranspSeqno transpSeqno;
@@ -113,6 +149,13 @@ public class TransponderRepository {
 		return result;
 	}
 
+	/**
+	 * Adds the Transponder to the persisted list of Transponders
+	 * (stores it in the database).
+	 * 
+	 * @param transponder the Transponder to add
+	 * @param seqno       the sequence number of the added Transponder
+	 */
 	public void add(Transponder transponder, int seqno) {
 
 		em.persist(transponder);
@@ -121,10 +164,23 @@ public class TransponderRepository {
 		move(transponder, seqno);
 	}
 
+	/**
+	 * Updates the Transponder in the persisted list of Transponders
+	 * (updates it in the database).
+	 * 
+	 * @param transponder the Transponder to update
+	 */
 	public void update(Transponder transponder) {
 		em.merge(transponder);
 	}
 
+	/**
+	 * Moves the Transponder to the new sequence number in the list of
+	 * Transponders of the current application user.
+	 * 
+	 * @param transponder the Transponder to move
+	 * @param seqno the new sequence number
+	 */
 	public void move(Transponder transponder, int seqno) {
 		TranspSeqno transpSeqno;
 		int curSeqno;
@@ -170,6 +226,12 @@ public class TransponderRepository {
 		}
 	}
 
+	/**
+	 * Deletes the Transponder from the persisted list of Transponders
+	 * (deletes it from the database).
+	 * 
+	 * @param transponder the Transponder to delete
+	 */
 	public void delete(Transponder transponder) {
 		long transpId;
 		TranspSeqno transpSeqno;

@@ -22,25 +22,37 @@ public class ChannelsManager implements Serializable {
 	@Inject
 	private ChannelRepository channelRepository;
 
+	// ID of the Source to filter Channel list on.
+	// No filtering if it's negative.
 	private long filteredSourceId = -1;
+	// ID of the Transponder to filter Channel list on.
+	// No filtering if it's negative.
 	private long filteredTranspId = -1;
 
+	// (Filtered) Channel list for the current application user
 	private List<Channel> channels;
 
+	// Number of table rows per page
 	private final int rowsPerPage = 15;
+	// Current table scroller page 
 	private int scrollerPage = 1;
 
+	// Map of Channel IDs and checked checkboxes
 	private Map<Long, Boolean> channelCheckboxes = new HashMap<Long, Boolean>();
+	// List of checked Channels built on checkboxes map
 	private List<Channel> checkedChannels = new ArrayList<Channel>();
 
+	// Clear the list of checked Channels
 	public void clearCheckedChannels() {
 		checkedChannels.clear();
 	}
 
+	// Clear the map of Channel checkboxes
 	public void clearChannelCheckboxes() {
 		channelCheckboxes.clear();
 	}
 
+	// (Re)Fill in the Channel list
 	@PostConstruct
 	public void retrieveAllChannels() {
 		channels = channelRepository

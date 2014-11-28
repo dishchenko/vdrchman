@@ -67,6 +67,7 @@ public class IgnoredChannel implements Serializable {
 	}
 
 	public Long getId() {
+
 		return id;
 	}
 
@@ -75,6 +76,7 @@ public class IgnoredChannel implements Serializable {
 	}
 
 	public Long getTranspId() {
+
 		return transpId;
 	}
 
@@ -83,6 +85,7 @@ public class IgnoredChannel implements Serializable {
 	}
 
 	public Integer getSid() {
+
 		return sid;
 	}
 
@@ -91,6 +94,7 @@ public class IgnoredChannel implements Serializable {
 	}
 
 	public Integer getApid() {
+
 		return apid;
 	}
 
@@ -99,6 +103,7 @@ public class IgnoredChannel implements Serializable {
 	}
 
 	public String getScannedName() {
+
 		return scannedName;
 	}
 
@@ -107,6 +112,7 @@ public class IgnoredChannel implements Serializable {
 	}
 
 	public String getProviderName() {
+
 		return providerName;
 	}
 

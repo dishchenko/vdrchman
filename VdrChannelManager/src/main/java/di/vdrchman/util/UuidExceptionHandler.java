@@ -20,6 +20,8 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ExceptionQueuedEvent;
 import javax.servlet.http.HttpServletRequest;
 
+// A "universal" (Ajax and non-Ajax request aware) exception handler
+// allowing user to reference the exception occurred by UUID value
 public class UuidExceptionHandler extends ExceptionHandlerWrapper {
 
 	private static final Logger logger = Logger
@@ -54,6 +56,7 @@ public class UuidExceptionHandler extends ExceptionHandlerWrapper {
 		unhandledExceptionQueuedEvents = getUnhandledExceptionQueuedEvents()
 				.iterator();
 		if (!unhandledExceptionQueuedEvents.hasNext()) {
+
 			return;
 		}
 
@@ -61,6 +64,7 @@ public class UuidExceptionHandler extends ExceptionHandlerWrapper {
 				.getException();
 
 		if (exception instanceof AbortProcessingException) {
+
 			return;
 		}
 
@@ -90,12 +94,9 @@ public class UuidExceptionHandler extends ExceptionHandlerWrapper {
 					.createView(context, "/WEB-INF/errorpages/uuid.xhtml"));
 			context.getPartialViewContext().setRenderAll(true);
 		} else {
-			try
-			{
-			externalContext.dispatch("WEB-INF/errorpages/uuid.xhtml");
-			}
-			catch (IOException ex)
-			{
+			try {
+				externalContext.dispatch("WEB-INF/errorpages/uuid.xhtml");
+			} catch (IOException ex) {
 				logger.log(Level.SEVERE, ex.getMessage());
 			}
 		}

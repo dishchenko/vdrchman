@@ -21,6 +21,8 @@ public class SourceRotorUniquenessValidator implements Validator {
 	@Inject
 	private SourcesManager sourcesManager;
 
+	// Validates that a user would not have two Sources with the same rotor value
+	// (provided that the value is defined i.e. not null)
 	@Override
 	public void validate(FacesContext context, UIComponent component,
 			Object value) throws ValidatorException {

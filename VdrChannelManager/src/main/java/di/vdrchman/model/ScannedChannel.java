@@ -119,6 +119,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public Long getId() {
+
 		return id;
 	}
 
@@ -127,6 +128,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public Long getUserId() {
+
 		return userId;
 	}
 
@@ -135,6 +137,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public String getSourceName() {
+
 		return sourceName;
 	}
 
@@ -143,6 +146,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public Integer getDvbsGen() {
+
 		return dvbsGen;
 	}
 
@@ -151,6 +155,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public Integer getFrequency() {
+
 		return frequency;
 	}
 
@@ -159,6 +164,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public String getPolarity() {
+
 		return polarity;
 	}
 
@@ -167,6 +173,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public Integer getSymbolRate() {
+
 		return symbolRate;
 	}
 
@@ -175,6 +182,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public Integer getNid() {
+
 		return nid;
 	}
 
@@ -183,6 +191,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public Integer getTid() {
+
 		return tid;
 	}
 
@@ -191,6 +200,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public Integer getSid() {
+
 		return sid;
 	}
 
@@ -199,6 +209,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public Integer getVpid() {
+
 		return vpid;
 	}
 
@@ -207,6 +218,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public Integer getApid() {
+
 		return apid;
 	}
 
@@ -215,6 +227,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public Integer getTpid() {
+
 		return tpid;
 	}
 
@@ -223,6 +236,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public Integer getCaid() {
+
 		return caid;
 	}
 
@@ -231,6 +245,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public Integer getRid() {
+
 		return rid;
 	}
 
@@ -239,6 +254,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public String getScannedName() {
+
 		return scannedName;
 	}
 
@@ -247,6 +263,7 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public String getProviderName() {
+
 		return providerName;
 	}
 

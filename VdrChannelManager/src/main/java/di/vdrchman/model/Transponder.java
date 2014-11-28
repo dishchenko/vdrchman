@@ -31,7 +31,6 @@ public class Transponder implements Serializable {
 	@Column(name = "source_id")
 	private Long sourceId;
 
-	// 1 - S, 2 - S2
 	@NotNull
 	@Column(name = "dvbs_gen")
 	private Integer dvbsGen;

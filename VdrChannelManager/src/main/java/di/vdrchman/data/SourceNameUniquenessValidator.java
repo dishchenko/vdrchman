@@ -21,6 +21,7 @@ public class SourceNameUniquenessValidator implements Validator {
 	@Inject
 	private SourcesManager sourcesManager;
 
+	// Validates that a user would not have two Sources with the same name 
 	@Override
 	public void validate(FacesContext context, UIComponent component,
 			Object value) throws ValidatorException {

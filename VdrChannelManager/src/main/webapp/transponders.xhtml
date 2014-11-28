@@ -110,7 +110,7 @@
 						<h:column>
 							<f:facet name="header">DVB-S Generation</f:facet>
 							<h:outputText styleClass="preformattedtext"
-								value="#{transponderVar.dvbsGen==1 ? 'S' : 'S2'}" />
+								value="#{transponderVar.dvbsGen==1 ? 'DVB-S' : 'DVB-S2'}" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">Symbol Rate</f:facet>
@@ -210,7 +210,7 @@
 								value="                                             "
 								styleClass="preformattedtext" />
 						</h:panelGrid>
-						<h:outputLabel value="Frequency:" styleClass="preformattedtext" />
+						<h:outputLabel value="Frequency, MHz:" styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
 							<h:inputText id="frequencyInput"
 								value="#{transpondersManager.editedTransponder.frequency}"
@@ -232,10 +232,10 @@
 							styleClass="preformattedtext" />
 						<h:selectOneMenu
 							value="#{transpondersManager.editedTransponder.dvbsGen}">
-							<f:selectItem itemValue="1" itemLabel="S" />
-							<f:selectItem itemValue="2" itemLabel="S2" />
+							<f:selectItem itemValue="1" itemLabel="DVB-S" />
+							<f:selectItem itemValue="2" itemLabel="DVB-S2" />
 						</h:selectOneMenu>
-						<h:outputLabel value="Symbol Rate:" styleClass="preformattedtext" />
+						<h:outputLabel value="Symbol Rate, ksyms/s:" styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
 							<h:inputText id="symbolRateInput"
 								value="#{transpondersManager.editedTransponder.symbolRate}"

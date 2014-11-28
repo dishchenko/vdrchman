@@ -26,22 +26,34 @@ public class TranspondersManager implements Serializable {
 	@Inject
 	private TransponderRepository transponderRepository;
 
+	// ID of the Source to filter Transponder list on.
+	// No filtering if it's negative.
 	private long filteredSourceId = -1;
 
+	// (Filtered) Transponder list for the current application user
 	private List<Transponder> transponders;
 
+	// Number of table rows per page
 	private final int rowsPerPage = 15;
+	// Current table scroller page 
 	private int scrollerPage = 1;
 
+	// Map of Transponder IDs and checked checkboxes
 	private Map<Long, Boolean> transponderCheckboxes = new HashMap<Long, Boolean>();
+	// List of checked Transponders built on checkboxes map
 	private List<Transponder> checkedTransponders = new ArrayList<Transponder>();
 
+	// The Transponder which the user is going to add/update 
 	private Transponder editedTransponder = new Transponder();
 
+	// Sequence number of the edited Transponder
 	private int editedTransponderSeqno;
 
+	// The "clipboard": the place to store the Transponder copied by user 
 	private Transponder copiedTransponder = null;
 
+	// Fill in checkedTransponders list with Transponders corresponding
+	// to checkboxes checked in the data table on the page
 	public void collectCheckedTransponders(long sourceId) {
 		List<Transponder> transponders;
 
@@ -58,14 +70,17 @@ public class TranspondersManager implements Serializable {
 		}
 	}
 
+	// Clear the list of checked Transponders
 	public void clearCheckedTransponders() {
 		checkedTransponders.clear();
 	}
 
+	// Clear the map of Transponder checkboxes
 	public void clearTransponderCheckboxes() {
 		transponderCheckboxes.clear();
 	}
 
+	// Find and set the table scroller page to show the Transponder given
 	public void turnScrollerPage(Transponder transponder) {
 		List<Transponder> transponders;
 		int i;
@@ -86,6 +101,11 @@ public class TranspondersManager implements Serializable {
 		}
 	}
 
+	// Calculate the sequence number for the Transponder to be placed on top
+	// of the current transponder list. If current transponder list is not empty
+	// then it is the sequence number of its top Transponder. Otherwise it is
+	// calculated the way the Transponder to be placed right after
+	// the last existing Transponder of previous Sources
 	public int calculateOnTopSeqno() {
 		int result;
 		Source source;
@@ -112,6 +132,7 @@ public class TranspondersManager implements Serializable {
 		return result;
 	}
 
+	// (Re)Fill in the Transponder list
 	@PostConstruct
 	public void retrieveAllTransponders() {
 		transponders = transponderRepository.findAll(filteredSourceId);
@@ -165,6 +186,7 @@ public class TranspondersManager implements Serializable {
 	}
 
 	public int getEditedTransponderSeqno() {
+
 		return editedTransponderSeqno;
 	}
 
@@ -173,6 +195,7 @@ public class TranspondersManager implements Serializable {
 	}
 
 	public Transponder getCopiedTransponder() {
+
 		return copiedTransponder;
 	}
 

@@ -21,6 +21,21 @@ public class ChannelRepository {
 	@Inject
 	private User user;
 
+	/**
+	 * Builds a full or partial list of Channels belonging to
+	 * the current application user depending on values of sourceId and
+	 * transpId parameters.
+	 * Channels are added to the list in ascending sequence number order.
+	 * 
+	 * @param sourceId the ID of the Source which Channels are added to
+	 *                 the list, if both sourceId and transpId are
+	 *                 negative then all current user's Channels are added
+	 * @param transpId the ID of the Transponder which Channels are added to
+	 *                 the list, if transpId is negative then sourceId
+	 *                 value is taken into account
+	 * @return the list of Channels found for the current application user
+	 *         and given Source and Transponder IDs
+	 */
 	public List<Channel> findAll(long sourceId, long transpId) {
 		List<Channel> result;
 		Query query;

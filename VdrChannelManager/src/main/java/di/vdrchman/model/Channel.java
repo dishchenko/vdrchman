@@ -38,14 +38,12 @@ public class Channel implements Serializable {
 	@Digits(fraction = 0, integer = 5)
 	private Integer vpid;
 
-	// 1 - MPEG-2, 2 - MPEG-4
 	private Integer venc;
 
 	@NotNull(message = "Audio PID must be defined")
 	@Digits(fraction = 0, integer = 5)
 	private Integer apid;
 
-	// 1 - MPEG, 2 - AC3
 	private Integer aenc;
 
 	@Digits(fraction = 0, integer = 5)
@@ -103,6 +101,7 @@ public class Channel implements Serializable {
 	}
 
 	public Long getId() {
+
 		return id;
 	}
 
@@ -111,6 +110,7 @@ public class Channel implements Serializable {
 	}
 
 	public Long getTranspId() {
+
 		return transpId;
 	}
 
@@ -119,6 +119,7 @@ public class Channel implements Serializable {
 	}
 
 	public Integer getSid() {
+
 		return sid;
 	}
 
@@ -127,6 +128,7 @@ public class Channel implements Serializable {
 	}
 
 	public Integer getVpid() {
+
 		return vpid;
 	}
 
@@ -135,6 +137,7 @@ public class Channel implements Serializable {
 	}
 
 	public Integer getVenc() {
+
 		return venc;
 	}
 
@@ -143,6 +146,7 @@ public class Channel implements Serializable {
 	}
 
 	public Integer getApid() {
+
 		return apid;
 	}
 
@@ -151,6 +155,7 @@ public class Channel implements Serializable {
 	}
 
 	public Integer getAenc() {
+
 		return aenc;
 	}
 
@@ -159,6 +164,7 @@ public class Channel implements Serializable {
 	}
 
 	public Integer getTpid() {
+
 		return tpid;
 	}
 
@@ -167,6 +173,7 @@ public class Channel implements Serializable {
 	}
 
 	public Integer getCaid() {
+
 		return caid;
 	}
 
@@ -175,6 +182,7 @@ public class Channel implements Serializable {
 	}
 
 	public Integer getRid() {
+
 		return rid;
 	}
 
@@ -183,6 +191,7 @@ public class Channel implements Serializable {
 	}
 
 	public String getScannedName() {
+
 		return scannedName;
 	}
 
@@ -191,6 +200,7 @@ public class Channel implements Serializable {
 	}
 
 	public String getProviderName() {
+
 		return providerName;
 	}
 
@@ -199,6 +209,7 @@ public class Channel implements Serializable {
 	}
 
 	public String getName() {
+
 		return name;
 	}
 
@@ -207,6 +218,7 @@ public class Channel implements Serializable {
 	}
 
 	public String getLang() {
+
 		return lang;
 	}
 
@@ -215,6 +227,7 @@ public class Channel implements Serializable {
 	}
 
 	public Boolean getLocked() {
+
 		return locked;
 	}
 
