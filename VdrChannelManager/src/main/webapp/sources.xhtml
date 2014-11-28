@@ -10,10 +10,14 @@
 		<h:outputScript library="javax.faces" name="jsf.js" target="head" />
 		<h:outputScript library="js" name="jsf_fix.js" target="head" />
 		<h:outputScript library="js" name="sources.js" target="head" />
+		<!-- Clear source checkboxes on page load -->
 		#{sourcesManager.clearSourceCheckboxes()}
+		<!-- Main panel group -->
 		<h:panelGroup id="sourcesContent">
 			<h1>Sources</h1>
+			<!-- Sources form -->
 			<h:form id="sourcesForm">
+				<!-- 'Add', 'Remove' etc. buttons panel -->
 				<h:panelGrid columns="4">
 					<a4j:commandButton id="addButton" value="Add..."
 						action="#{sourcesBacking.intendAddSource()}"
@@ -40,6 +44,7 @@
 				<h:panelGroup rendered="#{empty sourcesManager.sources}">
 					<em>No sources defined.</em>
 				</h:panelGroup>
+				<!-- Data table with scroller panel group rendered if there is at least one Source defined -->
 				<h:panelGroup rendered="#{not empty sourcesManager.sources}">
 					<h:dataTable var="sourceVar" value="#{sourcesManager.sources}"
 						styleClass="simpletablestyle" id="sourcesTable"
@@ -92,16 +97,20 @@
 						scrollListener="#{sourcesBacking.onDataTableScroll}" />
 				</h:panelGroup>
 			</h:form>
+			<!-- Set buttons enable/disable state on panel rendering -->
 			<h:outputScript library="js">
 				document.getElementById('sourcesForm:removeButton').disabled=!isAtLeastOneSourceCheckboxChecked();
 				document.getElementById('sourcesForm:copyButton').disabled=!isExactlyOneSourceCheckboxChecked();
 			</h:outputScript>
 		</h:panelGroup>
 		<h:panelGrid columns="2">
+			<!-- Outer form for the Edit panel -->
 			<h:form id="editPanelForm" styleClass="zerosize"
 				onkeypress="return editPanelFormKeyPressHandler(event)">
+				<!-- The Edit panel -->
 				<rich:popupPanel id="editPanel" modal="true" autosized="true"
 					domElementAttachment="form">
+					<!-- Header -->
 					<f:facet name="header">
 						<h:panelGroup>
 							<h:outputText
@@ -115,7 +124,9 @@
 								action="#{formResetter.resetForm(rich:findComponent('editPanelForm'))}" />
 						</h:panelGroup>
 					</f:facet>
+					<!-- Content -->
 					<br />
+					<!-- Source data inputs -->
 					<h:panelGrid columns="2">
 						<h:outputLabel value="Name:" styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
@@ -164,6 +175,7 @@
 							<rich:message for="rotorInput" />
 						</h:panelGrid>
 					</h:panelGrid>
+					<!-- Action buttons -->
 					<h:panelGrid columns="2">
 						<a4j:commandButton id="okAddButton" value="OK"
 							rendered="#{empty sourcesManager.editedSource.id}"
@@ -183,10 +195,13 @@
 					</h:panelGrid>
 				</rich:popupPanel>
 			</h:form>
+			<!-- Outer form for the Remove panel -->
 			<h:form id="removePanelForm" styleClass="zerosize"
 				onkeypress="return removePanelFormKeyPressHandler(event)">
+				<!-- The Remove panel -->
 				<rich:popupPanel id="removePanel" modal="true" autosized="true"
 					domElementAttachment="form">
+					<!-- Header -->
 					<f:facet name="header">
 						<h:panelGroup>
 							<h:outputText value="Remove Source(s)"></h:outputText>
@@ -199,6 +214,7 @@
 								action="#{formResetter.resetForm(rich:findComponent('removePanelForm'))}" />
 						</h:panelGroup>
 					</f:facet>
+					<!-- Content -->
 					<h:outputText
 						value="Are you sure you want to remove the following source(s)"></h:outputText>
 					<br />
@@ -217,6 +233,7 @@
 							<br />
 						</ui:fragment>
 					</ui:repeat>
+					<!-- Action buttons -->
 					<h:panelGrid columns="2">
 						<a4j:commandButton id="okButton" value="OK"
 							onclick="this.disabled=true"

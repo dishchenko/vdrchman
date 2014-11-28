@@ -7,7 +7,7 @@ import javax.inject.Named;
 @Named
 public class FormResetter {
 
-	// The hack to clear all previously stuck values from the form
+	// A hack to clear all previously stuck values from the form
 	// allowing it to render values directly from new object
 	public static void resetForm(UIComponent form) {
 		for (UIComponent uic : form.getChildren()) {

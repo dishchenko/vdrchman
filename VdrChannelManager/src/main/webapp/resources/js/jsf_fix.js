@@ -1,3 +1,6 @@
+// Fix for JSF (Mojarra 2.0/2.1/2.2) bug 
+// Without this fix on some circumstances JSF commandButtons work only on second click
+
 jsf.ajax.addOnEvent(function(data) {
 	if (data.status == "success") {
 		fixViewState(data.responseXML);

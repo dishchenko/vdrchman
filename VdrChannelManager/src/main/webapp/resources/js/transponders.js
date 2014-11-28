@@ -1,3 +1,4 @@
+// Return true if at least one of the transponder checkboxes within the table is checked
 function isAtLeastOneTransponderCheckboxChecked() {
 	var result = false;
 	var checkboxNameSuffix = 'transponderCheckbox';
@@ -18,6 +19,7 @@ function isAtLeastOneTransponderCheckboxChecked() {
 	return result;
 }
 
+// Return true if exactly one of the transponder checkboxes within the table is checked
 function isExactlyOneTransponderCheckboxChecked() {
 	var result = false;
 	var checkboxNameSuffix = 'transponderCheckbox';
@@ -42,6 +44,10 @@ function isExactlyOneTransponderCheckboxChecked() {
 	return result;
 }
 
+// The Edit panel form key press listener
+// Emulates 'OK' button click on hitting the 'Enter' key
+// Emulates 'Cancel' button click on hitting the 'Esc' key
+// Loops input focus through the form inputs on pressing 'Tab' / 'Shift+Tab'
 function editPanelFormKeyPressHandler(event) {
 	var result;
 	var element;
@@ -103,6 +109,9 @@ function editPanelFormKeyPressHandler(event) {
 	return result;
 }
 
+// The Remove panel form key press listener
+// Emulates 'Cancel' button click on hitting the 'Esc' key
+// Loops input focus through 'OK' and 'Cancel' buttons on pressing 'Tab' / 'Shift+Tab'
 function removePanelFormKeyPressHandler(event) {
 	var result;
 

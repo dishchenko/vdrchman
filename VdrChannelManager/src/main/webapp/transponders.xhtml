@@ -10,10 +10,14 @@
 		<h:outputScript library="javax.faces" name="jsf.js" target="head" />
 		<h:outputScript library="js" name="jsf_fix.js" target="head" />
 		<h:outputScript library="js" name="transponders.js" target="head" />
+		<!-- Clear transponder checkboxes on page load -->
 		#{transpondersManager.clearTransponderCheckboxes()}
+		<!-- Main panel group -->
 		<h:panelGroup id="transpondersContent">
 			<h1>Transponders</h1>
+			<!-- Transponders form -->
 			<h:form id="transpondersForm">
+				<!-- 'Add', 'Remove' etc. buttons panel -->
 				<h:panelGrid columns="8">
 					<a4j:commandButton id="addOnTopButton" value="Add on top..."
 						action="#{transpondersBacking.intendAddTransponderOnTop()}"
@@ -60,6 +64,7 @@
 						oncomplete="document.getElementById('transpondersForm:moveAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked()"
 						render="transpondersContent" />
 				</h:panelGrid>
+				<!-- Filter(s) panel -->
 				<h:panelGrid columns="3">
 					<h:outputText styleClass="preformattedtext" value="Filter by:" />
 					<h:outputLabel styleClass="preformattedtext" value="Source" />
@@ -75,6 +80,7 @@
 				<h:panelGroup rendered="#{empty transpondersManager.transponders}">
 					<em>No transponders defined.</em>
 				</h:panelGroup>
+				<!-- Data table with scroller panel group rendered if there is at least one Transponder defined -->
 				<h:panelGroup
 					rendered="#{not empty transpondersManager.transponders}">
 					<h:dataTable var="transponderVar"
@@ -139,6 +145,7 @@
 						scrollListener="#{transpondersBacking.onDataTableScroll}" />
 				</h:panelGroup>
 			</h:form>
+			<!-- Set buttons enable/disable state on panel rendering -->
 			<h:outputScript library="js">
 					document.getElementById('transpondersForm:removeButton').disabled=!isAtLeastOneTransponderCheckboxChecked();
 					document.getElementById('transpondersForm:addAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
@@ -148,10 +155,13 @@
 			</h:outputScript>
 		</h:panelGroup>
 		<h:panelGrid columns="2">
+			<!-- Outer form for the Edit panel -->
 			<h:form id="editPanelForm" styleClass="zerosize"
 				onkeypress="return editPanelFormKeyPressHandler(event)">
+				<!-- The Edit panel -->
 				<rich:popupPanel id="editPanel" modal="true" autosized="true"
 					domElementAttachment="form">
+					<!-- Header -->
 					<f:facet name="header">
 						<h:panelGroup>
 							<h:outputText
@@ -165,10 +175,12 @@
 								action="#{formResetter.resetForm(rich:findComponent('editPanelForm'))}" />
 						</h:panelGroup>
 					</f:facet>
+					<!-- Content -->
 					<h:panelGrid columns="2">
 						<rich:message for="sourceFrequencyPolarityValidator" />
 						<br />
 					</h:panelGrid>
+					<!-- Special hidden input for multiple fields validator -->
 					<h:inputHidden id="sourceFrequencyPolarityValidator" value="true">
 						<f:validator
 							binding="#{transponderSourceFrequencyPolarityUniquenessValidator}" />
@@ -176,6 +188,7 @@
 						<f:attribute name="frequency" value="editPanelForm:frequencyInput" />
 						<f:attribute name="polarity" value="editPanelForm:polarityMenu" />
 					</h:inputHidden>
+					<!-- Transponder data inputs -->
 					<h:panelGrid columns="2">
 						<h:outputLabel value="Source:" styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
@@ -255,6 +268,7 @@
 						<h:selectBooleanCheckbox
 							value="#{transpondersManager.editedTransponder.ignored}" />
 					</h:panelGrid>
+					<!-- Action buttons -->
 					<h:panelGrid columns="2">
 						<a4j:commandButton id="okAddButton" value="OK"
 							rendered="#{empty transpondersManager.editedTransponder.id}"
@@ -275,10 +289,13 @@
 					</h:panelGrid>
 				</rich:popupPanel>
 			</h:form>
+			<!-- Outer form for the Remove panel -->
 			<h:form id="removePanelForm" styleClass="zerosize"
 				onkeypress="return removePanelFormKeyPressHandler(event)">
+				<!-- The Remove panel -->
 				<rich:popupPanel id="removePanel" modal="true" autosized="true"
 					domElementAttachment="form">
+					<!-- Header -->
 					<f:facet name="header">
 						<h:panelGroup>
 							<h:outputText value="Remove Transponder(s)"></h:outputText>
@@ -291,6 +308,7 @@
 								action="#{formResetter.resetForm(rich:findComponent('removePanelForm'))}" />
 						</h:panelGroup>
 					</f:facet>
+					<!-- Content -->
 					<h:outputText
 						value="Are you sure you want to remove the following transponder(s)"></h:outputText>
 					<br />
@@ -312,6 +330,7 @@
 							<br />
 						</ui:fragment>
 					</ui:repeat>
+					<!-- Action buttons -->
 					<h:panelGrid columns="2">
 						<a4j:commandButton id="okButton" value="OK"
 							onclick="this.disabled=true"

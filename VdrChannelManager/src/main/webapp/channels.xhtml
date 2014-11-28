@@ -10,9 +10,12 @@
 		<h:outputScript library="javax.faces" name="jsf.js" target="head" />
 		<h:outputScript library="js" name="jsf_fix.js" target="head" />
 		<h:outputScript library="js" name="channels.js" target="head" />
+		<!-- Clear channel checkboxes on page load -->
 		#{channelsManager.clearChannelCheckboxes()}
+		<!-- Main panel group -->
 		<h:panelGroup id="channelsContent">
 			<h1>Channels</h1>
+			<!-- Channels form -->
 			<h:form id="channelsForm">
 				<h:panelGroup rendered="#{empty channelsManager.channels}">
 					<em>No channels defined.</em>
