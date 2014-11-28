@@ -42,6 +42,9 @@ public class ChannelsManager implements Serializable {
 	// List of checked Channels built on checkboxes map
 	private List<Channel> checkedChannels = new ArrayList<Channel>();
 
+	// The "clipboard": the place to store the Channel copied by user 
+	private Channel copiedChannel = null;
+
 	// Clear the list of checked Channels
 	public void clearCheckedChannels() {
 		checkedChannels.clear();
@@ -104,6 +107,15 @@ public class ChannelsManager implements Serializable {
 	public List<Channel> getCheckedChannels() {
 
 		return checkedChannels;
+	}
+
+	public Channel getCopiedChannel() {
+
+		return copiedChannel;
+	}
+
+	public void setCopiedChannel(Channel copiedChannel) {
+		this.copiedChannel = copiedChannel;
 	}
 
 }

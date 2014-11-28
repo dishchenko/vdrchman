@@ -20,6 +20,45 @@
 				<h:panelGroup rendered="#{empty channelsManager.channels}">
 					<em>No channels defined.</em>
 				</h:panelGroup>
+				<h:panelGroup rendered="#{not empty channelsManager.channels}">
+					<h:dataTable var="channelVar" value="#{channelsManager.channels}"
+						styleClass="simpletablestyle" id="channelsTable"
+						rows="#{channelsManager.rowsPerPage}">
+						<h:column>
+							<f:facet name="header" />
+							<h:selectBooleanCheckbox id="channelCheckbox"
+								value="#{channelsManager.channelCheckboxes[channelVar.id]}"
+								styleClass="preformattedtext"
+								onclick="document.getElementById('channelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();document.getElementById('channelsForm:addAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();document.getElementById('channelsForm:copyButton').disabled=!isExactlyOneChannelCheckboxChecked();document.getElementById('channelsForm:pasteAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();document.getElementById('channelsForm:moveAfterButton').disabled=!isExactlyOneChannelCheckboxChecked()" />
+							<h:outputText styleClass="preformattedtext" value="C"
+								rendered="#{not empty channelsManager.copiedChannel and channelsManager.copiedChannel.id eq channelVar.id}" />
+						</h:column>
+						<h:column rendered="#{channelsManager.filteredSourceId lt 0}">
+							<f:facet name="header">Source</f:facet>
+							<ui:param name="sourceParam"
+								value="#{sourceRepository.findById(transponderRepository.findById(channelVar.transpId).sourceId)}">
+							</ui:param>
+							<h:outputText styleClass="preformattedtext"
+								value="#{sourceParam.name} (#{sourceParam.description})" />
+						</h:column>
+						<h:column rendered="#{channelsManager.filteredTranspId lt 0}">
+							<f:facet name="header">Frequency and Polarity</f:facet>
+							<ui:param name="transponderParam"
+								value="#{transponderRepository.findById(channelVar.transpId)}">
+							</ui:param>
+							<h:outputText styleClass="preformattedtext"
+								value="#{transponderParam.frequency} #{transponderParam.polarity}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Name</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.name}" />
+						</h:column>
+					</h:dataTable>
+					<rich:dataScroller for="channelsTable" maxPages="5" fastStep="5"
+						page="#{channelsManager.scrollerPage}" render="channelsContent"
+						scrollListener="#{channelsBacking.onDataTableScroll}" />
+				</h:panelGroup>
 			</h:form>
 		</h:panelGroup>
 	</ui:define>

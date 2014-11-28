@@ -104,6 +104,17 @@ public class TransponderRepository {
 	}
 
 	/**
+	 * Finds a Transponder by ID.
+	 * 
+	 * @param id the ID of the Transponder to find
+	 * @return the Transponder found or null if no Transponders found
+	 */
+	public Transponder findById(long id) {
+
+		return em.find(Transponder.class, id);
+	}
+
+	/**
 	 * Finds maximum sequence number of Transponder belonging to
 	 * the Source with ID given.
 	 * 
