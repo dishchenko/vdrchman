@@ -69,6 +69,7 @@ public class Main {
 		}
 	}
 
+	// Clean VDR Channel Manager database for user with given User ID
 	private static void cleanDb(EntityManager em, Long userId) {
 		SourceRepository sr;
 
@@ -76,6 +77,9 @@ public class Main {
 		sr.clean(userId);
 	}
 
+	// Load Sources data for the User with given userid from 
+	// sources.conf, diseqc.conf and rotor.conf files.
+	// All files must reside in the directory where the loader is launched
 	private static void loadSources(EntityManager em, Long userId)
 			throws FileNotFoundException, IOException {
 		Scanner sourcesConf;
@@ -109,6 +113,9 @@ public class Main {
 		}
 	}
 
+	// Load Transponders data for the Source named as sourceName and the User
+	// identified by userId from <sourceName>.freq file.
+	// The file must reside in the directory where the loader is launched
 	private static void loadTransponders(EntityManager em, Long userId,
 			String sourceName) throws FileNotFoundException, IOException {
 		SourceRepository sr;

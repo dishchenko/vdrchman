@@ -6,6 +6,8 @@ public class ArgsParser {
 	private Long userId;
 	private String sourceName;
 
+	// Parse the command line arguments and
+	// set member values to the parsed values
 	public void parse(String[] args) {
 		String argCommand;
 
@@ -34,14 +36,17 @@ public class ArgsParser {
 	}
 
 	public Command getCommand() {
+
 		return command;
 	}
 
 	public Long getUserId() {
+
 		return userId;
 	}
 
 	public String getSourceName() {
+
 		return sourceName;
 	}
 

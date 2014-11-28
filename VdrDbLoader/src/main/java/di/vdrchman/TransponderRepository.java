@@ -13,6 +13,8 @@ public class TransponderRepository {
 		this.em = em;
 	}
 
+	// Load Transponders data for the Source with given ID belonging to
+	// the User with given ID reading the data from configuration scanner
 	public void load(Long userId, Long sourceId, Scanner sourceFreq) {
 		Query query;
 		Integer queryResult;
