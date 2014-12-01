@@ -29,6 +29,12 @@ public class ArgsParser {
 					if (argCommand.equals("loadTransponders")) {
 						command = Command.LOAD_TRANSPONDERS;
 					}
+					if (argCommand.equals("loadNidsTids")) {
+						command = Command.LOAD_NIDS_TIDS;
+					}
+					if (argCommand.equals("loadChannels")) {
+						command = Command.LOAD_CHANNELS;
+					}
 				}
 			}
 		}

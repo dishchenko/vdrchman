@@ -161,7 +161,7 @@ public class TranspondersBacking {
 
 	// On changing the Source Filter selection clear the "clipboard"
 	// if a Source is selected and it is not the one copied Transponder
-	// belongs to. Also try to stay on the scroller page which includes
+	// relates to. Also try to stay on the scroller page which includes
 	// the previous shown page top transponder 
 	public void onSourceMenuSelection(ValueChangeEvent event) {
 		Transponder lastPageTopTransponder;

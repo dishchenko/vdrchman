@@ -1,7 +1,8 @@
 package di.vdrchman;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Scanner;
@@ -12,10 +13,11 @@ import javax.persistence.EntityManager;
 
 public class Main {
 
+	private ArgsParser ap;
+	private EntityManager em;
+
 	public static void main(String[] args) {
 		ArgsParser ap;
-		Properties p;
-		EntityManager em;
 
 		ap = new ArgsParser();
 		ap.parse(args);
@@ -25,10 +27,23 @@ public class Main {
 			System.err.println("                       loadSources <userId>");
 			System.err
 					.println("                       loadTransponders <userId> <sourceName>");
+			System.err
+					.println("                       loadNidsTids <userId> <sourceName|ALL_SOURCES>");
+			System.err
+					.println("                       loadChannels <userId> <sourceName|ALL_SOURCES>");
 			System.exit(0);
 		}
 
-		em = null;
+		(new Main(ap)).doMain();
+	}
+
+	public Main(ArgsParser ap) {
+		this.ap = ap;
+	}
+
+	// Setup an environment and process the command parsed
+	private void doMain() {
+		Properties p;
 
 		try {
 			Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
@@ -44,13 +59,19 @@ public class Main {
 			em.getTransaction().begin();
 
 			if (ap.getCommand() == Command.CLEAN_DB) {
-				cleanDb(em, ap.getUserId());
+				cleanDb();
 			}
 			if (ap.getCommand() == Command.LOAD_SOURCES) {
-				loadSources(em, ap.getUserId());
+				loadSources();
 			}
 			if (ap.getCommand() == Command.LOAD_TRANSPONDERS) {
-				loadTransponders(em, ap.getUserId(), ap.getSourceName());
+				loadTransponders();
+			}
+			if (ap.getCommand() == Command.LOAD_NIDS_TIDS) {
+				loadNidsTids();
+			}
+			if (ap.getCommand() == Command.LOAD_CHANNELS) {
+				loadChannels();
 			}
 
 			em.getTransaction().commit();
@@ -69,19 +90,18 @@ public class Main {
 		}
 	}
 
-	// Clean VDR Channel Manager database for user with given User ID
-	private static void cleanDb(EntityManager em, Long userId) {
+	// Clean VDR Channel Manager database for the current User
+	private void cleanDb() {
 		SourceRepository sr;
 
 		sr = new SourceRepository(em);
-		sr.clean(userId);
+		sr.clean(ap.getUserId());
 	}
 
-	// Load Sources data for the User with given userid from 
-	// sources.conf, diseqc.conf and rotor.conf files.
+	// Load Sources data for the current User from sources.conf,
+	// diseqc.conf and rotor.conf files.
 	// All files must reside in the directory where the loader is launched
-	private static void loadSources(EntityManager em, Long userId)
-			throws FileNotFoundException, IOException {
+	private void loadSources() throws FileNotFoundException, IOException {
 		Scanner sourcesConf;
 		Scanner diseqcConf;
 		Scanner rotorConf;
@@ -92,12 +112,15 @@ public class Main {
 		rotorConf = null;
 
 		try {
-			sourcesConf = new Scanner(new File("sources.conf"), "UTF-8");
-			diseqcConf = new Scanner(new File("diseqc.conf"), "UTF-8");
-			rotorConf = new Scanner(new File("rotor.conf"), "UTF-8");
+			sourcesConf = new Scanner(new BufferedReader(new FileReader(
+					"sources.conf")));
+			diseqcConf = new Scanner(new BufferedReader(new FileReader(
+					"diseqc.conf")));
+			rotorConf = new Scanner(new BufferedReader(new FileReader(
+					"rotor.conf")));
 
 			sr = new SourceRepository(em);
-			sr.load(userId, sourcesConf, diseqcConf, rotorConf);
+			sr.load(ap.getUserId(), sourcesConf, diseqcConf, rotorConf);
 		}
 
 		finally {
@@ -113,28 +136,27 @@ public class Main {
 		}
 	}
 
-	// Load Transponders data for the Source named as sourceName and the User
-	// identified by userId from <sourceName>.freq file.
+	// Load Transponders data for the Source defined and the current User
+	// from <sourceName>.freq file.
 	// The file must reside in the directory where the loader is launched
-	private static void loadTransponders(EntityManager em, Long userId,
-			String sourceName) throws FileNotFoundException, IOException {
+	private void loadTransponders() throws FileNotFoundException, IOException {
 		SourceRepository sr;
 		Source source;
 		Scanner sourceFreq;
 		TransponderRepository tr;
 
 		sr = new SourceRepository(em);
-		source = sr.findByName(userId, sourceName);
+		source = sr.findByName(ap.getUserId(), ap.getSourceName());
 
 		if (source != null) {
 			sourceFreq = null;
 
 			try {
-				sourceFreq = new Scanner(new File(sourceName + ".freq"),
-						"UTF-8");
+				sourceFreq = new Scanner(new BufferedReader(new FileReader(
+						ap.getSourceName() + ".freq")));
 
 				tr = new TransponderRepository(em);
-				tr.load(userId, source.getId(), sourceFreq);
+				tr.load(ap.getUserId(), source.getId(), sourceFreq);
 			}
 
 			finally {
@@ -143,8 +165,88 @@ public class Main {
 				}
 			}
 		} else {
-			System.out.println("Can't find source with name '" + sourceName
+			System.err.println("Can't find Source named '" + ap.getSourceName()
 					+ "'");
+		}
+	}
+
+	// Load NIDs and TIDs for Transponders from channels.cfg file.
+	// The file must reside in the directory where the loader is launched.
+	// When a special source name 'ALL_SOURCES' is used, NIDs/TIDs are loaded
+	// for all Transponders belonging to the current User.
+	// Otherwise only Transponders of the Source defined are processed
+	private void loadNidsTids() throws FileNotFoundException, IOException {
+		Scanner channelsCfg;
+		TransponderRepository tr;
+		SourceRepository sr;
+		Source source;
+
+		channelsCfg = null;
+
+		try {
+			channelsCfg = new Scanner(new BufferedReader(new FileReader(
+					"channels.cfg")));
+
+			tr = new TransponderRepository(em);
+			if (ap.getSourceName().equals("ALL_SOURCES")) {
+				tr.loadNidsTids(ap.getUserId(), null, channelsCfg);
+			} else {
+				sr = new SourceRepository(em);
+				source = sr.findByName(ap.getUserId(), ap.getSourceName());
+
+				if (source != null) {
+					tr.loadNidsTids(ap.getUserId(), source, channelsCfg);
+				} else {
+					System.err.println("Can't find Source named '"
+							+ ap.getSourceName() + "'");
+				}
+			}
+		}
+
+		finally {
+			if (channelsCfg != null) {
+				channelsCfg.close();
+			}
+		}
+	}
+
+	// Load Channels for Sources from channels.cfg file.
+	// The file must reside in the directory where the loader is launched.
+	// When a special source name 'ALL_SOURCES' is used, Channels are loaded
+	// for all Sources belonging to the current User.
+	// Otherwise only Channels for the Source defined are taken into account
+	private void loadChannels() throws FileNotFoundException, IOException {
+		Scanner channelsCfg;
+		ChannelRepository cr;
+		SourceRepository sr;
+		Source source;
+
+		channelsCfg = null;
+
+		try {
+			channelsCfg = new Scanner(new BufferedReader(new FileReader(
+					"channels.cfg")));
+
+			cr = new ChannelRepository(em);
+			if (ap.getSourceName().equals("ALL_SOURCES")) {
+				cr.load(ap.getUserId(), null, channelsCfg);
+			} else {
+				sr = new SourceRepository(em);
+				source = sr.findByName(ap.getUserId(), ap.getSourceName());
+
+				if (source != null) {
+					cr.load(ap.getUserId(), source, channelsCfg);
+				} else {
+					System.err.println("Can't find Source named '"
+							+ ap.getSourceName() + "'");
+				}
+			}
+		}
+
+		finally {
+			if (channelsCfg != null) {
+				channelsCfg.close();
+			}
 		}
 	}
 

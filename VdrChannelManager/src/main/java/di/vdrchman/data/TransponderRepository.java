@@ -115,7 +115,7 @@ public class TransponderRepository {
 	}
 
 	/**
-	 * Finds maximum sequence number of Transponder belonging to
+	 * Finds maximum sequence number of Transponder related to
 	 * the Source with ID given.
 	 * 
 	 * @param sourceId the Source ID to find a Transponder's maximum sequence

@@ -7,6 +7,7 @@
 		<class>di.vdrchman.Source</class>
 		<class>di.vdrchman.Transponder</class>
 		<class>di.vdrchman.TranspSeqno</class>
+		<class>di.vdrchman.Channel</class>
 		<properties>
 			<property name="hibernate.connection.username" value="vdrchman" />
 			<property name="hibernate.connection.password" value="vdrchman" />

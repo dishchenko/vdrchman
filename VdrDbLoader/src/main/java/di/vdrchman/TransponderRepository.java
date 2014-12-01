@@ -3,7 +3,15 @@ package di.vdrchman;
 import java.util.Scanner;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.jboss.logging.Logger;
+import org.jboss.logging.Logger.Level;
 
 public class TransponderRepository {
 
@@ -14,7 +22,7 @@ public class TransponderRepository {
 	}
 
 	// Load Transponders data for the Source with given ID belonging to
-	// the User with given ID reading the data from configuration scanner
+	// the User with given ID by reading the data from configuration scanner
 	public void load(Long userId, Long sourceId, Scanner sourceFreq) {
 		Query query;
 		Integer queryResult;
@@ -70,6 +78,122 @@ public class TransponderRepository {
 
 			++seqno;
 		}
+	}
+
+	// Load NIDs and TIDs for Transponders by reading the data from
+	// configuration scanner.
+	// If the Source given is null then NIDs/TIDs are loaded
+	// for all Transponders belonging to the current User.
+	// Otherwise only Transponders of the given Source are processed.
+	// In this case configuration scanning interrupts since all Source
+	// Transponders have been loaded
+	public void loadNidsTids(Long userId, Source source, Scanner channelCfg) {
+		SourceRepository sr;
+		String curSourceName;
+		Source curSource;
+		String line;
+		String[] splitLine;
+		int frequency;
+		String polarity;
+		Transponder transponder;
+		int nid;
+		int tid;
+
+		sr = new SourceRepository(em);
+		curSourceName = null;
+		curSource = null;
+
+		while (channelCfg.hasNextLine()) {
+			line = channelCfg.nextLine().trim();
+			if (line.length() == 0) {
+				continue;
+			}
+			if (line.charAt(0) == '#') {
+				continue;
+			}
+			splitLine = line.split(":");
+
+			if ("S".equals(splitLine[0])) {
+				curSourceName = splitLine[1];
+				if (source != null) {
+					if (curSourceName.equals(source.getName())) {
+						curSource = source;
+					} else {
+						if (curSource != null) {
+							break;
+						}
+					}
+				} else {
+					curSource = sr.findByName(userId, curSourceName);
+					if (curSource == null) {
+						Logger.getLogger(this.getClass()).log(
+								Level.ERROR,
+								"Can't find Source named '" + curSourceName
+										+ "'");
+					}
+				}
+			}
+
+			if ("T".equals(splitLine[0])) {
+				if (curSource != null) {
+					if ((source == null) || (source == curSource)) {
+						frequency = Integer.parseInt(splitLine[1]);
+						polarity = splitLine[2].substring(0, 1);
+						transponder = findBySourceFrequencyPolarity(
+								curSource.getId(), frequency, polarity);
+						if (transponder != null) {
+							nid = Integer.parseInt(splitLine[4]);
+							if (nid != 0) {
+								transponder.setNid(nid);
+							}
+							tid = Integer.parseInt(splitLine[5]);
+							if (tid != 0) {
+								transponder.setTid(tid);
+							}
+							em.flush();
+						} else {
+							Logger.getLogger(this.getClass()).log(
+									Level.ERROR,
+									"Can't find Transponder for Source '"
+											+ curSourceName
+											+ "' with frequency '" + frequency
+											+ "' and polarity '" + polarity
+											+ "'");
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Find a Transponder with given frequency and polarity which relates to
+	// the Source with the ID given.
+	// Return null if no Transponder found
+	public Transponder findBySourceFrequencyPolarity(long sourceId,
+			int frequency, String polarity) {
+		Transponder result;
+		CriteriaBuilder cb;
+		CriteriaQuery<Transponder> criteria;
+		Root<Transponder> transponderRoot;
+		Predicate p;
+
+		cb = em.getCriteriaBuilder();
+		criteria = cb.createQuery(Transponder.class);
+		transponderRoot = criteria.from(Transponder.class);
+		criteria.select(transponderRoot);
+		p = cb.conjunction();
+		p = cb.and(p, cb.equal(transponderRoot.get("sourceId"), sourceId));
+		p = cb.and(p, cb.equal(transponderRoot.get("frequency"), frequency));
+		p = cb.and(p, cb.equal(transponderRoot.get("polarity"), polarity));
+		criteria.where(p);
+
+		try {
+			result = em.createQuery(criteria).getSingleResult();
+		} catch (NoResultException ex) {
+			result = null;
+		}
+
+		return result;
 	}
 
 }

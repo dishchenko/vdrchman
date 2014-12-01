@@ -26,7 +26,7 @@ public class SourceRepository {
 		query.executeUpdate();
 	}
 
-	// Load Sources data for the User with given ID reading the data
+	// Load Sources data for the User with given ID by reading the data
 	// from configuration scanners
 	public void load(Long userId, Scanner sourcesConf, Scanner diseqcConf,
 			Scanner rotorConf) {
@@ -105,11 +105,10 @@ public class SourceRepository {
 		}
 	}
 
-	// Find a Source with given name belonging to the User identified by ID
+	// Find a Source with given name belonging to the User identified by ID.
 	// Return null if no Source found
 	public Source findByName(Long userId, String name) {
 		Source result;
-
 		CriteriaBuilder cb;
 		CriteriaQuery<Source> criteria;
 		Root<Source> sourceRoot;

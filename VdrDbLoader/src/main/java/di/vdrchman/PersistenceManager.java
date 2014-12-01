@@ -21,4 +21,5 @@ public enum PersistenceManager {
 	public void close() {
 		emFactory.close();
 	}
+
 }
