@@ -93,6 +93,7 @@ create table tchannel (
 	sid int(11) not null,
 	vpid int(11),
 	venc int(11),
+	pcr int(11),
 	apid int(11) not null,
 	aenc int(11),
 	tpid int(11),

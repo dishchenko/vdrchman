@@ -1,11 +1,11 @@
 package di.vdrchman;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -102,9 +102,9 @@ public class Main {
 	// diseqc.conf and rotor.conf files.
 	// All files must reside in the directory where the loader is launched
 	private void loadSources() throws FileNotFoundException, IOException {
-		Scanner sourcesConf;
-		Scanner diseqcConf;
-		Scanner rotorConf;
+		BufferedReader sourcesConf;
+		BufferedReader diseqcConf;
+		BufferedReader rotorConf;
 		SourceRepository sr;
 
 		sourcesConf = null;
@@ -112,12 +112,12 @@ public class Main {
 		rotorConf = null;
 
 		try {
-			sourcesConf = new Scanner(new BufferedReader(new FileReader(
-					"sources.conf")));
-			diseqcConf = new Scanner(new BufferedReader(new FileReader(
-					"diseqc.conf")));
-			rotorConf = new Scanner(new BufferedReader(new FileReader(
-					"rotor.conf")));
+			sourcesConf = new BufferedReader(new InputStreamReader(
+					new FileInputStream("sources.conf"), "ISO-8859-1"));
+			diseqcConf = new BufferedReader(new InputStreamReader(
+					new FileInputStream("diseqc.conf"), "ISO-8859-1"));
+			rotorConf = new BufferedReader(new InputStreamReader(
+					new FileInputStream("rotor.conf"), "ISO-8859-1"));
 
 			sr = new SourceRepository(em);
 			sr.load(ap.getUserId(), sourcesConf, diseqcConf, rotorConf);
@@ -142,7 +142,7 @@ public class Main {
 	private void loadTransponders() throws FileNotFoundException, IOException {
 		SourceRepository sr;
 		Source source;
-		Scanner sourceFreq;
+		BufferedReader sourceFreq;
 		TransponderRepository tr;
 
 		sr = new SourceRepository(em);
@@ -152,8 +152,9 @@ public class Main {
 			sourceFreq = null;
 
 			try {
-				sourceFreq = new Scanner(new BufferedReader(new FileReader(
-						ap.getSourceName() + ".freq")));
+				sourceFreq = new BufferedReader(new InputStreamReader(
+						new FileInputStream(ap.getSourceName() + ".freq"),
+						"ISO-8859-1"));
 
 				tr = new TransponderRepository(em);
 				tr.load(ap.getUserId(), source.getId(), sourceFreq);
@@ -176,7 +177,7 @@ public class Main {
 	// for all Transponders belonging to the current User.
 	// Otherwise only Transponders of the Source defined are processed
 	private void loadNidsTids() throws FileNotFoundException, IOException {
-		Scanner channelsCfg;
+		BufferedReader channelsCfg;
 		TransponderRepository tr;
 		SourceRepository sr;
 		Source source;
@@ -184,8 +185,8 @@ public class Main {
 		channelsCfg = null;
 
 		try {
-			channelsCfg = new Scanner(new BufferedReader(new FileReader(
-					"channels.cfg")));
+			channelsCfg = new BufferedReader(new InputStreamReader(
+					new FileInputStream("channels.cfg"), "ISO-8859-1"));
 
 			tr = new TransponderRepository(em);
 			if (ap.getSourceName().equals("ALL_SOURCES")) {
@@ -216,7 +217,7 @@ public class Main {
 	// for all Sources belonging to the current User.
 	// Otherwise only Channels for the Source defined are taken into account
 	private void loadChannels() throws FileNotFoundException, IOException {
-		Scanner channelsCfg;
+		BufferedReader channelsCfg;
 		ChannelRepository cr;
 		SourceRepository sr;
 		Source source;
@@ -224,8 +225,8 @@ public class Main {
 		channelsCfg = null;
 
 		try {
-			channelsCfg = new Scanner(new BufferedReader(new FileReader(
-					"channels.cfg")));
+			channelsCfg = new BufferedReader(new InputStreamReader(
+					new FileInputStream("channels.cfg"), "ISO-8859-1"));
 
 			cr = new ChannelRepository(em);
 			if (ap.getSourceName().equals("ALL_SOURCES")) {

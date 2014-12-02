@@ -1,6 +1,7 @@
 package di.vdrchman;
 
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -22,8 +23,9 @@ public class TransponderRepository {
 	}
 
 	// Load Transponders data for the Source with given ID belonging to
-	// the User with given ID by reading the data from configuration scanner
-	public void load(Long userId, Long sourceId, Scanner sourceFreq) {
+	// the User with given ID by reading the data from configuration reader
+	public void load(Long userId, Long sourceId, BufferedReader sourceFreq)
+			throws NumberFormatException, IOException {
 		Query query;
 		Integer queryResult;
 		int seqno;
@@ -44,8 +46,8 @@ public class TransponderRepository {
 			seqno = 1;
 		}
 
-		while (sourceFreq.hasNextLine()) {
-			line = sourceFreq.nextLine().trim();
+		while ((line = sourceFreq.readLine()) != null) {
+
 			if (line.length() == 0) {
 				continue;
 			}
@@ -81,13 +83,15 @@ public class TransponderRepository {
 	}
 
 	// Load NIDs and TIDs for Transponders by reading the data from
-	// configuration scanner.
+	// configuration reader.
 	// If the Source given is null then NIDs/TIDs are loaded
 	// for all Transponders belonging to the current User.
 	// Otherwise only Transponders of the given Source are processed.
-	// In this case configuration scanning interrupts since all Source
+	// In this case configuration reading interrupts since all Source
 	// Transponders have been loaded
-	public void loadNidsTids(Long userId, Source source, Scanner channelCfg) {
+	public void loadNidsTids(Long userId, Source source,
+			BufferedReader channelCfg) throws NumberFormatException,
+			IOException {
 		SourceRepository sr;
 		String curSourceName;
 		Source curSource;
@@ -103,8 +107,8 @@ public class TransponderRepository {
 		curSourceName = null;
 		curSource = null;
 
-		while (channelCfg.hasNextLine()) {
-			line = channelCfg.nextLine().trim();
+		while ((line = channelCfg.readLine()) != null) {
+
 			if (line.length() == 0) {
 				continue;
 			}
@@ -136,30 +140,27 @@ public class TransponderRepository {
 
 			if ("T".equals(splitLine[0])) {
 				if (curSource != null) {
-					if ((source == null) || (source == curSource)) {
-						frequency = Integer.parseInt(splitLine[1]);
-						polarity = splitLine[2].substring(0, 1);
-						transponder = findBySourceFrequencyPolarity(
-								curSource.getId(), frequency, polarity);
-						if (transponder != null) {
-							nid = Integer.parseInt(splitLine[4]);
-							if (nid != 0) {
-								transponder.setNid(nid);
-							}
-							tid = Integer.parseInt(splitLine[5]);
-							if (tid != 0) {
-								transponder.setTid(tid);
-							}
-							em.flush();
-						} else {
-							Logger.getLogger(this.getClass()).log(
-									Level.ERROR,
-									"Can't find Transponder for Source '"
-											+ curSourceName
-											+ "' with frequency '" + frequency
-											+ "' and polarity '" + polarity
-											+ "'");
+					frequency = Integer.parseInt(splitLine[1]);
+					polarity = splitLine[2].substring(0, 1);
+					transponder = findBySourceFrequencyPolarity(
+							curSource.getId(), frequency, polarity);
+					if (transponder != null) {
+						nid = Integer.parseInt(splitLine[4]);
+						if (nid != 0) {
+							transponder.setNid(nid);
 						}
+						tid = Integer.parseInt(splitLine[5]);
+						if (tid != 0) {
+							transponder.setTid(tid);
+						}
+						em.flush();
+					} else {
+						Logger.getLogger(this.getClass()).log(
+								Level.ERROR,
+								"Can't find Transponder for Source '"
+										+ curSourceName + "' with frequency '"
+										+ frequency + "' and polarity '"
+										+ polarity + "'");
 					}
 				}
 			}

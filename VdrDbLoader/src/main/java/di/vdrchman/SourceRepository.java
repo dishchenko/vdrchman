@@ -1,6 +1,7 @@
 package di.vdrchman;
 
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -27,9 +28,10 @@ public class SourceRepository {
 	}
 
 	// Load Sources data for the User with given ID by reading the data
-	// from configuration scanners
-	public void load(Long userId, Scanner sourcesConf, Scanner diseqcConf,
-			Scanner rotorConf) {
+	// from configuration readers
+	public void load(Long userId, BufferedReader sourcesConf,
+			BufferedReader diseqcConf, BufferedReader rotorConf)
+			throws IOException {
 		String line;
 		String[] splitLine;
 		Source source;
@@ -37,8 +39,8 @@ public class SourceRepository {
 
 		sb = new StringBuffer();
 
-		while (sourcesConf.hasNextLine()) {
-			line = sourcesConf.nextLine().trim();
+		while ((line = sourcesConf.readLine()) != null) {
+
 			if (line.length() == 0) {
 				continue;
 			}
@@ -59,8 +61,8 @@ public class SourceRepository {
 			em.flush();
 		}
 
-		while (diseqcConf.hasNextLine()) {
-			line = diseqcConf.nextLine().trim();
+		while ((line = diseqcConf.readLine()) != null) {
+
 			if (line.length() == 0) {
 				continue;
 			}
@@ -90,8 +92,8 @@ public class SourceRepository {
 			em.flush();
 		}
 
-		while (rotorConf.hasNextLine()) {
-			line = rotorConf.nextLine().trim();
+		while ((line = rotorConf.readLine()) != null) {
+
 			if (line.length() == 0) {
 				continue;
 			}

@@ -40,6 +40,8 @@ public class Channel implements Serializable {
 
 	private Integer venc;
 
+	private Integer pcr;
+
 	@NotNull(message = "Audio PID must be defined")
 	@Digits(fraction = 0, integer = 5)
 	private Integer apid;
@@ -117,6 +119,15 @@ public class Channel implements Serializable {
 
 	public void setVenc(Integer venc) {
 		this.venc = venc;
+	}
+
+	public Integer getPcr() {
+
+		return pcr;
+	}
+
+	public void setPcr(Integer pcr) {
+		this.pcr = pcr;
 	}
 
 	public Integer getApid() {
