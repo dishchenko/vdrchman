@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 		@UniqueConstraint(columnNames = { "user_id", "seqno" }) })
 public class ChannelSeqno implements Serializable {
 
-	private static final long serialVersionUID = -7507099475141663471L;
+	private static final long serialVersionUID = -8225234734823944927L;
 
 	@Id
 	@Column(name = "channel_id")

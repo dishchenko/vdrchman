@@ -16,12 +16,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
 @XmlRootElement
-@Table(name = "tchannel", uniqueConstraints = {
+@Table(name = "tignored_channel", uniqueConstraints = {
 		@UniqueConstraint(columnNames = "id"),
 		@UniqueConstraint(columnNames = { "transp_id", "sid", "apid" }) })
-public class Channel implements Serializable {
+public class IgnoredChannel implements Serializable {
 
-	private static final long serialVersionUID = -4320692161692842240L;
+	private static final long serialVersionUID = 6024265300939069144L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,27 +35,9 @@ public class Channel implements Serializable {
 	@Digits(fraction = 0, integer = 5)
 	private Integer sid;
 
-	@Digits(fraction = 0, integer = 5)
-	private Integer vpid;
-
-	private Integer venc;
-
-	private Integer pcr;
-
 	@NotNull(message = "Audio PID must be defined")
 	@Digits(fraction = 0, integer = 5)
 	private Integer apid;
-
-	private Integer aenc;
-
-	@Digits(fraction = 0, integer = 5)
-	private Integer tpid;
-
-	@Digits(fraction = 0, integer = 5)
-	private Integer caid;
-
-	@Digits(fraction = 0, integer = 5)
-	private Integer rid;
 
 	@Size(max = 50)
 	@Column(name = "scanned_name")
@@ -65,16 +47,24 @@ public class Channel implements Serializable {
 	@Column(name = "provider_name")
 	private String providerName;
 
-	@NotNull(message = "Channel Name must be defined")
-	@Size(max = 50)
-	private String name;
+	public IgnoredChannel() {
+		// do nothing
+	}
 
-	@Size(max = 5)
-	private String lang;
-
-	@NotNull
-	@Column(columnDefinition = "BIT", length = 1)
-	private Boolean locked;
+	public IgnoredChannel(IgnoredChannel ignoredChannel) {
+		this.id = ignoredChannel.id != null ? new Long(ignoredChannel.id)
+				: null;
+		this.transpId = ignoredChannel.transpId != null ? new Long(
+				ignoredChannel.transpId) : null;
+		this.sid = ignoredChannel.sid != null ? new Integer(ignoredChannel.sid)
+				: null;
+		this.apid = ignoredChannel.apid != null ? new Integer(
+				ignoredChannel.apid) : null;
+		this.scannedName = ignoredChannel.scannedName != null ? new String(
+				ignoredChannel.scannedName) : null;
+		this.providerName = ignoredChannel.providerName != null ? new String(
+				ignoredChannel.providerName) : null;
+	}
 
 	public Long getId() {
 
@@ -103,33 +93,6 @@ public class Channel implements Serializable {
 		this.sid = sid;
 	}
 
-	public Integer getVpid() {
-
-		return vpid;
-	}
-
-	public void setVpid(Integer vpid) {
-		this.vpid = vpid;
-	}
-
-	public Integer getVenc() {
-
-		return venc;
-	}
-
-	public void setVenc(Integer venc) {
-		this.venc = venc;
-	}
-
-	public Integer getPcr() {
-
-		return pcr;
-	}
-
-	public void setPcr(Integer pcr) {
-		this.pcr = pcr;
-	}
-
 	public Integer getApid() {
 
 		return apid;
@@ -137,42 +100,6 @@ public class Channel implements Serializable {
 
 	public void setApid(Integer apid) {
 		this.apid = apid;
-	}
-
-	public Integer getAenc() {
-
-		return aenc;
-	}
-
-	public void setAenc(Integer aenc) {
-		this.aenc = aenc;
-	}
-
-	public Integer getTpid() {
-
-		return tpid;
-	}
-
-	public void setTpid(Integer tpid) {
-		this.tpid = tpid;
-	}
-
-	public Integer getCaid() {
-
-		return caid;
-	}
-
-	public void setCaid(Integer caid) {
-		this.caid = caid;
-	}
-
-	public Integer getRid() {
-
-		return rid;
-	}
-
-	public void setRid(Integer rid) {
-		this.rid = rid;
 	}
 
 	public String getScannedName() {
@@ -191,33 +118,6 @@ public class Channel implements Serializable {
 
 	public void setProviderName(String providerName) {
 		this.providerName = providerName;
-	}
-
-	public String getName() {
-
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getLang() {
-
-		return lang;
-	}
-
-	public void setLang(String lang) {
-		this.lang = lang;
-	}
-
-	public Boolean getLocked() {
-
-		return locked;
-	}
-
-	public void setLocked(Boolean locked) {
-		this.locked = locked;
 	}
 
 }

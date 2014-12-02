@@ -9,6 +9,9 @@
 		<class>di.vdrchman.TranspSeqno</class>
 		<class>di.vdrchman.Channel</class>
 		<class>di.vdrchman.ChannelSeqno</class>
+		<class>di.vdrchman.Group</class>
+		<class>di.vdrchman.ChannelGroup</class>
+		<class>di.vdrchman.IgnoredChannel</class>
 		<properties>
 			<property name="hibernate.connection.username" value="vdrchman" />
 			<property name="hibernate.connection.password" value="vdrchman" />

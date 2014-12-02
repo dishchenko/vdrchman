@@ -6,7 +6,12 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.jboss.logging.Logger;
 import org.jboss.logging.Logger.Level;
@@ -23,7 +28,7 @@ public class ChannelRepository {
 	// If the Source given is null then Channels are loaded
 	// for all Sources belonging to the current User.
 	// Otherwise only Channels of the given Source are taken into account.
-	// In this case configuration reading interrupts since all Source
+	// In this case configuration reading interrupts as long as all Source
 	// Channels have been loaded
 	public void load(Long userId, Source source, BufferedReader channelCfg)
 			throws IOException {
@@ -39,7 +44,6 @@ public class ChannelRepository {
 		int frequency;
 		String polarity;
 		Transponder transponder;
-		Channel channel;
 		String[] vInfo;
 		int vpid;
 		int venc;
@@ -56,6 +60,7 @@ public class ChannelRepository {
 		String[] nlInfo;
 		String name;
 		String lang;
+		Channel channel;
 		ChannelSeqno channelSeqno;
 
 		query = em
@@ -222,6 +227,156 @@ public class ChannelRepository {
 				}
 			}
 		}
+	}
+
+	// Load Channel Groups by reading the data from configuration reader.
+	// If the Source given is null then Channel Groups are loaded
+	// for all Sources belonging to the current User.
+	// Otherwise only Channels of the given Source are processed.
+	// In this case configuration reading interrupts as long as all Source
+	// Channel Groups have been loaded
+	public void loadGroups(Long userId, Source source, BufferedReader channelCfg)
+			throws IOException {
+		SourceRepository sr;
+		TransponderRepository tr;
+		GroupRepository gr;
+		String curSourceName;
+		Source curSource;
+		String line;
+		String[] splitLine;
+		int frequency;
+		String polarity;
+		Transponder transponder;
+		int sid;
+		String[] aInfo;
+		int apid;
+		Channel channel;
+		String[] groupInfo;
+		Group group;
+		ChannelGroup channelGroup;
+
+		sr = new SourceRepository(em);
+		tr = new TransponderRepository(em);
+		gr = new GroupRepository(em);
+		curSourceName = null;
+		curSource = null;
+		transponder = null;
+
+		while ((line = channelCfg.readLine()) != null) {
+
+			if (line.length() == 0) {
+				continue;
+			}
+			if (line.charAt(0) == '#') {
+				continue;
+			}
+			splitLine = line.split(":");
+
+			if ("S".equals(splitLine[0])) {
+				curSourceName = splitLine[1];
+				if (source != null) {
+					if (curSourceName.equals(source.getName())) {
+						curSource = source;
+					} else {
+						if (curSource != null) {
+							break;
+						}
+					}
+				} else {
+					curSource = sr.findByName(userId, curSourceName);
+					if (curSource == null) {
+						Logger.getLogger(this.getClass()).log(
+								Level.ERROR,
+								"Can't find Source named '" + curSourceName
+										+ "'");
+					}
+				}
+			}
+
+			if ("T".equals(splitLine[0])) {
+				if (curSource != null) {
+					frequency = Integer.parseInt(splitLine[1]);
+					polarity = splitLine[2].substring(0, 1);
+					transponder = tr.findBySourceFrequencyPolarity(
+							curSource.getId(), frequency, polarity);
+					if (transponder == null) {
+						Logger.getLogger(this.getClass()).log(
+								Level.ERROR,
+								"Can't find Transponder for Source '"
+										+ curSourceName + "' with frequency '"
+										+ frequency + "' and polarity '"
+										+ polarity + "'");
+					}
+				}
+			}
+
+			if ("C".equals(splitLine[0])) {
+				if (transponder != null) {
+					sid = Integer.parseInt(splitLine[1]);
+					aInfo = splitLine[3].split("=@");
+					apid = Integer.parseInt(aInfo[0]);
+					channel = findByTransponderSidApid(transponder.getId(),
+							sid, apid);
+					if (channel != null) {
+						groupInfo = splitLine[10].split(",");
+						for (int i = 0; i < groupInfo.length; ++i) {
+							group = gr.findByName(userId, groupInfo[i]);
+							if (group != null) {
+								channelGroup = new ChannelGroup();
+								channelGroup.setChannelId(channel.getId());
+								channelGroup.setGroupId(group.getId());
+								em.persist(channelGroup);
+								em.flush();
+							} else {
+								Logger.getLogger(this.getClass()).log(
+										Level.ERROR,
+										"Can't find Group named '"
+												+ groupInfo[i] + "'");
+							}
+						}
+					} else {
+						Logger.getLogger(this.getClass()).log(
+								Level.ERROR,
+								"Can't find Channel with SID '" + sid
+										+ "' and APID '" + apid
+										+ "' for Transponder on '"
+										+ curSourceName + "' with frequency '"
+										+ transponder.getFrequency()
+										+ "' and polarity '"
+										+ transponder.getPolarity() + "'");
+					}
+				}
+			}
+		}
+	}
+
+	// Find a Channel with given SID and APID which relates to
+	// the Transponder with the ID given.
+	// Return null if no Channel found
+	public Channel findByTransponderSidApid(long transpId, int sid, int apid) {
+		Channel result;
+		CriteriaBuilder cb;
+		CriteriaQuery<Channel> criteria;
+		Root<Channel> channelRoot;
+		Predicate p;
+
+		cb = em.getCriteriaBuilder();
+		criteria = cb.createQuery(Channel.class);
+		channelRoot = criteria.from(Channel.class);
+		criteria.select(channelRoot);
+		p = cb.conjunction();
+		p = cb.and(p, cb.equal(channelRoot.get("transpId"), transpId));
+		p = cb.and(p, cb.equal(channelRoot.get("sid"), sid));
+		p = cb.and(p, cb.equal(channelRoot.get("apid"), apid));
+		criteria.where(p);
+
+		try {
+			result = em.createQuery(criteria).getSingleResult();
+		} catch (NoResultException ex) {
+			result = null;
+		}
+
+		return result;
 	}
 
 }

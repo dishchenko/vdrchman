@@ -22,6 +22,9 @@ public class ArgsParser {
 				if (argCommand.equals("loadSources")) {
 					command = Command.LOAD_SOURCES;
 				}
+				if (argCommand.equals("loadGroups")) {
+					command = Command.LOAD_GROUPS;
+				}
 			} else {
 				sourceName = args[2];
 
@@ -34,6 +37,9 @@ public class ArgsParser {
 					}
 					if (argCommand.equals("loadChannels")) {
 						command = Command.LOAD_CHANNELS;
+					}
+					if (argCommand.equals("loadChannelGroups")) {
+						command = Command.LOAD_CHANNEL_GROUPS;
 					}
 				}
 			}

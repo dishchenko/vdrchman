@@ -31,6 +31,9 @@ public class Main {
 					.println("                       loadNidsTids <userId> <sourceName|ALL_SOURCES>");
 			System.err
 					.println("                       loadChannels <userId> <sourceName|ALL_SOURCES>");
+			System.err.println("                       loadGroups <userId>");
+			System.err
+					.println("                       loadChannelGroups <userId> <sourceName|ALL_SOURCES>");
 			System.exit(0);
 		}
 
@@ -73,6 +76,12 @@ public class Main {
 			if (ap.getCommand() == Command.LOAD_CHANNELS) {
 				loadChannels();
 			}
+			if (ap.getCommand() == Command.LOAD_GROUPS) {
+				loadGroups();
+			}
+			if (ap.getCommand() == Command.LOAD_CHANNEL_GROUPS) {
+				loadChannelGroups();
+			}
 
 			em.getTransaction().commit();
 		}
@@ -93,9 +102,13 @@ public class Main {
 	// Clean VDR Channel Manager database for the current User
 	private void cleanDb() {
 		SourceRepository sr;
+		GroupRepository gr;
 
 		sr = new SourceRepository(em);
 		sr.clean(ap.getUserId());
+
+		gr = new GroupRepository(em);
+		gr.clean(ap.getUserId());
 	}
 
 	// Load Sources data for the current User from sources.conf,
@@ -113,11 +126,11 @@ public class Main {
 
 		try {
 			sourcesConf = new BufferedReader(new InputStreamReader(
-					new FileInputStream("sources.conf"), "ISO-8859-1"));
+					new FileInputStream("sources.conf"), "UTF-8"));
 			diseqcConf = new BufferedReader(new InputStreamReader(
-					new FileInputStream("diseqc.conf"), "ISO-8859-1"));
+					new FileInputStream("diseqc.conf"), "UTF-8"));
 			rotorConf = new BufferedReader(new InputStreamReader(
-					new FileInputStream("rotor.conf"), "ISO-8859-1"));
+					new FileInputStream("rotor.conf"), "UTF-8"));
 
 			sr = new SourceRepository(em);
 			sr.load(ap.getUserId(), sourcesConf, diseqcConf, rotorConf);
@@ -154,7 +167,7 @@ public class Main {
 			try {
 				sourceFreq = new BufferedReader(new InputStreamReader(
 						new FileInputStream(ap.getSourceName() + ".freq"),
-						"ISO-8859-1"));
+						"UTF-8"));
 
 				tr = new TransponderRepository(em);
 				tr.load(ap.getUserId(), source.getId(), sourceFreq);
@@ -237,6 +250,69 @@ public class Main {
 
 				if (source != null) {
 					cr.load(ap.getUserId(), source, channelsCfg);
+				} else {
+					System.err.println("Can't find Source named '"
+							+ ap.getSourceName() + "'");
+				}
+			}
+		}
+
+		finally {
+			if (channelsCfg != null) {
+				channelsCfg.close();
+			}
+		}
+	}
+
+	// Load Groups data for the current User from groups.cfg.
+	// The file must reside in the directory where the loader is launched
+	private void loadGroups() throws FileNotFoundException, IOException {
+		BufferedReader groupsCfg;
+		GroupRepository gr;
+
+		groupsCfg = null;
+
+		try {
+			groupsCfg = new BufferedReader(new InputStreamReader(
+					new FileInputStream("groups.cfg"), "UTF-8"));
+
+			gr = new GroupRepository(em);
+			gr.load(ap.getUserId(), groupsCfg);
+		}
+
+		finally {
+			if (groupsCfg != null) {
+				groupsCfg.close();
+			}
+		}
+	}
+
+	// Load Channel Groups from channels.cfg file.
+	// The file must reside in the directory where the loader is launched.
+	// When a special source name 'ALL_SOURCES' is used, Channels Groups
+	// are loaded for all Sources belonging to the current User.
+	// Otherwise only Channels for the Source defined are processed
+	private void loadChannelGroups() throws FileNotFoundException, IOException {
+		BufferedReader channelsCfg;
+		ChannelRepository cr;
+		SourceRepository sr;
+		Source source;
+
+		channelsCfg = null;
+
+		try {
+			channelsCfg = new BufferedReader(new InputStreamReader(
+					new FileInputStream("channels.cfg"), "ISO-8859-1"));
+
+			cr = new ChannelRepository(em);
+			if (ap.getSourceName().equals("ALL_SOURCES")) {
+				cr.loadGroups(ap.getUserId(), null, channelsCfg);
+			} else {
+				sr = new SourceRepository(em);
+				source = sr.findByName(ap.getUserId(), ap.getSourceName());
+
+				if (source != null) {
+					cr.loadGroups(ap.getUserId(), source, channelsCfg);
 				} else {
 					System.err.println("Can't find Source named '"
 							+ ap.getSourceName() + "'");

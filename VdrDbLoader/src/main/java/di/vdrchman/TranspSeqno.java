@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 		@UniqueConstraint(columnNames = { "user_id", "seqno" }) })
 public class TranspSeqno implements Serializable {
 
-	private static final long serialVersionUID = 6136014657774985023L;
+	private static final long serialVersionUID = 7151718387249632343L;
 
 	@Id
 	@Column(name = "transp_id")

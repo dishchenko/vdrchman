@@ -1,4 +1,4 @@
-package di.vdrchman.model;
+package di.vdrchman;
 
 import java.io.Serializable;
 

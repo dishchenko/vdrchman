@@ -87,7 +87,7 @@ public class TransponderRepository {
 	// If the Source given is null then NIDs/TIDs are loaded
 	// for all Transponders belonging to the current User.
 	// Otherwise only Transponders of the given Source are processed.
-	// In this case configuration reading interrupts since all Source
+	// In this case configuration reading interrupts as long as all Source
 	// Transponders have been loaded
 	public void loadNidsTids(Long userId, Source source,
 			BufferedReader channelCfg) throws NumberFormatException,

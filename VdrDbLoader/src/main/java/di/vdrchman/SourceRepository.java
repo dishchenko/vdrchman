@@ -32,10 +32,10 @@ public class SourceRepository {
 	public void load(Long userId, BufferedReader sourcesConf,
 			BufferedReader diseqcConf, BufferedReader rotorConf)
 			throws IOException {
+		StringBuffer sb;
 		String line;
 		String[] splitLine;
 		Source source;
-		StringBuffer sb;
 
 		sb = new StringBuffer();
 
@@ -48,6 +48,7 @@ public class SourceRepository {
 				continue;
 			}
 			splitLine = line.split("\\s+");
+
 			source = new Source();
 			source.setUserId(userId);
 			source.setName(splitLine[0]);
@@ -70,6 +71,7 @@ public class SourceRepository {
 				continue;
 			}
 			splitLine = line.split("\\s+");
+
 			source = findByName(userId, splitLine[0]);
 			sb.setLength(0);
 			for (int i = 1; i < splitLine.length; ++i) {
@@ -101,6 +103,7 @@ public class SourceRepository {
 				continue;
 			}
 			splitLine = line.split("\\s+");
+
 			source = findByName(userId, splitLine[1]);
 			source.setRotor(Integer.valueOf(splitLine[0]));
 			em.flush();
