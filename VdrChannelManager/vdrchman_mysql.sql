@@ -131,6 +131,7 @@ create table tgroup (
 	name varchar(20) not null,
 	start_channel_no int(11) not null,
 	description varchar(50) not null,
+	ignored boolean not null,
 	unique (user_id, name),
 	unique (user_id, start_channel_no),
 	foreign key (user_id) references tuser (id) on delete cascade

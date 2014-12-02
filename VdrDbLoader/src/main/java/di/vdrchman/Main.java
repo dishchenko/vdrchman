@@ -34,6 +34,8 @@ public class Main {
 			System.err.println("                       loadGroups <userId>");
 			System.err
 					.println("                       loadChannelGroups <userId> <sourceName|ALL_SOURCES>");
+			System.err
+					.println("                       loadIgnoredChannels <userId> <sourceName|ALL_SOURCES>");
 			System.exit(0);
 		}
 
@@ -81,6 +83,9 @@ public class Main {
 			}
 			if (ap.getCommand() == Command.LOAD_CHANNEL_GROUPS) {
 				loadChannelGroups();
+			}
+			if (ap.getCommand() == Command.LOAD_IGNORED_CHANNELS) {
+				loadIgnoredChannels();
 			}
 
 			em.getTransaction().commit();
@@ -323,6 +328,46 @@ public class Main {
 		finally {
 			if (channelsCfg != null) {
 				channelsCfg.close();
+			}
+		}
+	}
+
+	// Load Ignored Channels from channels.ignored file.
+	// The file must reside in the directory where the loader is launched.
+	// When a special source name 'ALL_SOURCES' is used, Ignored Channels are loaded
+	// for all Sources belonging to the current User.
+	// Otherwise only Ignored Channels for the Source defined are taken into account
+	private void loadIgnoredChannels() throws FileNotFoundException, IOException {
+		BufferedReader channelsIgnored;
+		IgnoredChannelRepository icr;
+		SourceRepository sr;
+		Source source;
+
+		channelsIgnored = null;
+
+		try {
+			channelsIgnored = new BufferedReader(new InputStreamReader(
+					new FileInputStream("channels.ignored"), "ISO-8859-1"));
+
+			icr = new IgnoredChannelRepository(em);
+			if (ap.getSourceName().equals("ALL_SOURCES")) {
+				icr.load(ap.getUserId(), null, channelsIgnored);
+			} else {
+				sr = new SourceRepository(em);
+				source = sr.findByName(ap.getUserId(), ap.getSourceName());
+
+				if (source != null) {
+					icr.load(ap.getUserId(), source, channelsIgnored);
+				} else {
+					System.err.println("Can't find Source named '"
+							+ ap.getSourceName() + "'");
+				}
+			}
+		}
+
+		finally {
+			if (channelsIgnored != null) {
+				channelsIgnored.close();
 			}
 		}
 	}

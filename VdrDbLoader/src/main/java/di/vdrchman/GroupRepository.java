@@ -59,6 +59,7 @@ public class GroupRepository {
 			}
 			sb.setLength(sb.length() - 1);
 			group.setDescription(sb.toString());
+			group.setIgnored(false);
 			em.persist(group);
 			em.flush();
 		}

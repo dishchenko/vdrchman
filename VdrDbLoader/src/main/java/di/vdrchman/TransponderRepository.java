@@ -90,7 +90,7 @@ public class TransponderRepository {
 	// In this case configuration reading interrupts as long as all Source
 	// Transponders have been loaded
 	public void loadNidsTids(Long userId, Source source,
-			BufferedReader channelCfg) throws NumberFormatException,
+			BufferedReader channelsCfg) throws NumberFormatException,
 			IOException {
 		SourceRepository sr;
 		String curSourceName;
@@ -107,7 +107,7 @@ public class TransponderRepository {
 		curSourceName = null;
 		curSource = null;
 
-		while ((line = channelCfg.readLine()) != null) {
+		while ((line = channelsCfg.readLine()) != null) {
 
 			if (line.length() == 0) {
 				continue;

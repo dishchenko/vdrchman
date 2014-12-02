@@ -45,6 +45,10 @@ public class Group implements Serializable {
 	@Size(max = 50)
 	private String description;
 
+	@NotNull
+	@Column(columnDefinition = "BIT", length = 1)
+	private Boolean ignored;
+
 	public Long getId() {
 
 		return id;
@@ -88,6 +92,15 @@ public class Group implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Boolean getIgnored() {
+
+		return ignored;
+	}
+
+	public void setIgnored(Boolean ignored) {
+		this.ignored = ignored;
 	}
 
 }

@@ -30,7 +30,7 @@ public class ChannelRepository {
 	// Otherwise only Channels of the given Source are taken into account.
 	// In this case configuration reading interrupts as long as all Source
 	// Channels have been loaded
-	public void load(Long userId, Source source, BufferedReader channelCfg)
+	public void load(Long userId, Source source, BufferedReader channelsCfg)
 			throws IOException {
 		Query query;
 		Integer queryResult;
@@ -80,7 +80,7 @@ public class ChannelRepository {
 		curSource = null;
 		transponder = null;
 
-		while ((line = channelCfg.readLine()) != null) {
+		while ((line = channelsCfg.readLine()) != null) {
 
 			if (line.length() == 0) {
 				continue;
@@ -235,7 +235,7 @@ public class ChannelRepository {
 	// Otherwise only Channels of the given Source are processed.
 	// In this case configuration reading interrupts as long as all Source
 	// Channel Groups have been loaded
-	public void loadGroups(Long userId, Source source, BufferedReader channelCfg)
+	public void loadGroups(Long userId, Source source, BufferedReader channelsCfg)
 			throws IOException {
 		SourceRepository sr;
 		TransponderRepository tr;
@@ -262,7 +262,7 @@ public class ChannelRepository {
 		curSource = null;
 		transponder = null;
 
-		while ((line = channelCfg.readLine()) != null) {
+		while ((line = channelsCfg.readLine()) != null) {
 
 			if (line.length() == 0) {
 				continue;

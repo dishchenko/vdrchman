@@ -41,6 +41,9 @@ public class ArgsParser {
 					if (argCommand.equals("loadChannelGroups")) {
 						command = Command.LOAD_CHANNEL_GROUPS;
 					}
+					if (argCommand.equals("loadIgnoredChannels")) {
+						command = Command.LOAD_IGNORED_CHANNELS;
+					}
 				}
 			}
 		}
