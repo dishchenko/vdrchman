@@ -76,9 +76,9 @@ create table ttransp_seqno (
 -- Main Channel list
 -- 'sid' - Service ID
 -- 'vpid' - Video PID, NULL for radio channels
--- 'venc' - video stream encoding: 1 - MPEG-2, 2 - MPEG-4
+-- 'venc' - video stream encoding
 -- 'apid' - Audio PID
--- 'aenc' - audio stream encoding: 1 - MPEG, 2 - AC3
+-- 'aenc' - audio stream encoding
 -- 'tpid' - Text PID
 -- 'caid' - Conditional Access system ID, 2600 for BISS
 -- 'rid' - so called Radio ID but it seems it's not used
@@ -123,7 +123,7 @@ create table tchannel_seqno (
 -- 'start_channel_no' - a number which VDR will use to start numbering channels
 -- within the group
 -- 'description' - a human readable description of the group, VDR sorts groups
--- in alphabetical order so it may be useful to start descriptions' text with
+-- in alphabetical order so it may be useful to start description texts with
 -- numbers to achieve preferred groups' order
 create table tgroup (
 	id bigint(20) not null primary key auto_increment,

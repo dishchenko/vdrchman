@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -26,7 +26,7 @@ public class TransponderRepository {
 	// the User with given ID by reading the data from configuration reader
 	public void load(Long userId, Long sourceId, BufferedReader sourceFreq)
 			throws NumberFormatException, IOException {
-		Query query;
+		TypedQuery<Integer> query;
 		Integer queryResult;
 		int seqno;
 		String line;
@@ -36,9 +36,9 @@ public class TransponderRepository {
 		TranspSeqno transpSeqno;
 
 		query = em
-				.createQuery("select max(ts.seqno) from TranspSeqno ts where ts.userId = :userId");
+				.createQuery("select max(ts.seqno) from TranspSeqno ts where ts.userId = :userId", Integer.class);
 		query.setParameter("userId", userId);
-		queryResult = (Integer) query.getSingleResult();
+		queryResult = query.getSingleResult();
 
 		if (queryResult != null) {
 			seqno = queryResult + 1;

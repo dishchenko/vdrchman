@@ -17,6 +17,14 @@
 			<h1>Channels</h1>
 			<!-- Channels form -->
 			<h:form id="channelsForm">
+				<!-- 'Add', 'Remove' etc. buttons panel -->
+				<h:panelGrid columns="1">
+					<a4j:commandButton id="addOnTopButton" value="Add on top..."
+						action="#{channelsBacking.intendAddChannelOnTop()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('channelsForm:addOnTopButton').disabled=false"
+						render="channelsContent, editPanel" />
+				</h:panelGrid>
 				<h:panelGroup rendered="#{empty channelsManager.channels}">
 					<em>No channels defined.</em>
 				</h:panelGroup>
@@ -42,7 +50,7 @@
 								value="#{sourceParam.name} (#{sourceParam.description})" />
 						</h:column>
 						<h:column rendered="#{channelsManager.filteredTranspId lt 0}">
-							<f:facet name="header">Frequency and Polarity</f:facet>
+							<f:facet name="header">Frequency</f:facet>
 							<ui:param name="transponderParam"
 								value="#{transponderRepository.findById(channelVar.transpId)}">
 							</ui:param>
@@ -51,8 +59,72 @@
 						</h:column>
 						<h:column>
 							<f:facet name="header">Name</f:facet>
+							<ui:param name="channelGroupsParam"
+								value="#{channelsManager.buildGroupDescriptionsString(channelRepository.findGroups(channelVar.id))}">
+							</ui:param>
+							<ui:fragment rendered="#{not empty channelVar.lang}">
+								<h:outputText styleClass="preformattedtext"
+									value="#{channelVar.lang}) " title="#{channelGroupsParam}" />
+							</ui:fragment>
 							<h:outputText styleClass="preformattedtext"
-								value="#{channelVar.name}" />
+								value="#{channelVar.name}" title="#{channelGroupsParam}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">SID</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.sid}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">VPID</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.vpid}" />
+							<ui:fragment rendered="#{not empty channelVar.venc}">
+								<h:outputText styleClass="preformattedtext"
+									value=" (#{channelVar.venc == 27 ? 'MPEG-4' : channelVar.venc})" />
+							</ui:fragment>
+						</h:column>
+						<h:column>
+							<f:facet name="header">APID</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.apid}" />
+							<ui:fragment rendered="#{not empty channelVar.aenc}">
+								<h:outputText styleClass="preformattedtext"
+									value=" (#{channelVar.aenc == 129 ? 'AC3' : channelVar.aenc})" />
+							</ui:fragment>
+						</h:column>
+						<h:column>
+							<f:facet name="header">TPID</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.tpid}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">CAID</f:facet>
+							<ui:fragment rendered="#{not empty channelVar.caid}">
+								<h:panelGroup style="background-color: #ffcc99;">
+									<h:outputText styleClass="preformattedtext"
+										value="#{channelVar.caid == 2600 ? 'BISS' : channelVar.caid}" />
+								</h:panelGroup>
+							</ui:fragment>
+						</h:column>
+						<h:column>
+							<f:facet name="header">RID</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.rid}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Scanned As</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.scannedName}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Provider</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.providerName}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Locked</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.locked ? 'V' : ''}" />
 						</h:column>
 					</h:dataTable>
 					<rich:dataScroller for="channelsTable" maxPages="5" fastStep="5"

@@ -12,12 +12,17 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import di.vdrchman.model.Channel;
+import di.vdrchman.model.Group;
+import di.vdrchman.model.Transponder;
 
 @SessionScoped
 @Named
 public class ChannelsManager implements Serializable {
 
 	private static final long serialVersionUID = -1754936915825346390L;
+
+	@Inject
+	private TransponderRepository transponderRepository;
 
 	@Inject
 	private ChannelRepository channelRepository;
@@ -34,7 +39,7 @@ public class ChannelsManager implements Serializable {
 
 	// Number of table rows per page
 	private final int rowsPerPage = 15;
-	// Current table scroller page 
+	// Current table scroller page
 	private int scrollerPage = 1;
 
 	// Map of Channel IDs and checked checkboxes
@@ -42,7 +47,13 @@ public class ChannelsManager implements Serializable {
 	// List of checked Channels built on checkboxes map
 	private List<Channel> checkedChannels = new ArrayList<Channel>();
 
-	// The "clipboard": the place to store the Channel copied by user 
+	// The Channel which the user is going to add/update
+	private Channel editedChannel = new Channel();
+
+	// Sequence number of the edited Channel
+	private int editedChannelSeqno;
+
+	// The "clipboard": the place to store the Channel copied by user
 	private Channel copiedChannel = null;
 
 	// Clear the list of checked Channels
@@ -53,6 +64,61 @@ public class ChannelsManager implements Serializable {
 	// Clear the map of Channel checkboxes
 	public void clearChannelCheckboxes() {
 		channelCheckboxes.clear();
+	}
+
+	// Calculate the sequence number for the Channel to be placed on top
+	// of the current Channel list. If current Channel list is not empty
+	// then it is the sequence number of its top Channel. Otherwise it is
+	// calculated the way the Channel to be placed right after
+	// the last existing Channel of previous Transponders
+	public int calculateOnTopSeqno() {
+		int result;
+		Transponder transponder;
+		Integer maxSeqnoOnTransponder;
+
+		// TODO add filteredSourceId processing
+
+		if (channels.isEmpty()) {
+			result = 1;
+			if (filteredTranspId >= 0) {
+				transponder = transponderRepository
+						.findBySeqno(transponderRepository
+								.getSeqno(transponderRepository
+										.findById(filteredTranspId)) - 1);
+				while (transponder != null) {
+					maxSeqnoOnTransponder = channelRepository
+							.findMaxSeqno(transponder.getId());
+					if (maxSeqnoOnTransponder != null) {
+						result = maxSeqnoOnTransponder + 1;
+						break;
+					}
+					transponder = transponderRepository
+							.findBySeqno(transponderRepository
+									.getSeqno(transponder) - 1);
+				}
+			}
+		} else {
+			result = channelRepository.getSeqno(channels.get(0));
+		}
+
+		return result;
+	}
+
+	// Build a string consisting of a comma delimited group descriptions
+	public String buildGroupDescriptionsString(List<Group> groups) {
+		StringBuilder sb;
+
+		sb = new StringBuilder();
+
+		if (!groups.isEmpty()) {
+			for (Group group : groups) {
+				sb.append(group.getDescription() + ", ");
+			}
+
+			sb.setLength(sb.length() - 2);
+		}
+
+		return sb.toString();
 	}
 
 	// (Re)Fill in the Channel list
@@ -107,6 +173,24 @@ public class ChannelsManager implements Serializable {
 	public List<Channel> getCheckedChannels() {
 
 		return checkedChannels;
+	}
+
+	public Channel getEditedChannel() {
+
+		return editedChannel;
+	}
+
+	public void setEditedChannel(Channel editedChannel) {
+		this.editedChannel = editedChannel;
+	}
+
+	public int getEditedChannelSeqno() {
+
+		return editedChannelSeqno;
+	}
+
+	public void setEditedChannelSeqno(int editedChannelSeqno) {
+		this.editedChannelSeqno = editedChannelSeqno;
 	}
 
 	public Channel getCopiedChannel() {

@@ -7,7 +7,7 @@ import java.nio.charset.Charset;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -32,7 +32,7 @@ public class ChannelRepository {
 	// Channels have been loaded
 	public void load(Long userId, Source source, BufferedReader channelsCfg)
 			throws IOException {
-		Query query;
+		TypedQuery<Integer> query;
 		Integer queryResult;
 		int seqno;
 		SourceRepository sr;
@@ -64,9 +64,9 @@ public class ChannelRepository {
 		ChannelSeqno channelSeqno;
 
 		query = em
-				.createQuery("select max(cs.seqno) from ChannelSeqno cs where cs.userId = :userId");
+				.createQuery("select max(cs.seqno) from ChannelSeqno cs where cs.userId = :userId", Integer.class);
 		query.setParameter("userId", userId);
-		queryResult = (Integer) query.getSingleResult();
+		queryResult = query.getSingleResult();
 
 		if (queryResult != null) {
 			seqno = queryResult + 1;
@@ -133,9 +133,6 @@ public class ChannelRepository {
 					vInfo = splitLine[2].split("=");
 					if (vInfo.length == 2) {
 						venc = Integer.parseInt(vInfo[1]);
-						if (venc == 27) {
-							venc = 2;
-						}
 					} else {
 						venc = 0;
 					}
@@ -150,9 +147,6 @@ public class ChannelRepository {
 					apid = Integer.parseInt(aInfo[0]);
 					if (aInfo.length == 2) {
 						aenc = Integer.parseInt(aInfo[1]);
-						if (aenc == 129) {
-							aenc = 2;
-						}
 					} else {
 						aenc = 0;
 					}
@@ -235,8 +229,8 @@ public class ChannelRepository {
 	// Otherwise only Channels of the given Source are processed.
 	// In this case configuration reading interrupts as long as all Source
 	// Channel Groups have been loaded
-	public void loadGroups(Long userId, Source source, BufferedReader channelsCfg)
-			throws IOException {
+	public void loadGroups(Long userId, Source source,
+			BufferedReader channelsCfg) throws IOException {
 		SourceRepository sr;
 		TransponderRepository tr;
 		GroupRepository gr;

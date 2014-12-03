@@ -9,6 +9,7 @@ import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -29,29 +30,33 @@ public class TransponderRepository {
 	private User user;
 
 	/**
-	 * Builds a full or partial list of Transponders belonging to
-	 * the current application user depending on the value of
-	 * the sourceId parameter.
+	 * Builds a full or partial list of Transponders belonging to the current
+	 * application user depending on the value of the sourceId parameter.
 	 * Transponders are added to the list in ascending sequence number order.
 	 * 
-	 * @param sourceId the ID of the Source which Transponders are added to
-	 *                 the list, if SourceId is negative then all current user's
-	 *                 Transponders are added
+	 * @param sourceId
+	 *            the ID of the Source which Transponders are added to the list,
+	 *            if SourceId is negative then all current user's Transponders
+	 *            are added
 	 * @return the list of Transponders found for the current application user
 	 *         and given Source ID
 	 */
 	public List<Transponder> findAll(long sourceId) {
 		List<Transponder> result;
-		Query query;
-		List<?> queryResult;
+		TypedQuery<Object[]> query;
+		List<Object[]> queryResult;
 
 		if (sourceId < 0) {
 			query = em
-					.createQuery("select t, ts.seqno from Transponder t, TranspSeqno ts where t.id = ts.transpId and ts.userId = :userId order by ts.seqno");
+					.createQuery(
+							"select t, ts.seqno from Transponder t, TranspSeqno ts where t.id = ts.transpId and ts.userId = :userId order by ts.seqno",
+							Object[].class);
 			query.setParameter("userId", user.getId());
 		} else {
 			query = em
-					.createQuery("select t, ts.seqno from Transponder t, TranspSeqno ts where t.id = ts.transpId and ts.userId = :userId and t.sourceId = :sourceId order by ts.seqno");
+					.createQuery(
+							"select t, ts.seqno from Transponder t, TranspSeqno ts where t.id = ts.transpId and ts.userId = :userId and t.sourceId = :sourceId order by ts.seqno",
+							Object[].class);
 			query.setParameter("userId", user.getId());
 			query.setParameter("sourceId", sourceId);
 		}
@@ -60,20 +65,24 @@ public class TransponderRepository {
 
 		result = new ArrayList<Transponder>();
 
-		for (Object row : queryResult) {
-			result.add((Transponder) ((Object[]) row)[0]);
+		for (Object[] row : queryResult) {
+			result.add((Transponder) row[0]);
 		}
 
 		return result;
 	}
 
 	/**
-	 * Finds a Transponder by the combination of Source ID, frequency and polarity given
-	 * among the Transponders belonging to the current application user.
+	 * Finds a Transponder by the combination of Source ID, frequency and
+	 * polarity given among the Transponders belonging to the current
+	 * application user.
 	 * 
-	 * @param sourceId  the Source ID to find a Transponder on
-	 * @param frequency the frequency of Transponder to find
-	 * @param polarity  the polarity of Transponder to find
+	 * @param sourceId
+	 *            the Source ID to find a Transponder on
+	 * @param frequency
+	 *            the frequency of Transponder to find
+	 * @param polarity
+	 *            the polarity of Transponder to find
 	 * @return the Transponder found or null if no Transponders found
 	 */
 	public Transponder findBySourceFrequencyPolarity(long sourceId,
@@ -106,7 +115,8 @@ public class TransponderRepository {
 	/**
 	 * Finds a Transponder by ID.
 	 * 
-	 * @param id the ID of the Transponder to find
+	 * @param id
+	 *            the ID of the Transponder to find
 	 * @return the Transponder found or null if no Transponders found
 	 */
 	public Transponder findById(long id) {
@@ -115,36 +125,41 @@ public class TransponderRepository {
 	}
 
 	/**
-	 * Finds maximum sequence number of Transponder related to
-	 * the Source with ID given.
+	 * Finds maximum sequence number of Transponder related to the Source with
+	 * ID given.
 	 * 
-	 * @param sourceId the Source ID to find a Transponder's maximum sequence
-	 *                 number
-	 * @return the maximum Transponder sequence number or
-	 *         null if no Transponders found
+	 * @param sourceId
+	 *            the Source ID to find a Transponder's maximum sequence number
+	 * @return the maximum Transponder sequence number or null if no
+	 *         Transponders found
 	 */
 	public Integer findMaxSeqno(long sourceId) {
-		Query query;
+		TypedQuery<Integer> query;
 
 		if (sourceId < 0) {
 			query = em
-					.createQuery("select max(ts.seqno) from TranspSeqno ts, Transponder t where t.id = ts.transpId and ts.userId = :userId");
+					.createQuery(
+							"select max(ts.seqno) from TranspSeqno ts, Transponder t where t.id = ts.transpId and ts.userId = :userId",
+							Integer.class);
 			query.setParameter("userId", user.getId());
 		} else {
 			query = em
-					.createQuery("select max(ts.seqno) from TranspSeqno ts, Transponder t where t.id = ts.transpId and ts.userId = :userId and t.sourceId = :sourceId");
+					.createQuery(
+							"select max(ts.seqno) from TranspSeqno ts, Transponder t where t.id = ts.transpId and ts.userId = :userId and t.sourceId = :sourceId",
+							Integer.class);
 			query.setParameter("userId", user.getId());
 			query.setParameter("sourceId", sourceId);
 		}
 
-		return (Integer) query.getSingleResult();
+		return query.getSingleResult();
 	}
 
 	/**
 	 * Returns a sequence number of the Transponder given.
 	 * 
-	 * @param transponder the Transponder to get the sequence number for
-	 * @return the sequence number or null if Transponder not found
+	 * @param transponder
+	 *            the Transponder to get the sequence number for
+	 * @return the sequence number or null if no Transponder found
 	 */
 	public Integer getSeqno(Transponder transponder) {
 		Integer result;
@@ -161,11 +176,47 @@ public class TransponderRepository {
 	}
 
 	/**
-	 * Adds the Transponder to the persisted list of Transponders
-	 * (stores it in the database).
+	 * Finds a Transponder by its sequence number.
 	 * 
-	 * @param transponder the Transponder to add
-	 * @param seqno       the sequence number of the added Transponder
+	 * @param seqno
+	 *            the sequence number of the Transponder to be found
+	 * @return the Transponder found or null if no Transponder found
+	 */
+	public Transponder findBySeqno(int seqno) {
+		Transponder result;
+		TypedQuery<Integer> query;
+		Integer queryResult;
+
+		result = null;
+
+		query = em
+				.createQuery(
+						"select ts.transpId from TranspSeqno ts where ts.userId = :userId and ts.seqno = :seqno",
+						Integer.class);
+		query.setParameter("userId", user.getId());
+		query.setParameter("seqno", seqno);
+
+		try {
+			queryResult = query.getSingleResult();
+		} catch (NoResultException ex) {
+			queryResult = null;
+		}
+
+		if (queryResult != null) {
+			result = findById(queryResult);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Adds the Transponder to the persisted list of Transponders (stores it in
+	 * the database).
+	 * 
+	 * @param transponder
+	 *            the Transponder to add
+	 * @param seqno
+	 *            the sequence number of the added Transponder
 	 */
 	public void add(Transponder transponder, int seqno) {
 
@@ -176,10 +227,11 @@ public class TransponderRepository {
 	}
 
 	/**
-	 * Updates the Transponder in the persisted list of Transponders
-	 * (updates it in the database).
+	 * Updates the Transponder in the persisted list of Transponders (updates it
+	 * in the database).
 	 * 
-	 * @param transponder the Transponder to update
+	 * @param transponder
+	 *            the Transponder to update
 	 */
 	public void update(Transponder transponder) {
 		em.merge(transponder);
@@ -189,8 +241,10 @@ public class TransponderRepository {
 	 * Moves the Transponder to the new sequence number in the list of
 	 * Transponders of the current application user.
 	 * 
-	 * @param transponder the Transponder to move
-	 * @param seqno the new sequence number
+	 * @param transponder
+	 *            the Transponder to move
+	 * @param seqno
+	 *            the new sequence number
 	 */
 	public void move(Transponder transponder, int seqno) {
 		TranspSeqno transpSeqno;
@@ -203,32 +257,34 @@ public class TransponderRepository {
 			curSeqno = transpSeqno.getSeqno();
 			transpSeqno.setSeqno(0);
 
-			query = em.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno where ts.userId = :userId and ts.seqno > :curSeqno");
+			query = em
+					.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno where ts.userId = :userId and ts.seqno > :curSeqno");
 			query.setParameter("userId", user.getId());
 			query.setParameter("curSeqno", curSeqno);
 			query.executeUpdate();
 
-			query = em.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno - 1 where ts.userId = :userId and ts.seqno < -:curSeqno");
+			query = em
+					.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno - 1 where ts.userId = :userId and ts.seqno < -:curSeqno");
 			query.setParameter("userId", user.getId());
 			query.setParameter("curSeqno", curSeqno);
 			query.executeUpdate();
 		}
 
-		query = em.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno where ts.userId = :userId and ts.seqno >= :seqno");
+		query = em
+				.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno where ts.userId = :userId and ts.seqno >= :seqno");
 		query.setParameter("userId", user.getId());
 		query.setParameter("seqno", seqno);
 		query.executeUpdate();
 
-		query = em.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno + 1 where ts.userId = :userId and ts.seqno <= -:seqno");
+		query = em
+				.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno + 1 where ts.userId = :userId and ts.seqno <= -:seqno");
 		query.setParameter("userId", user.getId());
 		query.setParameter("seqno", seqno);
 		query.executeUpdate();
 
 		if (transpSeqno != null) {
 			transpSeqno.setSeqno(seqno);
-		}
-		else
-		{
+		} else {
 			transpSeqno = new TranspSeqno();
 			transpSeqno.setTranspId(transponder.getId());
 			transpSeqno.setUserId(user.getId());
@@ -238,10 +294,11 @@ public class TransponderRepository {
 	}
 
 	/**
-	 * Deletes the Transponder from the persisted list of Transponders
-	 * (deletes it from the database).
+	 * Deletes the Transponder from the persisted list of Transponders (deletes
+	 * it from the database).
 	 * 
-	 * @param transponder the Transponder to delete
+	 * @param transponder
+	 *            the Transponder to delete
 	 */
 	public void delete(Transponder transponder) {
 		long transpId;
@@ -258,12 +315,14 @@ public class TransponderRepository {
 
 			em.remove(transpSeqno);
 
-			query = em.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno where ts.userId = :userId and ts.seqno > :seqno");
+			query = em
+					.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno where ts.userId = :userId and ts.seqno > :seqno");
 			query.setParameter("userId", user.getId());
 			query.setParameter("seqno", seqno);
 			query.executeUpdate();
 
-			query = em.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno - 1 where ts.userId = :userId and ts.seqno < -:seqno");
+			query = em
+					.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno - 1 where ts.userId = :userId and ts.seqno < -:seqno");
 			query.setParameter("userId", user.getId());
 			query.setParameter("seqno", seqno);
 			query.executeUpdate();

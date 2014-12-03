@@ -35,7 +35,7 @@ public class TranspondersManager implements Serializable {
 
 	// Number of table rows per page
 	private final int rowsPerPage = 15;
-	// Current table scroller page 
+	// Current table scroller page
 	private int scrollerPage = 1;
 
 	// Map of Transponder IDs and checked checkboxes
@@ -43,13 +43,13 @@ public class TranspondersManager implements Serializable {
 	// List of checked Transponders built on checkboxes map
 	private List<Transponder> checkedTransponders = new ArrayList<Transponder>();
 
-	// The Transponder which the user is going to add/update 
+	// The Transponder which the user is going to add/update
 	private Transponder editedTransponder = new Transponder();
 
 	// Sequence number of the edited Transponder
 	private int editedTransponderSeqno;
 
-	// The "clipboard": the place to store the Transponder copied by user 
+	// The "clipboard": the place to store the Transponder copied by user
 	private Transponder copiedTransponder = null;
 
 	// Fill in checkedTransponders list with Transponders corresponding
@@ -102,24 +102,24 @@ public class TranspondersManager implements Serializable {
 	}
 
 	// Calculate the sequence number for the Transponder to be placed on top
-	// of the current transponder list. If current transponder list is not empty
+	// of the current Transponder list. If current Transponder list is not empty
 	// then it is the sequence number of its top Transponder. Otherwise it is
 	// calculated the way the Transponder to be placed right after
 	// the last existing Transponder of previous Sources
 	public int calculateOnTopSeqno() {
 		int result;
 		Source source;
-		Integer maxSourceSeqno;
+		Integer maxSeqnoOnSource;
 
 		if (transponders.isEmpty()) {
 			result = 1;
 			if (filteredSourceId >= 0) {
 				source = sourceRepository.findPrevious(filteredSourceId);
 				while (source != null) {
-					maxSourceSeqno = transponderRepository.findMaxSeqno(source
-							.getId());
-					if (maxSourceSeqno != null) {
-						result = maxSourceSeqno + 1;
+					maxSeqnoOnSource = transponderRepository
+							.findMaxSeqno(source.getId());
+					if (maxSeqnoOnSource != null) {
+						result = maxSeqnoOnSource + 1;
 						break;
 					}
 					source = sourceRepository.findPrevious(source.getId());
