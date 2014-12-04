@@ -34,31 +34,31 @@
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('removePanel')}.show();document.getElementById('removePanelForm:okButton').focus();document.getElementById('transpondersForm:removeButton').disabled=!isAtLeastOneTransponderCheckboxChecked()"
 						render="transpondersContent, removePanel" />
-					<a4j:commandButton id="copyButton" value="Copy"
-						action="#{transpondersBacking.copyTransponder()}"
+					<a4j:commandButton id="takeButton" value="Take"
+						action="#{transpondersBacking.takeTransponder()}"
 						onclick="this.disabled=true"
-						oncomplete="document.getElementById('transpondersForm:copyButton').disabled=!isExactlyOneTransponderCheckboxChecked()"
+						oncomplete="document.getElementById('transpondersForm:takeButton').disabled=!isExactlyOneTransponderCheckboxChecked()"
 						render="transpondersContent" />
-					<a4j:commandButton id="pasteOnTopButton" value="Paste on top..."
-						rendered="#{not empty transpondersManager.copiedTransponder}"
-						action="#{transpondersBacking.intendPasteTransponderOnTop()}"
+					<a4j:commandButton id="copyOnTopButton" value="Copy on top..."
+						rendered="#{not empty transpondersManager.takenTransponder}"
+						action="#{transpondersBacking.intendCopyTransponderOnTop()}"
 						onclick="this.disabled=true"
-						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:frequencyInput').focus();document.getElementById('transpondersForm:pasteOnTopButton').disabled=false"
+						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:frequencyInput').focus();document.getElementById('transpondersForm:copyOnTopButton').disabled=false"
 						render="transpondersContent, editPanel" />
-					<a4j:commandButton id="pasteAfterButton" value="Paste after..."
-						rendered="#{not empty transpondersManager.copiedTransponder}"
-						action="#{transpondersBacking.intendPasteTransponderAfter()}"
+					<a4j:commandButton id="copyAfterButton" value="Copy after..."
+						rendered="#{not empty transpondersManager.takenTransponder}"
+						action="#{transpondersBacking.intendCopyTransponderAfter()}"
 						onclick="this.disabled=true"
-						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:frequencyInput').focus();document.getElementById('transpondersForm:pasteAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked()"
+						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:frequencyInput').focus();document.getElementById('transpondersForm:copyAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked()"
 						render="transpondersContent, editPanel" />
 					<a4j:commandButton id="moveOnTopButton" value="Move on top"
-						rendered="#{not empty transpondersManager.copiedTransponder}"
+						rendered="#{not empty transpondersManager.takenTransponder}"
 						action="#{transpondersBacking.moveTransponderOnTop()}"
 						onclick="this.disabled=true"
 						oncomplete="document.getElementById('transpondersForm:moveOnTopButton').disabled=false"
 						render="transpondersContent" />
 					<a4j:commandButton id="moveAfterButton" value="Move after"
-						rendered="#{not empty transpondersManager.copiedTransponder}"
+						rendered="#{not empty transpondersManager.takenTransponder}"
 						action="#{transpondersBacking.moveTransponderAfter()}"
 						onclick="this.disabled=true"
 						oncomplete="document.getElementById('transpondersForm:moveAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked()"
@@ -92,9 +92,9 @@
 							<h:selectBooleanCheckbox id="transponderCheckbox"
 								value="#{transpondersManager.transponderCheckboxes[transponderVar.id]}"
 								styleClass="preformattedtext"
-								onclick="document.getElementById('transpondersForm:removeButton').disabled=!isAtLeastOneTransponderCheckboxChecked();document.getElementById('transpondersForm:addAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();document.getElementById('transpondersForm:copyButton').disabled=!isExactlyOneTransponderCheckboxChecked();document.getElementById('transpondersForm:pasteAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();document.getElementById('transpondersForm:moveAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked()" />
+								onclick="document.getElementById('transpondersForm:removeButton').disabled=!isAtLeastOneTransponderCheckboxChecked();document.getElementById('transpondersForm:addAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();document.getElementById('transpondersForm:takeButton').disabled=!isExactlyOneTransponderCheckboxChecked();document.getElementById('transpondersForm:copyAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();document.getElementById('transpondersForm:moveAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked()" />
 							<h:outputText styleClass="preformattedtext" value="C"
-								rendered="#{not empty transpondersManager.copiedTransponder and transpondersManager.copiedTransponder.id eq transponderVar.id}" />
+								rendered="#{not empty transpondersManager.takenTransponder and transpondersManager.takenTransponder.id eq transponderVar.id}" />
 						</h:column>
 						<h:column rendered="#{transpondersManager.filteredSourceId lt 0}">
 							<f:facet name="header">Source</f:facet>
@@ -149,8 +149,8 @@
 			<h:outputScript library="js">
 					document.getElementById('transpondersForm:removeButton').disabled=!isAtLeastOneTransponderCheckboxChecked();
 					document.getElementById('transpondersForm:addAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
-					document.getElementById('transpondersForm:copyButton').disabled=!isExactlyOneTransponderCheckboxChecked();
-					document.getElementById('transpondersForm:pasteAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
+					document.getElementById('transpondersForm:takeButton').disabled=!isExactlyOneTransponderCheckboxChecked();
+					document.getElementById('transpondersForm:copyAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
 					document.getElementById('transpondersForm:moveAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
 			</h:outputScript>
 		</h:panelGroup>

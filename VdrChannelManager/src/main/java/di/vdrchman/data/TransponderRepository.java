@@ -30,16 +30,16 @@ public class TransponderRepository {
 	private User user;
 
 	/**
-	 * Builds a full or partial list of Transponders belonging to the current
+	 * Builds a full or partial list of transponders belonging to the current
 	 * application user depending on the value of the sourceId parameter.
 	 * Transponders are added to the list in ascending sequence number order.
 	 * 
 	 * @param sourceId
-	 *            the ID of the Source which Transponders are added to the list,
-	 *            if SourceId is negative then all current user's Transponders
+	 *            the ID of the source which transponders are added to the list,
+	 *            if sourceId is negative then all current user's transponders
 	 *            are added
-	 * @return the list of Transponders found for the current application user
-	 *         and given Source ID
+	 * @return the list of transponders found for the current application user
+	 *         and given source ID
 	 */
 	public List<Transponder> findAll(long sourceId) {
 		List<Transponder> result;
@@ -73,17 +73,17 @@ public class TransponderRepository {
 	}
 
 	/**
-	 * Finds a Transponder by the combination of Source ID, frequency and
-	 * polarity given among the Transponders belonging to the current
+	 * Finds a transponder by the combination of source ID, frequency and
+	 * polarity given among the transponders belonging to the current
 	 * application user.
 	 * 
 	 * @param sourceId
-	 *            the Source ID to find a Transponder on
+	 *            the source ID to find a transponder within
 	 * @param frequency
-	 *            the frequency of Transponder to find
+	 *            the frequency of transponder to find
 	 * @param polarity
-	 *            the polarity of Transponder to find
-	 * @return the Transponder found or null if no Transponders found
+	 *            the polarity of transponder to find
+	 * @return the transponder found or null if no transponders found
 	 */
 	public Transponder findBySourceFrequencyPolarity(long sourceId,
 			int frequency, String polarity) {
@@ -113,11 +113,11 @@ public class TransponderRepository {
 	}
 
 	/**
-	 * Finds a Transponder by ID.
+	 * Finds a transponder by ID.
 	 * 
 	 * @param id
-	 *            the ID of the Transponder to find
-	 * @return the Transponder found or null if no Transponders found
+	 *            the ID of the transponder to find
+	 * @return the transponder found or null if no transponders found
 	 */
 	public Transponder findById(long id) {
 
@@ -125,13 +125,13 @@ public class TransponderRepository {
 	}
 
 	/**
-	 * Finds maximum sequence number of Transponder related to the Source with
+	 * Finds maximum sequence number of transponder related to the source with
 	 * ID given.
 	 * 
 	 * @param sourceId
-	 *            the Source ID to find a Transponder's maximum sequence number
-	 * @return the maximum Transponder sequence number or null if no
-	 *         Transponders found
+	 *            the source ID to find a transponder's maximum sequence number
+	 * @return the maximum transponder sequence number or null if no
+	 *         transponders found
 	 */
 	public Integer findMaxSeqno(long sourceId) {
 		TypedQuery<Integer> query;
@@ -155,11 +155,11 @@ public class TransponderRepository {
 	}
 
 	/**
-	 * Returns a sequence number of the Transponder given.
+	 * Returns a sequence number of the transponder given.
 	 * 
 	 * @param transponder
-	 *            the Transponder to get the sequence number for
-	 * @return the sequence number or null if no Transponder found
+	 *            the transponder to get the sequence number for
+	 * @return the sequence number or null if no transponder found
 	 */
 	public Integer getSeqno(Transponder transponder) {
 		Integer result;
@@ -176,11 +176,11 @@ public class TransponderRepository {
 	}
 
 	/**
-	 * Finds a Transponder by its sequence number.
+	 * Finds a transponder by its sequence number.
 	 * 
 	 * @param seqno
-	 *            the sequence number of the Transponder to be found
-	 * @return the Transponder found or null if no Transponder found
+	 *            the sequence number of the transponder to be found
+	 * @return the transponder found or null if no transponder found
 	 */
 	public Transponder findBySeqno(int seqno) {
 		Transponder result;
@@ -210,13 +210,43 @@ public class TransponderRepository {
 	}
 
 	/**
-	 * Adds the Transponder to the persisted list of Transponders (stores it in
+	 * Finds a transponder which has one less sequence number compared to the
+	 * sequence number of the transponder given.
+	 * 
+	 * @param id
+	 *            the transponder for which the previous transponder has to be
+	 *            found
+	 * @return the previous transponder or null if there's no previous
+	 *         transponder
+	 */
+	public Transponder findPrevious(Transponder transponder) {
+
+		return findBySeqno(getSeqno(transponder) - 1);
+	}
+
+	/**
+	 * Finds a transponder which has one less sequence number compared to the
+	 * sequence number of the transponder with ID given.
+	 * 
+	 * @param id
+	 *            the ID of the transponder for which the previous transponder
+	 *            has to be found
+	 * @return the previous transponder or null if there's no previous
+	 *         transponder
+	 */
+	public Transponder findPrevious(long id) {
+
+		return findBySeqno(getSeqno(findById(id)) - 1);
+	}
+
+	/**
+	 * Adds the transponder to the persisted list of transponders (stores it in
 	 * the database).
 	 * 
 	 * @param transponder
-	 *            the Transponder to add
+	 *            the transponder to add
 	 * @param seqno
-	 *            the sequence number of the added Transponder
+	 *            the sequence number of the added transponder
 	 */
 	public void add(Transponder transponder, int seqno) {
 
@@ -227,22 +257,22 @@ public class TransponderRepository {
 	}
 
 	/**
-	 * Updates the Transponder in the persisted list of Transponders (updates it
+	 * Updates the transponder in the persisted list of transponders (updates it
 	 * in the database).
 	 * 
 	 * @param transponder
-	 *            the Transponder to update
+	 *            the transponder to update
 	 */
 	public void update(Transponder transponder) {
 		em.merge(transponder);
 	}
 
 	/**
-	 * Moves the Transponder to the new sequence number in the list of
-	 * Transponders of the current application user.
+	 * Moves the transponder to the new sequence number in the list of
+	 * transponders of the current application user.
 	 * 
 	 * @param transponder
-	 *            the Transponder to move
+	 *            the transponder to move
 	 * @param seqno
 	 *            the new sequence number
 	 */
@@ -294,11 +324,11 @@ public class TransponderRepository {
 	}
 
 	/**
-	 * Deletes the Transponder from the persisted list of Transponders (deletes
+	 * Deletes the transponder from the persisted list of transponders (deletes
 	 * it from the database).
 	 * 
 	 * @param transponder
-	 *            the Transponder to delete
+	 *            the transponder to delete
 	 */
 	public void delete(Transponder transponder) {
 		long transpId;

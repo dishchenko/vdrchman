@@ -24,7 +24,7 @@ public class TransponderSourceFrequencyPolarityUniquenessValidator implements
 	private TranspondersManager transpondersManager;
 
 	// Validates that there would not be two transponders with the same
-	// frequency and polarity with the Source given
+	// frequency and polarity within the source given
 	@Override
 	public void validate(FacesContext context, UIComponent component,
 			Object value) throws ValidatorException {

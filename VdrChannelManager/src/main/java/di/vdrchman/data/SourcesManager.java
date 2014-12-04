@@ -27,21 +27,21 @@ public class SourcesManager implements Serializable {
 
 	// Number of table rows per page
 	private final int rowsPerPage = 5;
-	// Current table scroller page 
+	// Current table scroller page
 	private int scrollerPage = 1;
 
-	// Map of Source IDs and checked checkboxes
+	// Map of source IDs and checked checkboxes
 	private Map<Long, Boolean> sourceCheckboxes = new HashMap<Long, Boolean>();
-	// List of checked Sources built on checkboxes map
+	// List of checked sources built on checkboxes map
 	private List<Source> checkedSources = new ArrayList<Source>();
 
-	// The Source which the user is going to add/update 
+	// The source which the user is going to add/update
 	private Source editedSource = new Source();
 
-	// The "clipboard": the place to store the Source copied by user 
-	private Source copiedSource = null;
+	// The "clipboard": the place to store the source taken by user
+	private Source takenSource = null;
 
-	// Fill in checkedSources list with Sources corresponding to checkboxes
+	// Fill in checkedSources list with sources corresponding to checkboxes
 	// checked in the data table on the page
 	public void collectCheckedSources() {
 		List<Source> sources;
@@ -59,17 +59,17 @@ public class SourcesManager implements Serializable {
 		}
 	}
 
-	// Clear the list of checked Sources
+	// Clear the list of checked sources
 	public void clearCheckedSources() {
 		checkedSources.clear();
 	}
 
-	// Clear the map of Source checkboxes
+	// Clear the map of source checkboxes
 	public void clearSourceCheckboxes() {
 		sourceCheckboxes.clear();
 	}
 
-	// Find and set the table scroller page to show the Source given
+	// Find and set the table scroller page to show the source given
 	public void turnScrollerPage(Source source) {
 		List<Source> sources;
 		int i;
@@ -85,7 +85,7 @@ public class SourcesManager implements Serializable {
 		}
 	}
 
-	// (Re)Fill in the Source list
+	// (Re)Fill in the source list
 	@PostConstruct
 	public void retrieveAllSources() {
 		sources = sourceRepository.findAll();
@@ -129,13 +129,13 @@ public class SourcesManager implements Serializable {
 		this.editedSource = editedSource;
 	}
 
-	public Source getCopiedSource() {
+	public Source getTakenSource() {
 
-		return copiedSource;
+		return takenSource;
 	}
 
-	public void setCopiedSource(Source copiedSource) {
-		this.copiedSource = copiedSource;
+	public void setTakenSource(Source takenSource) {
+		this.takenSource = takenSource;
 	}
 
 }

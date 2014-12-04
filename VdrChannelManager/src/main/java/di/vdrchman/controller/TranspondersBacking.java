@@ -1,5 +1,6 @@
 package di.vdrchman.controller;
 
+import javax.enterprise.event.Event;
 import javax.enterprise.inject.Model;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
@@ -8,6 +9,7 @@ import org.richfaces.event.DataScrollEvent;
 
 import di.vdrchman.data.TransponderRepository;
 import di.vdrchman.data.TranspondersManager;
+import di.vdrchman.event.TransponderAction;
 import di.vdrchman.model.Transponder;
 
 @Model
@@ -19,7 +21,10 @@ public class TranspondersBacking {
 	@Inject
 	private TransponderRepository transponderRepository;
 
-	// The user is going to add a new Transponder on top of
+	@Inject
+	private Event<TransponderAction> transponderActionEvent;
+
+	// The user is going to add a new transponder on top of
 	// the current transponder list
 	public void intendAddTransponderOnTop() {
 		Transponder transponder;
@@ -31,7 +36,7 @@ public class TranspondersBacking {
 				.calculateOnTopSeqno());
 	}
 
-	// The user is going to add a new Transponder and place it right after
+	// The user is going to add a new transponder and place it right after
 	// the checked transponder in the list
 	public void intendAddTransponderAfter() {
 		Transponder transponder;
@@ -47,10 +52,12 @@ public class TranspondersBacking {
 								.get(0)) + 1);
 	}
 
-	// Really adding a new Transponder to the place specified
+	// Really adding a new transponder to the place specified
 	public void doAddTransponder() {
 		transponderRepository.add(transpondersManager.getEditedTransponder(),
 				transpondersManager.getEditedTransponderSeqno());
+		transponderActionEvent.fire(new TransponderAction(transpondersManager
+				.getEditedTransponder(), TransponderAction.Action.ADD));
 		transpondersManager.retrieveAllTransponders();
 		transpondersManager.clearCheckedTransponders();
 		transpondersManager.clearTransponderCheckboxes();
@@ -58,21 +65,23 @@ public class TranspondersBacking {
 				.getEditedTransponder());
 	}
 
-	// The user is going to update a Transponder
+	// The user is going to update a transponder
 	public void intendUpdateTransponder(Transponder transponder) {
 		transpondersManager.setEditedTransponder(new Transponder(transponder));
 	}
 
-	// Really updating the Transponder
+	// Really updating the transponder
 	public void doUpdateTransponder() {
 		transponderRepository
 				.update(transpondersManager.getEditedTransponder());
+		transponderActionEvent.fire(new TransponderAction(transpondersManager
+				.getEditedTransponder(), TransponderAction.Action.UPDATE));
 		transpondersManager.retrieveAllTransponders();
 		transpondersManager.clearCheckedTransponders();
 		transpondersManager.clearTransponderCheckboxes();
 	}
 
-	// Going to remove some checked Transponders
+	// Going to remove some checked transponders
 	public void intendRemoveTransponders() {
 		transpondersManager.collectCheckedTransponders(transpondersManager
 				.getFilteredSourceId());
@@ -83,39 +92,41 @@ public class TranspondersBacking {
 		for (Transponder transponder : transpondersManager
 				.getCheckedTransponders()) {
 			transponderRepository.delete(transponder);
+			transponderActionEvent.fire(new TransponderAction(transponder,
+					TransponderAction.Action.DELETE));
 		}
 		transpondersManager.retrieveAllTransponders();
 		transpondersManager.clearCheckedTransponders();
 		transpondersManager.clearTransponderCheckboxes();
 	}
 
-	// Let's put the checked Transponder's data on the "clipboard"
-	public void copyTransponder() {
+	// Let's take the checked transponder's data on the "clipboard"
+	public void takeTransponder() {
 		transpondersManager.collectCheckedTransponders(transpondersManager
 				.getFilteredSourceId());
-		transpondersManager.setCopiedTransponder(new Transponder(
+		transpondersManager.setTakenTransponder(new Transponder(
 				transpondersManager.getCheckedTransponders().get(0)));
 		transpondersManager.clearCheckedTransponders();
 		transpondersManager.clearTransponderCheckboxes();
 	}
 
-	// The user's gonna add a new Transponder on top of the list
+	// The user's gonna add a new transponder on top of the list
 	// using data from the "clipboard"
-	public void intendPasteTransponderOnTop() {
+	public void intendCopyTransponderOnTop() {
 		transpondersManager.setEditedTransponder(new Transponder(
-				transpondersManager.getCopiedTransponder()));
+				transpondersManager.getTakenTransponder()));
 		transpondersManager.getEditedTransponder().setId(null);
 		transpondersManager.setEditedTransponderSeqno(transpondersManager
 				.calculateOnTopSeqno());
 	}
 
-	// The user is going to add a new Transponder using data from the "clipboard"
-	// and place it right after the checked transponder in the list
-	public void intendPasteTransponderAfter() {
+	// The user is going to add a new transponder using data from the
+	// "clipboard" and place it right after the checked transponder in the list
+	public void intendCopyTransponderAfter() {
 		transpondersManager.collectCheckedTransponders(transpondersManager
 				.getFilteredSourceId());
 		transpondersManager.setEditedTransponder(new Transponder(
-				transpondersManager.getCopiedTransponder()));
+				transpondersManager.getTakenTransponder()));
 		transpondersManager.getEditedTransponder().setId(null);
 		transpondersManager
 				.setEditedTransponderSeqno(transponderRepository
@@ -123,19 +134,21 @@ public class TranspondersBacking {
 								.get(0)) + 1);
 	}
 
-	// Remember the Transponder put on the "clipboard"?
+	// Remember the transponder taken on the "clipboard"?
 	// Move the original one on top of the current list
 	public void moveTransponderOnTop() {
-		transponderRepository.move(transpondersManager.getCopiedTransponder(),
+		transponderRepository.move(transpondersManager.getTakenTransponder(),
 				transpondersManager.calculateOnTopSeqno());
+		transponderActionEvent.fire(new TransponderAction(transpondersManager
+				.getTakenTransponder(), TransponderAction.Action.MOVE));
 		transpondersManager.retrieveAllTransponders();
 		transpondersManager.clearCheckedTransponders();
 		transpondersManager.clearTransponderCheckboxes();
 		transpondersManager.turnScrollerPage(transpondersManager
-				.getCopiedTransponder());
+				.getTakenTransponder());
 	}
 
-	// Now move the Transponder copied to the "clipboard" right after
+	// Now move the transponder taken on the "clipboard" right after
 	// the checked transponder in the list
 	public void moveTransponderAfter() {
 		int curSeqno;
@@ -144,29 +157,31 @@ public class TranspondersBacking {
 		transpondersManager.collectCheckedTransponders(transpondersManager
 				.getFilteredSourceId());
 		curSeqno = transponderRepository.getSeqno(transpondersManager
-				.getCopiedTransponder());
+				.getTakenTransponder());
 		newSeqno = transponderRepository.getSeqno(transpondersManager
 				.getCheckedTransponders().get(0));
 		if (newSeqno < curSeqno) {
 			++newSeqno;
 		}
-		transponderRepository.move(transpondersManager.getCopiedTransponder(),
+		transponderRepository.move(transpondersManager.getTakenTransponder(),
 				newSeqno);
+		transponderActionEvent.fire(new TransponderAction(transpondersManager
+				.getTakenTransponder(), TransponderAction.Action.MOVE));
 		transpondersManager.retrieveAllTransponders();
 		transpondersManager.clearCheckedTransponders();
 		transpondersManager.clearTransponderCheckboxes();
 		transpondersManager.turnScrollerPage(transpondersManager
-				.getCopiedTransponder());
+				.getTakenTransponder());
 	}
 
-	// On changing the Source Filter selection clear the "clipboard"
-	// if a Source is selected and it is not the one copied Transponder
+	// On changing the source filter selection clear the "clipboard"
+	// if a source is selected and it is not the one taken transponder
 	// relates to. Also try to stay on the scroller page which includes
-	// the previous shown page top transponder 
+	// the previous shown page top transponder
 	public void onSourceMenuSelection(ValueChangeEvent event) {
 		Transponder lastPageTopTransponder;
 		long filteredSourceId;
-		Transponder copiedTransponder;
+		Transponder takenTransponder;
 
 		lastPageTopTransponder = null;
 		if (!transpondersManager.getTransponders().isEmpty()) {
@@ -176,10 +191,10 @@ public class TranspondersBacking {
 		}
 		filteredSourceId = (Long) event.getNewValue();
 		if (filteredSourceId >= 0) {
-			copiedTransponder = transpondersManager.getCopiedTransponder();
-			if (copiedTransponder != null) {
-				if (filteredSourceId != copiedTransponder.getSourceId()) {
-					transpondersManager.setCopiedTransponder(null);
+			takenTransponder = transpondersManager.getTakenTransponder();
+			if (takenTransponder != null) {
+				if (filteredSourceId != takenTransponder.getSourceId()) {
+					transpondersManager.setTakenTransponder(null);
 				}
 			}
 		}

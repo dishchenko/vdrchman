@@ -7,6 +7,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import di.vdrchman.model.Channel;
@@ -24,20 +25,20 @@ public class ChannelRepository {
 	private User user;
 
 	/**
-	 * Builds a full or partial list of Channels belonging to the current
+	 * Builds a full or partial list of channels belonging to the current
 	 * application user depending on values of sourceId and transpId parameters.
 	 * Channels are added to the list in ascending sequence number order.
 	 * 
 	 * @param sourceId
-	 *            the ID of the Source which Channels are added to the list, if
+	 *            the ID of the source which channels are added to the list, if
 	 *            both sourceId and transpId are negative then all current
-	 *            user's Channels are added
+	 *            user's channels are added
 	 * @param transpId
-	 *            the ID of the Transponder which Channels are added to the
+	 *            the ID of the transponder which channels are added to the
 	 *            list, if transpId is negative then sourceId value is taken
 	 *            into account
-	 * @return the list of Channels found for the current application user and
-	 *         given Source and Transponder IDs
+	 * @return the list of channels found for the current application user and
+	 *         given source and transponder IDs
 	 */
 	public List<Channel> findAll(long sourceId, long transpId) {
 		List<Channel> result;
@@ -80,12 +81,12 @@ public class ChannelRepository {
 	}
 
 	/**
-	 * Finds maximum sequence number of Channel related to the Transponder with
+	 * Finds maximum sequence number of channel related to the transponder with
 	 * ID given.
 	 * 
 	 * @param transpId
-	 *            the Transponder ID to find a Channel's maximum sequence number
-	 * @return the maximum Channel sequence number or null if no Channels found
+	 *            the transponder ID to find a channel's maximum sequence number
+	 * @return the maximum channel sequence number or null if no channels found
 	 */
 	public Integer findMaxSeqno(long transpId) {
 		TypedQuery<Integer> query;
@@ -109,11 +110,11 @@ public class ChannelRepository {
 	}
 
 	/**
-	 * Returns a sequence number of the Channel given.
+	 * Returns a sequence number of the channel given.
 	 * 
 	 * @param channel
-	 *            the Channel to get the sequence number for
-	 * @return the sequence number or null if no Channel found
+	 *            the channel to get the sequence number for
+	 * @return the sequence number or null if no channel found
 	 */
 	public Integer getSeqno(Channel channel) {
 		Integer result;
@@ -130,11 +131,11 @@ public class ChannelRepository {
 	}
 
 	/**
-	 * Builds a list of groups in which the Channel with given ID is present.
+	 * Builds a list of groups in which the channel with given ID is present.
 	 * 
 	 * @param channelId
-	 *            the ID of the Channel to build the list of Groups for
-	 * @return the list of Groups in which the Channel is present
+	 *            the ID of the channel to build the list of groups for
+	 * @return the list of groups in which the channel is present
 	 */
 	public List<Group> findGroups(long channelId) {
 		TypedQuery<Group> query;
@@ -146,6 +147,62 @@ public class ChannelRepository {
 		query.setParameter("channelId", channelId);
 
 		return query.getResultList();
+	}
+
+	/**
+	 * Moves the channel to the new sequence number in the list of
+	 * channels of the current application user.
+	 * 
+	 * @param channel
+	 *            the channel to move
+	 * @param seqno
+	 *            the new sequence number
+	 */
+	public void move(Channel channel, int seqno) {
+		ChannelSeqno channelSeqno;
+		int curSeqno;
+		Query query;
+
+		channelSeqno = em.find(ChannelSeqno.class, channel.getId());
+
+		if (channelSeqno != null) {
+			curSeqno = channelSeqno.getSeqno();
+			channelSeqno.setSeqno(0);
+
+			query = em
+					.createQuery("update ChannelSeqno cs set cs.seqno = -cs.seqno where cs.userId = :userId and cs.seqno > :curSeqno");
+			query.setParameter("userId", user.getId());
+			query.setParameter("curSeqno", curSeqno);
+			query.executeUpdate();
+
+			query = em
+					.createQuery("update ChannelSeqno cs set cs.seqno = -cs.seqno - 1 where cs.userId = :userId and cs.seqno < -:curSeqno");
+			query.setParameter("userId", user.getId());
+			query.setParameter("curSeqno", curSeqno);
+			query.executeUpdate();
+		}
+
+		query = em
+				.createQuery("update ChannelSeqno cs set cs.seqno = -cs.seqno where cs.userId = :userId and cs.seqno >= :seqno");
+		query.setParameter("userId", user.getId());
+		query.setParameter("seqno", seqno);
+		query.executeUpdate();
+
+		query = em
+				.createQuery("update ChannelSeqno cs set cs.seqno = -cs.seqno + 1 where cs.userId = :userId and cs.seqno <= -:seqno");
+		query.setParameter("userId", user.getId());
+		query.setParameter("seqno", seqno);
+		query.executeUpdate();
+
+		if (channelSeqno != null) {
+			channelSeqno.setSeqno(seqno);
+		} else {
+			channelSeqno = new ChannelSeqno();
+			channelSeqno.setChannelId(channel.getId());
+			channelSeqno.setUserId(user.getId());
+			channelSeqno.setSeqno(seqno);
+			em.persist(channelSeqno);
+		}
 	}
 
 }

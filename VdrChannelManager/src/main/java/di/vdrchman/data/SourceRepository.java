@@ -26,12 +26,11 @@ public class SourceRepository {
 	private User user;
 
 	/**
-	 * Builds a list of Sources belonging to the current application user.
-	 * First adds Sources with no rotor value defined
-	 * in ascending name order.
-	 * Then adds Sources in ascending rotor value order.
+	 * Builds a list of sources belonging to the current application user. First
+	 * adds sources with no rotor value defined in ascending name order. Then
+	 * adds sources in ascending rotor value order.
 	 * 
-	 * @return the list of all Sources for the current application user
+	 * @return the list of all sources for the current application user
 	 */
 	public List<Source> findAll() {
 		List<Source> result;
@@ -64,11 +63,12 @@ public class SourceRepository {
 	}
 
 	/**
-	 * Finds a Source by the name given among the Sources belonging to
-	 * the current application user.
+	 * Finds a source by the name given among the sources belonging to the
+	 * current application user.
 	 * 
-	 * @param name the name of the Source to find
-	 * @return the Source found or null if no Sources found
+	 * @param name
+	 *            the name of the source to find
+	 * @return the source found or null if no sources found
 	 */
 	public Source findByName(String name) {
 		Source result;
@@ -94,11 +94,12 @@ public class SourceRepository {
 	}
 
 	/**
-	 * Finds a Source by the rotor value given among the Sources belonging to
+	 * Finds a source by the rotor value given among the sources belonging to
 	 * the current application user.
 	 * 
-	 * @param rotor the rotor value of the Source to find
-	 * @return the Source found or null if no Sources found
+	 * @param rotor
+	 *            the rotor value of the source to find
+	 * @return the source found or null if no sources found
 	 */
 	public Source findByRotor(int rotor) {
 		Source result;
@@ -124,10 +125,11 @@ public class SourceRepository {
 	}
 
 	/**
-	 * Finds a Source by ID.
+	 * Finds a source by ID.
 	 * 
-	 * @param id the ID of the Source to find
-	 * @return the Source found or null if no Sources found
+	 * @param id
+	 *            the ID of the source to find
+	 * @return the source found or null if no sources found
 	 */
 	public Source findById(long id) {
 
@@ -135,11 +137,13 @@ public class SourceRepository {
 	}
 
 	/**
-	 * Finds a Source which resides in the list built by findAll method
-	 * right before the Source with ID given.
+	 * Finds a source which resides in the list built by findAll method right
+	 * before the source with ID given.
 	 * 
-	 * @param id the ID of the Source for which the previous Source has to be found
-	 * @return the previous Source or null if there's no previous Source
+	 * @param id
+	 *            the ID of the source for which the previous source has to be
+	 *            found
+	 * @return the previous source or null if there's no previous source
 	 */
 	public Source findPrevious(long id) {
 		Source result;
@@ -163,10 +167,11 @@ public class SourceRepository {
 	}
 
 	/**
-	 * Adds the Source to the persisted list of Sources
-	 * (stores it in the database).
+	 * Adds the source to the persisted list of sources (stores it in the
+	 * database).
 	 * 
-	 * @param source the Source to add
+	 * @param source
+	 *            the source to add
 	 */
 	public void add(Source source) {
 		source.setUserId(user.getId());
@@ -175,20 +180,22 @@ public class SourceRepository {
 	}
 
 	/**
-	 * Updates the Source in the persisted list of Sources
-	 * (updates it in the database).
+	 * Updates the source in the persisted list of sources (updates it in the
+	 * database).
 	 * 
-	 * @param source the Source to update
+	 * @param source
+	 *            the source to update
 	 */
 	public void update(Source source) {
 		em.merge(source);
 	}
 
 	/**
-	 * Deletes the Source from the persisted list of Sources
-	 * (deletes it from the database).
+	 * Deletes the source from the persisted list of sources (deletes it from
+	 * the database).
 	 * 
-	 * @param source the Source to delete
+	 * @param source
+	 *            the source to delete
 	 */
 	public void delete(Source source) {
 		em.remove(em.merge(source));

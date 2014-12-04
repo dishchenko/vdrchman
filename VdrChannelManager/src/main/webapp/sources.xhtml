@@ -29,16 +29,16 @@
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('removePanel')}.show();document.getElementById('removePanelForm:okButton').focus();document.getElementById('sourcesForm:removeButton').disabled=!isAtLeastOneSourceCheckboxChecked()"
 						render="sourcesContent, removePanel" />
-					<a4j:commandButton id="copyButton" value="Copy"
-						action="#{sourcesBacking.copySource()}"
+					<a4j:commandButton id="takeButton" value="Take"
+						action="#{sourcesBacking.takeSource()}"
 						onclick="this.disabled=true"
-						oncomplete="document.getElementById('sourcesForm:copyButton').disabled=!isExactlyOneSourceCheckboxChecked()"
+						oncomplete="document.getElementById('sourcesForm:takeButton').disabled=!isExactlyOneSourceCheckboxChecked()"
 						render="sourcesContent" />
-					<a4j:commandButton id="pasteButton" value="Paste..."
-						rendered="#{not empty sourcesManager.copiedSource}"
-						action="#{sourcesBacking.intendPasteSource()}"
+					<a4j:commandButton id="copyButton" value="Copy..."
+						rendered="#{not empty sourcesManager.takenSource}"
+						action="#{sourcesBacking.intendCopySource()}"
 						onclick="this.disabled=true"
-						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('sourcesForm:pasteButton').disabled=false"
+						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('sourcesForm:copyButton').disabled=false"
 						render="sourcesContent, editPanel" />
 				</h:panelGrid>
 				<h:panelGroup rendered="#{empty sourcesManager.sources}">
@@ -54,9 +54,9 @@
 							<h:selectBooleanCheckbox id="sourceCheckbox"
 								value="#{sourcesManager.sourceCheckboxes[sourceVar.id]}"
 								styleClass="preformattedtext"
-								onclick="document.getElementById('sourcesForm:removeButton').disabled=!isAtLeastOneSourceCheckboxChecked();document.getElementById('sourcesForm:copyButton').disabled=!isExactlyOneSourceCheckboxChecked()" />
+								onclick="document.getElementById('sourcesForm:removeButton').disabled=!isAtLeastOneSourceCheckboxChecked();document.getElementById('sourcesForm:takeButton').disabled=!isExactlyOneSourceCheckboxChecked()" />
 							<h:outputText styleClass="preformattedtext" value="C"
-								rendered="#{not empty sourcesManager.copiedSource and sourcesManager.copiedSource.id eq sourceVar.id}" />
+								rendered="#{not empty sourcesManager.takenSource and sourcesManager.takenSource.id eq sourceVar.id}" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">Name</f:facet>
@@ -100,7 +100,7 @@
 			<!-- Set buttons enable/disable state on panel rendering -->
 			<h:outputScript library="js">
 				document.getElementById('sourcesForm:removeButton').disabled=!isAtLeastOneSourceCheckboxChecked();
-				document.getElementById('sourcesForm:copyButton').disabled=!isExactlyOneSourceCheckboxChecked();
+				document.getElementById('sourcesForm:takeButton').disabled=!isExactlyOneSourceCheckboxChecked();
 			</h:outputScript>
 		</h:panelGroup>
 		<h:panelGrid columns="2">

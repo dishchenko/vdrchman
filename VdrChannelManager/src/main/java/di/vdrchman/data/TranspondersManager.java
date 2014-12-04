@@ -26,7 +26,7 @@ public class TranspondersManager implements Serializable {
 	@Inject
 	private TransponderRepository transponderRepository;
 
-	// ID of the Source to filter Transponder list on.
+	// ID of the source to filter transponder list on.
 	// No filtering if it's negative.
 	private long filteredSourceId = -1;
 
@@ -38,21 +38,21 @@ public class TranspondersManager implements Serializable {
 	// Current table scroller page
 	private int scrollerPage = 1;
 
-	// Map of Transponder IDs and checked checkboxes
+	// Map of transponder IDs and checked checkboxes
 	private Map<Long, Boolean> transponderCheckboxes = new HashMap<Long, Boolean>();
-	// List of checked Transponders built on checkboxes map
+	// List of checked transponders built on checkboxes map
 	private List<Transponder> checkedTransponders = new ArrayList<Transponder>();
 
-	// The Transponder which the user is going to add/update
+	// The transponder which the user is going to add/update
 	private Transponder editedTransponder = new Transponder();
 
-	// Sequence number of the edited Transponder
+	// Sequence number of the edited transponder
 	private int editedTransponderSeqno;
 
-	// The "clipboard": the place to store the Transponder copied by user
-	private Transponder copiedTransponder = null;
+	// The "clipboard": the place to store the transponder taken by user
+	private Transponder takenTransponder = null;
 
-	// Fill in checkedTransponders list with Transponders corresponding
+	// Fill in checkedTransponders list with transponders corresponding
 	// to checkboxes checked in the data table on the page
 	public void collectCheckedTransponders(long sourceId) {
 		List<Transponder> transponders;
@@ -70,17 +70,17 @@ public class TranspondersManager implements Serializable {
 		}
 	}
 
-	// Clear the list of checked Transponders
+	// Clear the list of checked transponders
 	public void clearCheckedTransponders() {
 		checkedTransponders.clear();
 	}
 
-	// Clear the map of Transponder checkboxes
+	// Clear the map of transponder checkboxes
 	public void clearTransponderCheckboxes() {
 		transponderCheckboxes.clear();
 	}
 
-	// Find and set the table scroller page to show the Transponder given
+	// Find and set the table scroller page to show the transponder given
 	public void turnScrollerPage(Transponder transponder) {
 		List<Transponder> transponders;
 		int i;
@@ -101,25 +101,25 @@ public class TranspondersManager implements Serializable {
 		}
 	}
 
-	// Calculate the sequence number for the Transponder to be placed on top
-	// of the current Transponder list. If current Transponder list is not empty
-	// then it is the sequence number of its top Transponder. Otherwise it is
-	// calculated the way the Transponder to be placed right after
-	// the last existing Transponder of previous Sources
+	// Calculate the sequence number for the transponder to be placed on top
+	// of the current transponder list. If current transponder list is not empty
+	// then it is the sequence number of its top transponder. Otherwise it is
+	// calculated the way the transponder to be placed right after
+	// the last existing transponder of previous sources
 	public int calculateOnTopSeqno() {
 		int result;
 		Source source;
-		Integer maxSeqnoOnSource;
+		Integer maxTranspSeqnoWithinSource;
 
 		if (transponders.isEmpty()) {
 			result = 1;
 			if (filteredSourceId >= 0) {
 				source = sourceRepository.findPrevious(filteredSourceId);
 				while (source != null) {
-					maxSeqnoOnSource = transponderRepository
+					maxTranspSeqnoWithinSource = transponderRepository
 							.findMaxSeqno(source.getId());
-					if (maxSeqnoOnSource != null) {
-						result = maxSeqnoOnSource + 1;
+					if (maxTranspSeqnoWithinSource != null) {
+						result = maxTranspSeqnoWithinSource + 1;
 						break;
 					}
 					source = sourceRepository.findPrevious(source.getId());
@@ -132,7 +132,7 @@ public class TranspondersManager implements Serializable {
 		return result;
 	}
 
-	// (Re)Fill in the Transponder list
+	// (Re)Fill in the transponder list
 	@PostConstruct
 	public void retrieveAllTransponders() {
 		transponders = transponderRepository.findAll(filteredSourceId);
@@ -194,13 +194,13 @@ public class TranspondersManager implements Serializable {
 		this.editedTransponderSeqno = editedTransponderSeqno;
 	}
 
-	public Transponder getCopiedTransponder() {
+	public Transponder getTakenTransponder() {
 
-		return copiedTransponder;
+		return takenTransponder;
 	}
 
-	public void setCopiedTransponder(Transponder copiedTransponder) {
-		this.copiedTransponder = copiedTransponder;
+	public void setTakenTransponder(Transponder takenTransponder) {
+		this.takenTransponder = takenTransponder;
 	}
 
 }
