@@ -10,8 +10,9 @@
 		<h:outputScript library="javax.faces" name="jsf.js" target="head" />
 		<h:outputScript library="js" name="jsf_fix.js" target="head" />
 		<h:outputScript library="js" name="transponders.js" target="head" />
-		<!-- Clear transponder checkboxes on page load -->
+		<!-- Clear transponder checkboxes and possibly refresh transponder list on page load -->
 		#{transpondersManager.clearTransponderCheckboxes()}
+		#{transpondersManager.refreshTranspondersIfNeeded()}
 		<!-- Main panel group -->
 		<h:panelGroup id="transpondersContent">
 			<h1>Transponders</h1>
@@ -223,7 +224,8 @@
 								value="                                             "
 								styleClass="preformattedtext" />
 						</h:panelGrid>
-						<h:outputLabel value="Frequency, MHz:" styleClass="preformattedtext" />
+						<h:outputLabel value="Frequency, MHz:"
+							styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
 							<h:inputText id="frequencyInput"
 								value="#{transpondersManager.editedTransponder.frequency}"
@@ -248,7 +250,8 @@
 							<f:selectItem itemValue="1" itemLabel="DVB-S" />
 							<f:selectItem itemValue="2" itemLabel="DVB-S2" />
 						</h:selectOneMenu>
-						<h:outputLabel value="Symbol Rate, ksyms/s:" styleClass="preformattedtext" />
+						<h:outputLabel value="Symbol Rate, ksyms/s:"
+							styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
 							<h:inputText id="symbolRateInput"
 								value="#{transpondersManager.editedTransponder.symbolRate}"

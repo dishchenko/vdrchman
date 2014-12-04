@@ -2,6 +2,8 @@ package di.vdrchman.data;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Observes;
+import javax.enterprise.event.Reception;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -11,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import di.vdrchman.event.SourceAction;
 import di.vdrchman.model.Source;
 import di.vdrchman.model.Transponder;
 
@@ -51,6 +54,9 @@ public class TranspondersManager implements Serializable {
 
 	// The "clipboard": the place to store the transponder taken by user
 	private Transponder takenTransponder = null;
+
+	// Indicates that transponders list refresh is suggested
+	private boolean transpondersRefreshNeeded = false;
 
 	// Fill in checkedTransponders list with transponders corresponding
 	// to checkboxes checked in the data table on the page
@@ -130,6 +136,38 @@ public class TranspondersManager implements Serializable {
 		}
 
 		return result;
+	}
+
+	// Cleanup the TransponderManager's data on SourceAction if needed
+	public void onSourceAction(
+			@Observes(notifyObserver = Reception.IF_EXISTS) final SourceAction sourceAction) {
+		long sourceId;
+
+		if (sourceAction.getAction() == SourceAction.Action.DELETE) {
+			sourceId = sourceAction.getSource().getId();
+
+			if (sourceId == filteredSourceId) {
+				filteredSourceId = -1;
+			}
+			if (filteredSourceId == -1) {
+				transpondersRefreshNeeded = true;
+			}
+
+			if (takenTransponder != null) {
+				if (sourceId == takenTransponder.getSourceId()) {
+					takenTransponder = null;
+				}
+			}
+		}
+	}
+
+	// Re(Fill) in the transponder list only if it is suggested
+	public void refreshTranspondersIfNeeded() {
+		if (transpondersRefreshNeeded) {
+			retrieveAllTransponders();
+
+			transpondersRefreshNeeded = false;
+		}
 	}
 
 	// (Re)Fill in the transponder list

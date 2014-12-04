@@ -10,8 +10,9 @@
 		<h:outputScript library="javax.faces" name="jsf.js" target="head" />
 		<h:outputScript library="js" name="jsf_fix.js" target="head" />
 		<h:outputScript library="js" name="channels.js" target="head" />
-		<!-- Clear channel checkboxes on page load -->
+		<!-- Clear channel checkboxes and possibly refresh channel list on page load -->
 		#{channelsManager.clearChannelCheckboxes()}
+		#{channelsManager.refreshChannelsIfNeeded()}
 		<!-- Main panel group -->
 		<h:panelGroup id="channelsContent">
 			<h1>Channels</h1>
@@ -184,6 +185,14 @@
 						scrollListener="#{channelsBacking.onDataTableScroll}" />
 				</h:panelGroup>
 			</h:form>
+			<!-- Set buttons enable/disable state on panel rendering -->
+			<h:outputScript library="js">
+					document.getElementById('channelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();
+					document.getElementById('channelsForm:addAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();
+					document.getElementById('channelsForm:takeButton').disabled=!isExactlyOneChannelCheckboxChecked();
+					document.getElementById('channelsForm:copyAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();
+					document.getElementById('channelsForm:moveAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();
+			</h:outputScript>
 		</h:panelGroup>
 	</ui:define>
 </ui:composition>

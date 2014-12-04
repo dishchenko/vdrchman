@@ -8,9 +8,12 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.event.Observes;
+import javax.enterprise.event.Reception;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import di.vdrchman.event.SourceAction;
 import di.vdrchman.model.Channel;
 import di.vdrchman.model.Group;
 import di.vdrchman.model.Source;
@@ -59,6 +62,9 @@ public class ChannelsManager implements Serializable {
 
 	// The "clipboard": the place to store the channel taken by user
 	private Channel takenChannel = null;
+
+	// Indicates that channels list refresh is suggested
+	private boolean channelsRefreshNeeded = false;
 
 	// Fill in checkedChannels list with channels corresponding
 	// to checkboxes checked in the data table on the page
@@ -180,6 +186,45 @@ public class ChannelsManager implements Serializable {
 		}
 
 		return sb.toString();
+	}
+
+	// Cleanup the ChannelManager's data on SourceAction if needed
+	public void onSourceAction(
+			@Observes(notifyObserver = Reception.IF_EXISTS) final SourceAction sourceAction) {
+		long sourceId;
+		Transponder transponder;
+
+		if (sourceAction.getAction() == SourceAction.Action.DELETE) {
+			sourceId = sourceAction.getSource().getId();
+
+			if (sourceId == filteredSourceId) {
+				filteredSourceId = -1;
+			}
+			if (filteredSourceId == -1) {
+				channelsRefreshNeeded = true;
+			}
+
+			if (takenChannel != null) {
+				transponder = transponderRepository.findById(takenChannel
+						.getId());
+				if (transponder != null) {
+					if (sourceId == transponder.getSourceId()) {
+						takenChannel = null;
+					}
+				} else {
+					takenChannel = null;
+				}
+			}
+		}
+	}
+
+	// Re(Fill) in the channel list only if it is suggested
+	public void refreshChannelsIfNeeded() {
+		if (channelsRefreshNeeded) {
+			retrieveAllChannels();
+
+			channelsRefreshNeeded = false;
+		}
 	}
 
 	// (Re)Fill in the channel list
