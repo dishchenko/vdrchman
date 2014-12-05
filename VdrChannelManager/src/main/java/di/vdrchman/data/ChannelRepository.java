@@ -81,6 +81,18 @@ public class ChannelRepository {
 	}
 
 	/**
+	 * Finds a channel by ID.
+	 * 
+	 * @param id
+	 *            the ID of the channel to find
+	 * @return the channel found or null if no channel found
+	 */
+	public Channel findById(long id) {
+
+		return em.find(Channel.class, id);
+	}
+
+	/**
 	 * Finds maximum sequence number of channel related to the transponder with
 	 * ID given.
 	 * 
@@ -150,8 +162,8 @@ public class ChannelRepository {
 	}
 
 	/**
-	 * Moves the channel to the new sequence number in the list of
-	 * channels of the current application user.
+	 * Moves the channel to the new sequence number in the list of channels of
+	 * the current application user.
 	 * 
 	 * @param channel
 	 *            the channel to move

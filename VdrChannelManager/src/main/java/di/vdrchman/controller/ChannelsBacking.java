@@ -134,7 +134,6 @@ public class ChannelsBacking {
 		Channel lastPageTopChannel;
 		long filteredSourceId;
 		Channel takenChannel;
-		long filteredTranspId;
 
 		lastPageTopChannel = null;
 		if (!channelsManager.getChannels().isEmpty()) {
@@ -151,16 +150,11 @@ public class ChannelsBacking {
 					channelsManager.setTakenChannel(null);
 				}
 			}
-			filteredTranspId = channelsManager.getFilteredTranspId();
-			if (filteredTranspId >= 0) {
-				if (filteredSourceId != transponderRepository.findById(
-						filteredTranspId).getSourceId()) {
-					channelsManager.setFilteredTranspId(-1);
-				}
-			}
 		}
 		channelsManager.setFilteredSourceId(filteredSourceId);
+		channelsManager.setFilteredTranspId(-1);
 		channelsManager.retrieveAllChannels();
+		channelsManager.retrieveOrClearFilteredSourceTransponders();
 		channelsManager.clearCheckedChannels();
 		channelsManager.clearChannelCheckboxes();
 		if (!channelsManager.getChannels().isEmpty()) {
@@ -170,6 +164,53 @@ public class ChannelsBacking {
 					channelsManager.turnScrollerPage(lastPageTopChannel);
 				} else {
 					if (filteredSourceId < 0) {
+						channelsManager.turnScrollerPage(lastPageTopChannel);
+					} else {
+						channelsManager.turnScrollerPage(channelsManager
+								.getChannels().get(0));
+					}
+				}
+			} else {
+				channelsManager.turnScrollerPage(channelsManager.getChannels()
+						.get(0));
+			}
+		}
+	}
+
+	// On changing the transponder filter selection clear the "clipboard"
+	// if a transponder is selected and it is not the one taken channel
+	// relates to. Also try to stay on the scroller page which includes the
+	// previous shown page top channel
+	public void onTransponderMenuSelection(ValueChangeEvent event) {
+		Channel lastPageTopChannel;
+		long filteredTranspId;
+		Channel takenChannel;
+
+		lastPageTopChannel = null;
+		if (!channelsManager.getChannels().isEmpty()) {
+			lastPageTopChannel = channelsManager.getChannels().get(
+					(channelsManager.getScrollerPage() - 1)
+							* channelsManager.getRowsPerPage());
+		}
+		filteredTranspId = (Long) event.getNewValue();
+		if (filteredTranspId >= 0) {
+			takenChannel = channelsManager.getTakenChannel();
+			if (takenChannel != null) {
+				if (filteredTranspId != takenChannel.getTranspId()) {
+					channelsManager.setTakenChannel(null);
+				}
+			}
+		}
+		channelsManager.setFilteredTranspId(filteredTranspId);
+		channelsManager.retrieveAllChannels();
+		channelsManager.clearCheckedChannels();
+		channelsManager.clearChannelCheckboxes();
+		if (!channelsManager.getChannels().isEmpty()) {
+			if (lastPageTopChannel != null) {
+				if (filteredTranspId == lastPageTopChannel.getTranspId()) {
+					channelsManager.turnScrollerPage(lastPageTopChannel);
+				} else {
+					if (filteredTranspId < 0) {
 						channelsManager.turnScrollerPage(lastPageTopChannel);
 					} else {
 						channelsManager.turnScrollerPage(channelsManager

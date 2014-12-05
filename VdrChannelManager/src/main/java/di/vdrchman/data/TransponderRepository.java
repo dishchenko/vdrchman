@@ -117,7 +117,7 @@ public class TransponderRepository {
 	 * 
 	 * @param id
 	 *            the ID of the transponder to find
-	 * @return the transponder found or null if no transponders found
+	 * @return the transponder found or null if no transponder found
 	 */
 	public Transponder findById(long id) {
 

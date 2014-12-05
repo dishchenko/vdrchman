@@ -10,9 +10,10 @@
 		<h:outputScript library="javax.faces" name="jsf.js" target="head" />
 		<h:outputScript library="js" name="jsf_fix.js" target="head" />
 		<h:outputScript library="js" name="channels.js" target="head" />
-		<!-- Clear channel checkboxes and possibly refresh channel list on page load -->
+		<!-- Clear channel checkboxes and possibly refresh item lists on page load -->
 		#{channelsManager.clearChannelCheckboxes()}
 		#{channelsManager.refreshChannelsIfNeeded()}
+		#{channelsManager.refreshFilteredSourceTranspondersIfNeeded()}
 		<!-- Main panel group -->
 		<h:panelGroup id="channelsContent">
 			<h1>Channels</h1>
@@ -66,7 +67,7 @@
 						render="channelsContent" />
 				</h:panelGrid>
 				<!-- Filter(s) panel -->
-				<h:panelGrid columns="3">
+				<h:panelGrid columns="5">
 					<h:outputText styleClass="preformattedtext" value="Filter by:" />
 					<h:outputLabel styleClass="preformattedtext" value="Source" />
 					<h:selectOneMenu value="#{channelsManager.filteredSourceId}"
@@ -76,6 +77,18 @@
 						<f:selectItems value="#{sourcesManager.sources}" var="sourceVar"
 							itemValue="#{sourceVar.id}"
 							itemLabel="#{sourceVar.name} (#{sourceVar.description})" />
+					</h:selectOneMenu>
+					<h:outputLabel styleClass="preformattedtext" value="Transponder"
+						rendered="#{not empty channelsManager.filteredSourceTransponders}" />
+					<h:selectOneMenu value="#{channelsManager.filteredTranspId}"
+						valueChangeListener="#{channelsBacking.onTransponderMenuSelection}"
+						onchange="document.getElementById('channelsForm').submit()"
+						rendered="#{not empty channelsManager.filteredSourceTransponders}">
+						<f:selectItem itemValue="-1" itemLabel="--" />
+						<f:selectItems
+							value="#{channelsManager.filteredSourceTransponders}"
+							var="transponderVar" itemValue="#{transponderVar.id}"
+							itemLabel="#{transponderVar.frequency} #{transponderVar.polarity}" />
 					</h:selectOneMenu>
 				</h:panelGrid>
 				<h:panelGroup rendered="#{empty channelsManager.channels}">
@@ -194,5 +207,34 @@
 					document.getElementById('channelsForm:moveAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();
 			</h:outputScript>
 		</h:panelGroup>
+		<h:panelGrid columns="2">
+			<!-- Outer form for the Edit panel -->
+			<h:form id="editPanelForm" styleClass="zerosize"
+				onkeypress="return editPanelFormKeyPressHandler(event)">
+				<!-- The Edit panel -->
+				<rich:popupPanel id="editPanel" modal="true" autosized="true"
+					domElementAttachment="form">
+					<!-- Header -->
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText
+								value="#{empty channelsManager.editedChannel.id ? 'Add' : 'Edit'} Channel"></h:outputText>
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<h:commandLink value="Close" immediate="true"
+								onclick="#{rich:component('editPanel')}.hide()"
+								action="#{formResetter.resetForm(rich:findComponent('editPanelForm'))}" />
+						</h:panelGroup>
+					</f:facet>
+					<!-- Content -->
+					<h:panelGrid columns="2">
+						<rich:message for="transponderSidApidValidator" />
+						<br />
+					</h:panelGrid>
+				</rich:popupPanel>
+			</h:form>
+		</h:panelGrid>
 	</ui:define>
 </ui:composition>

@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import di.vdrchman.event.SourceAction;
+import di.vdrchman.event.TransponderAction;
 import di.vdrchman.model.Channel;
 import di.vdrchman.model.Group;
 import di.vdrchman.model.Source;
@@ -41,8 +42,17 @@ public class ChannelsManager implements Serializable {
 	// No filtering if it's negative.
 	private long filteredTranspId = -1;
 
+	// List of filtered source transponders
+	private List<Transponder> filteredSourceTransponders = new ArrayList<Transponder>();
+
+	// Indicates that filtered source transponder list refresh is suggested
+	private boolean filteredSourceTranspondersRefreshNeeded = false;
+
 	// (Filtered) Channel list for the current application user
 	private List<Channel> channels;
+
+	// Indicates that channels list refresh is suggested
+	private boolean channelsRefreshNeeded = false;
 
 	// Number of table rows per page
 	private final int rowsPerPage = 15;
@@ -62,9 +72,6 @@ public class ChannelsManager implements Serializable {
 
 	// The "clipboard": the place to store the channel taken by user
 	private Channel takenChannel = null;
-
-	// Indicates that channels list refresh is suggested
-	private boolean channelsRefreshNeeded = false;
 
 	// Fill in checkedChannels list with channels corresponding
 	// to checkboxes checked in the data table on the page
@@ -199,6 +206,7 @@ public class ChannelsManager implements Serializable {
 
 			if (sourceId == filteredSourceId) {
 				filteredSourceId = -1;
+				filteredSourceTranspondersRefreshNeeded = true;
 			}
 			if (filteredSourceId == -1) {
 				channelsRefreshNeeded = true;
@@ -218,10 +226,76 @@ public class ChannelsManager implements Serializable {
 		}
 	}
 
-	// Re(Fill) in the channel list only if it is suggested
+	// Cleanup the ChannelManager's data on TransponderAction if needed
+	public void onTransponderAction(
+			@Observes(notifyObserver = Reception.IF_EXISTS) final TransponderAction transponderAction) {
+		long transpId;
+
+		if (transponderAction.getTransponder().getSourceId() == filteredSourceId) {
+			filteredSourceTranspondersRefreshNeeded = true;
+		}
+
+		if (transponderAction.getAction() == TransponderAction.Action.DELETE) {
+			transpId = transponderAction.getTransponder().getId();
+
+			if (transpId == filteredTranspId) {
+				filteredTranspId = -1;
+			}
+			if (filteredTranspId == -1) {
+				channelsRefreshNeeded = true;
+			}
+
+			if (takenChannel != null) {
+				if (transpId == takenChannel.getTranspId()) {
+					takenChannel = null;
+				}
+			}
+		}
+	}
+
+	// Re(Fill) in the filtered source transponder list only if it is suggested
+	public void refreshFilteredSourceTranspondersIfNeeded() {
+		if (filteredSourceTranspondersRefreshNeeded) {
+			retrieveOrClearFilteredSourceTransponders();
+
+			filteredSourceTranspondersRefreshNeeded = false;
+		}
+	}
+
+	// Re(Fill) in the filtered source transponder list. Clear the list
+	// if there is no filtered source (negative source ID value)
+	public void retrieveOrClearFilteredSourceTransponders() {
+		if (filteredSourceId >= 0) {
+			filteredSourceTransponders = transponderRepository
+					.findAll(filteredSourceId);
+		} else {
+			filteredSourceTransponders.clear();
+		}
+	}
+
+	// Re(Fill) in the channel list only if it is suggested. Also try to
+	// turn the table scroller page to keep the last page top channel shown
 	public void refreshChannelsIfNeeded() {
+		Channel lastPageTopChannel;
+
 		if (channelsRefreshNeeded) {
+			lastPageTopChannel = null;
+			if (!channels.isEmpty()) {
+				lastPageTopChannel = channels.get((scrollerPage - 1)
+						* rowsPerPage);
+			}
+
 			retrieveAllChannels();
+
+			if (!channels.isEmpty()) {
+				if (channelRepository.findById(lastPageTopChannel.getId()) != null) {
+					turnScrollerPage(lastPageTopChannel);
+				} else {
+					scrollerPage = 1;
+				}
+			} else {
+				scrollerPage = 1;
+			}
 
 			channelsRefreshNeeded = false;
 		}
@@ -250,6 +324,11 @@ public class ChannelsManager implements Serializable {
 
 	public void setFilteredTranspId(long filteredTranspId) {
 		this.filteredTranspId = filteredTranspId;
+	}
+
+	public List<Transponder> getFilteredSourceTransponders() {
+
+		return filteredSourceTransponders;
 	}
 
 	public List<Channel> getChannels() {

@@ -36,6 +36,9 @@ public class TranspondersManager implements Serializable {
 	// (Filtered) Transponder list for the current application user
 	private List<Transponder> transponders;
 
+	// Indicates that transponders list refresh is suggested
+	private boolean transpondersRefreshNeeded = false;
+
 	// Number of table rows per page
 	private final int rowsPerPage = 15;
 	// Current table scroller page
@@ -54,9 +57,6 @@ public class TranspondersManager implements Serializable {
 
 	// The "clipboard": the place to store the transponder taken by user
 	private Transponder takenTransponder = null;
-
-	// Indicates that transponders list refresh is suggested
-	private boolean transpondersRefreshNeeded = false;
 
 	// Fill in checkedTransponders list with transponders corresponding
 	// to checkboxes checked in the data table on the page
@@ -161,10 +161,30 @@ public class TranspondersManager implements Serializable {
 		}
 	}
 
-	// Re(Fill) in the transponder list only if it is suggested
+	// Re(Fill) in the transponder list only if it is suggested. Also try to
+	// turn the table scroller page to keep the last page top transponder shown
 	public void refreshTranspondersIfNeeded() {
+		Transponder lastPageTopTransponder;
+
 		if (transpondersRefreshNeeded) {
+			lastPageTopTransponder = null;
+			if (!transponders.isEmpty()) {
+				lastPageTopTransponder = transponders.get((scrollerPage - 1)
+						* rowsPerPage);
+			}
+
 			retrieveAllTransponders();
+
+			if (!transponders.isEmpty()) {
+				if (transponderRepository.findById(lastPageTopTransponder
+						.getId()) != null) {
+					turnScrollerPage(lastPageTopTransponder);
+				} else {
+					scrollerPage = 1;
+				}
+			} else {
+				scrollerPage = 1;
+			}
 
 			transpondersRefreshNeeded = false;
 		}

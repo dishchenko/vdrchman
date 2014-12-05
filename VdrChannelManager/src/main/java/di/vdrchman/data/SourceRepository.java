@@ -129,7 +129,7 @@ public class SourceRepository {
 	 * 
 	 * @param id
 	 *            the ID of the source to find
-	 * @return the source found or null if no sources found
+	 * @return the source found or null if no source found
 	 */
 	public Source findById(long id) {
 
