@@ -7,8 +7,13 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import di.vdrchman.model.Channel;
 import di.vdrchman.model.ChannelSeqno;
@@ -75,6 +80,46 @@ public class ChannelRepository {
 
 		for (Object[] row : queryResult) {
 			result.add((Channel) row[0]);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Finds a channel by the combination of transponder ID, SID and
+	 * APID given among the channels belonging to the current
+	 * application user.
+	 * 
+	 * @param transpId
+	 *            the transponder ID to find a channel within
+	 * @param sid
+	 *            the SID of channel to find
+	 * @param apid
+	 *            the APID of channel to find
+	 * @return the channel found or null if no channel found
+	 */
+	public Channel findByTransponderSidApid(long transpId,
+			int sid, int apid) {
+		Channel result;
+		CriteriaBuilder cb;
+		CriteriaQuery<Channel> criteria;
+		Root<Channel> channelRoot;
+		Predicate p;
+
+		cb = em.getCriteriaBuilder();
+		criteria = cb.createQuery(Channel.class);
+		channelRoot = criteria.from(Channel.class);
+		criteria.select(channelRoot);
+		p = cb.conjunction();
+		p = cb.and(p, cb.equal(channelRoot.get("transpId"), transpId));
+		p = cb.and(p, cb.equal(channelRoot.get("sid"), sid));
+		p = cb.and(p, cb.equal(channelRoot.get("apid"), apid));
+		criteria.where(p);
+
+		try {
+			result = em.createQuery(criteria).getSingleResult();
+		} catch (NoResultException ex) {
+			result = null;
 		}
 
 		return result;

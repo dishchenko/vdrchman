@@ -70,6 +70,12 @@ public class ChannelsManager implements Serializable {
 	// Sequence number of the edited channel
 	private int editedChannelSeqno;
 
+	// ID of the source the new channel relates to
+	private long editedSourceId = -1;
+
+	// List of edited source transponders
+	private List<Transponder> editedSourceTransponders = new ArrayList<Transponder>();
+
 	// The "clipboard": the place to store the channel taken by user
 	private Channel takenChannel = null;
 
@@ -273,6 +279,17 @@ public class ChannelsManager implements Serializable {
 		}
 	}
 
+	// Re(Fill) in the edited source transponder list. Clear the list
+	// if there is no edited source (negative source ID value)
+	public void retrieveOrClearEditedSourceTransponders() {
+		if (editedSourceId >= 0) {
+			editedSourceTransponders = transponderRepository
+					.findAll(editedSourceId);
+		} else {
+			editedSourceTransponders.clear();
+		}
+	}
+
 	// Re(Fill) in the channel list only if it is suggested. Also try to
 	// turn the table scroller page to keep the last page top channel shown
 	public void refreshChannelsIfNeeded() {
@@ -376,6 +393,20 @@ public class ChannelsManager implements Serializable {
 
 	public void setEditedChannelSeqno(int editedChannelSeqno) {
 		this.editedChannelSeqno = editedChannelSeqno;
+	}
+
+	public long getEditedSourceId() {
+
+		return editedSourceId;
+	}
+
+	public void setEditedSourceId(long editedSourceId) {
+		this.editedSourceId = editedSourceId;
+	}
+
+	public List<Transponder> getEditedSourceTransponders() {
+
+		return editedSourceTransponders;
 	}
 
 	public Channel getTakenChannel() {

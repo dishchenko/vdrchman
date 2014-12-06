@@ -68,7 +68,7 @@ public class SourceRepository {
 	 * 
 	 * @param name
 	 *            the name of the source to find
-	 * @return the source found or null if no sources found
+	 * @return the source found or null if no source found
 	 */
 	public Source findByName(String name) {
 		Source result;

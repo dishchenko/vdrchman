@@ -151,8 +151,12 @@
 					document.getElementById('transpondersForm:removeButton').disabled=!isAtLeastOneTransponderCheckboxChecked();
 					document.getElementById('transpondersForm:addAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
 					document.getElementById('transpondersForm:takeButton').disabled=!isExactlyOneTransponderCheckboxChecked();
-					document.getElementById('transpondersForm:copyAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
-					document.getElementById('transpondersForm:moveAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
+					if (document.getElementById('transpondersForm:copyAfterButton') != null) {
+						document.getElementById('transpondersForm:copyAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
+					}
+					if (document.getElementById('transpondersForm:moveAfterButton') != null) {
+						document.getElementById('transpondersForm:moveAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
+					}
 			</h:outputScript>
 		</h:panelGroup>
 		<h:panelGrid columns="2">

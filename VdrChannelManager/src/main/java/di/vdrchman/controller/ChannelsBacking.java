@@ -1,6 +1,9 @@
 package di.vdrchman.controller;
 
+import java.util.List;
+
 import javax.enterprise.inject.Model;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 
@@ -8,14 +11,19 @@ import org.richfaces.event.DataScrollEvent;
 
 import di.vdrchman.data.ChannelRepository;
 import di.vdrchman.data.ChannelsManager;
+import di.vdrchman.data.SourceRepository;
 import di.vdrchman.data.TransponderRepository;
 import di.vdrchman.model.Channel;
+import di.vdrchman.model.Source;
 
 @Model
 public class ChannelsBacking {
 
 	@Inject
 	private ChannelsManager channelsManager;
+
+	@Inject
+	private SourceRepository sourceRepository;
 
 	@Inject
 	private TransponderRepository transponderRepository;
@@ -26,18 +34,30 @@ public class ChannelsBacking {
 	// The user is going to add a new channel on top of the current channel list
 	public void intendAddChannelOnTop() {
 		Channel channel;
+		List<Source> sources;
 
 		channel = new Channel();
 		channel.setTranspId(channelsManager.getFilteredTranspId());
 		channelsManager.setEditedChannel(channel);
 		channelsManager.setEditedChannelSeqno(channelsManager
 				.calculateOnTopSeqno());
+		if (channelsManager.getFilteredSourceId() < 0) {
+			sources = sourceRepository.findAll();
+			if (!sources.isEmpty()) {
+				channelsManager.setEditedSourceId(sources.get(0).getId());
+			}
+		} else {
+			channelsManager.setEditedSourceId(channelsManager
+					.getFilteredSourceId());
+		}
+		channelsManager.retrieveOrClearEditedSourceTransponders();
 	}
 
 	// The user is going to add a new channel and place it right after
 	// the checked channel in the list
 	public void intendAddChannelAfter() {
 		Channel channel;
+		List<Source> sources;
 
 		channel = new Channel();
 		channel.setTranspId(channelsManager.getFilteredTranspId());
@@ -47,6 +67,16 @@ public class ChannelsBacking {
 		channelsManager.setEditedChannel(channel);
 		channelsManager.setEditedChannelSeqno(channelRepository
 				.getSeqno(channelsManager.getCheckedChannels().get(0)) + 1);
+		if (channelsManager.getFilteredSourceId() < 0) {
+			sources = sourceRepository.findAll();
+			if (!sources.isEmpty()) {
+				channelsManager.setEditedSourceId(sources.get(0).getId());
+			}
+		} else {
+			channelsManager.setEditedSourceId(channelsManager
+					.getFilteredSourceId());
+		}
+		channelsManager.retrieveOrClearEditedSourceTransponders();
 	}
 
 	// Going to remove some checked channels
@@ -228,6 +258,12 @@ public class ChannelsBacking {
 	public void onDataTableScroll(DataScrollEvent event) {
 		channelsManager.clearCheckedChannels();
 		channelsManager.clearChannelCheckboxes();
+	}
+
+	// On changing the selected source in the menu of channel addition panel
+	// reload content of that panel's transponders menu
+	public void onEditedSourceMenuSelection(AjaxBehaviorEvent event) {
+		channelsManager.retrieveOrClearEditedSourceTransponders();
 	}
 
 }

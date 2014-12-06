@@ -38,6 +38,7 @@ public class Channel implements Serializable {
 	@Digits(fraction = 0, integer = 5)
 	private Integer vpid;
 
+	@Digits(fraction = 0, integer = 3)
 	private Integer venc;
 
 	private Integer pcr;
@@ -46,6 +47,7 @@ public class Channel implements Serializable {
 	@Digits(fraction = 0, integer = 5)
 	private Integer apid;
 
+	@Digits(fraction = 0, integer = 3)
 	private Integer aenc;
 
 	@Digits(fraction = 0, integer = 5)
@@ -54,7 +56,6 @@ public class Channel implements Serializable {
 	@Digits(fraction = 0, integer = 5)
 	private Integer caid;
 
-	@Digits(fraction = 0, integer = 5)
 	private Integer rid;
 
 	@Size(max = 50)

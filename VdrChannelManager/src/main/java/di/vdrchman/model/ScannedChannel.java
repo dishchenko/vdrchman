@@ -64,6 +64,8 @@ public class ScannedChannel implements Serializable {
 	@Digits(fraction = 0, integer = 5)
 	private Integer vpid;
 
+	// TODO: add pcr
+
 	@NotNull(message = "Audio PID must be defined")
 	@Digits(fraction = 0, integer = 5)
 	private Integer apid;
@@ -74,7 +76,6 @@ public class ScannedChannel implements Serializable {
 	@Digits(fraction = 0, integer = 5)
 	private Integer caid;
 
-	@Digits(fraction = 0, integer = 5)
 	private Integer rid;
 
 	@Size(max = 50)

@@ -83,7 +83,7 @@ public class TransponderRepository {
 	 *            the frequency of transponder to find
 	 * @param polarity
 	 *            the polarity of transponder to find
-	 * @return the transponder found or null if no transponders found
+	 * @return the transponder found or null if no transponder found
 	 */
 	public Transponder findBySourceFrequencyPolarity(long sourceId,
 			int frequency, String polarity) {
