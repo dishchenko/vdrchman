@@ -9,36 +9,36 @@ import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 
-import di.vdrchman.model.Source;
+import di.vdrchman.model.Group;
 
 @ManagedBean
 @ViewScoped
-public class SourceNameUniquenessValidator implements Validator {
+public class GroupNameUniquenessValidator implements Validator {
 
 	@Inject
-	private SourceRepository sourceRepository;
+	private GroupRepository groupRepository;
 
 	@Inject
-	private SourcesManager sourcesManager;
+	private GroupsManager groupsManager;
 
-	// Validates that a user would not have two sources with the same name
+	// Validates that a user would not have two groups with the same name
 	@Override
 	public void validate(FacesContext context, UIComponent component,
 			Object value) throws ValidatorException {
 		String newName;
-		Source foundSource;
-		Long editedSourceId;
+		Group foundGroup;
+		Long editedGroupId;
 
 		newName = (String) value;
 		if (newName != null) {
-			foundSource = sourceRepository.findByName(newName);
-			if (foundSource != null) {
-				editedSourceId = sourcesManager.getEditedSource().getId();
-				if ((editedSourceId == null)
-						|| !foundSource.getId().equals(editedSourceId)) {
+			foundGroup = groupRepository.findByName(newName);
+			if (foundGroup != null) {
+				editedGroupId = groupsManager.getEditedGroup().getId();
+				if ((editedGroupId == null)
+						|| !foundGroup.getId().equals(editedGroupId)) {
 					FacesMessage msg = new FacesMessage(
-							"Source name uniqueness validation failed",
-							"A source with such name already exists");
+							"Group name uniqueness validation failed",
+							"A group with such name already exists");
 					msg.setSeverity(FacesMessage.SEVERITY_ERROR);
 					throw new ValidatorException(msg);
 				}

@@ -44,10 +44,6 @@ public class SourcesManager implements Serializable {
 	// Fill in checkedSources list with sources corresponding to checkboxes
 	// checked in the data table on the page
 	public void collectCheckedSources() {
-		List<Source> sources;
-
-		sources = sourceRepository.findAll();
-
 		clearCheckedSources();
 
 		for (Source source : sources) {

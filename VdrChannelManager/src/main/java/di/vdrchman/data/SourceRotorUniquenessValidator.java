@@ -39,7 +39,7 @@ public class SourceRotorUniquenessValidator implements Validator {
 						|| !foundSource.getId().equals(editedSourceId)) {
 					FacesMessage msg = new FacesMessage(
 							"Source rotor position uniqueness validation failed",
-							"A Source with such Rotor position already exists");
+							"A source with such rotor position already exists");
 					msg.setSeverity(FacesMessage.SEVERITY_ERROR);
 					throw new ValidatorException(msg);
 				}

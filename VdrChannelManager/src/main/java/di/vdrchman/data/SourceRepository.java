@@ -63,8 +63,8 @@ public class SourceRepository {
 	}
 
 	/**
-	 * Finds a source by the name given among the sources belonging to the
-	 * current application user.
+	 * Finds a source by the name given among sources belonging to the current
+	 * application user.
 	 * 
 	 * @param name
 	 *            the name of the source to find
@@ -94,8 +94,8 @@ public class SourceRepository {
 	}
 
 	/**
-	 * Finds a source by the rotor value given among the sources belonging to
-	 * the current application user.
+	 * Finds a source by the rotor value given among sources belonging to the
+	 * current application user.
 	 * 
 	 * @param rotor
 	 *            the rotor value of the source to find

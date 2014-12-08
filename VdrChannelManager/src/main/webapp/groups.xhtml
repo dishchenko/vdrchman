@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j"
+	template="/WEB-INF/templates/default.xhtml">
+	<ui:define name="content">
+		<h:outputScript library="javax.faces" name="jsf.js" target="head" />
+		<h:outputScript library="js" name="jsf_fix.js" target="head" />
+		<h:outputScript library="js" name="groups.js" target="head" />
+		<!-- Clear group checkboxes on page load -->
+		#{groupsManager.clearGroupCheckboxes()}
+		<!-- Main panel group -->
+		<h:panelGroup id="groupsContent">
+			<h1>Groups</h1>
+			<!-- Groups form -->
+			<h:form id="groupsForm">
+				<!-- 'Add', 'Remove' etc. buttons panel -->
+				<h:panelGrid columns="4">
+					<a4j:commandButton id="addButton" value="Add..."
+						action="#{groupsBacking.intendAddGroup()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('groupsForm:addButton').disabled=false"
+						render="groupsContent, editPanel" />
+					<a4j:commandButton id="removeButton" value="Remove..."
+						action="#{groupsBacking.intendRemoveGroups()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('removePanel')}.show();document.getElementById('removePanelForm:okButton').focus();document.getElementById('groupsForm:removeButton').disabled=!isAtLeastOneGroupCheckboxChecked()"
+						render="groupsContent, removePanel" />
+					<a4j:commandButton id="takeButton" value="Take"
+						action="#{groupsBacking.takeGroup()}"
+						onclick="this.disabled=true"
+						oncomplete="document.getElementById('groupsForm:takeButton').disabled=!isExactlyOneGroupCheckboxChecked()"
+						render="groupsContent" />
+					<a4j:commandButton id="copyButton" value="Copy..."
+						rendered="#{not empty groupsManager.takenGroup}"
+						action="#{groupsBacking.intendCopyGroup()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('groupsForm:copyButton').disabled=false"
+						render="groupsContent, editPanel" />
+				</h:panelGrid>
+				<h:panelGroup rendered="#{empty groupsManager.groups}">
+					<em>No groups defined.</em>
+				</h:panelGroup>
+				<!-- Data table with scroller panel group rendered if there is at least one Group defined -->
+				<h:panelGroup rendered="#{not empty groupsManager.groups}">
+					<h:dataTable var="groupVar" value="#{groupsManager.groups}"
+						styleClass="simpletablestyle" id="groupsTable"
+						rows="#{groupsManager.rowsPerPage}">
+						<h:column>
+							<f:facet name="header" />
+							<h:selectBooleanCheckbox id="groupCheckbox"
+								value="#{groupsManager.groupCheckboxes[groupVar.id]}"
+								styleClass="preformattedtext"
+								onclick="document.getElementById('groupsForm:removeButton').disabled=!isAtLeastOneGroupCheckboxChecked();document.getElementById('groupsForm:takeButton').disabled=!isExactlyOneGroupCheckboxChecked()" />
+							<h:outputText styleClass="preformattedtext" value="C"
+								rendered="#{not empty groupsManager.takenGroup and groupsManager.takenGroup.id eq groupVar.id}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Name</f:facet>
+							<a4j:commandLink styleClass="preformattedtext"
+								value="#{groupVar.name}"
+								onclick="this.setAttribute('onclick', 'return false')"
+								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus()"
+								action="#{groupsBacking.intendUpdateGroup(groupVar)}"
+								render="groupsContent, editPanel" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Starting Channel Number</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{groupVar.startChannelNo}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Description</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{groupVar.description}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Ignored</f:facet>
+							<h:outputText styleClass="preformattedtext, red"
+								value="#{groupVar.ignored ? '#' : ''}" />
+						</h:column>
+					</h:dataTable>
+					<rich:dataScroller for="groupsTable" maxPages="5" fastStep="5"
+						page="#{groupsManager.scrollerPage}" render="groupsContent"
+						scrollListener="#{groupsBacking.onDataTableScroll}" />
+				</h:panelGroup>
+			</h:form>
+			<!-- Set buttons enable/disable state on panel rendering -->
+			<h:outputScript library="js">
+				document.getElementById('groupsForm:removeButton').disabled=!isAtLeastOneGroupCheckboxChecked();
+				document.getElementById('groupsForm:takeButton').disabled=!isExactlyOneGroupCheckboxChecked();
+			</h:outputScript>
+		</h:panelGroup>
+		<h:panelGrid columns="2">
+			<!-- Outer form for the Edit panel -->
+			<h:form id="editPanelForm" styleClass="zerosize"
+				onkeypress="return editPanelFormKeyPressHandler(event)">
+				<!-- The Edit panel -->
+				<rich:popupPanel id="editPanel" modal="true" autosized="true"
+					domElementAttachment="form">
+					<!-- Header -->
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText
+								value="#{empty groupsManager.editedGroup.id ? 'Add' : 'Edit'} Group"></h:outputText>
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<h:commandLink value="Close" immediate="true"
+								onclick="#{rich:component('editPanel')}.hide()"
+								action="#{formResetter.resetForm(rich:findComponent('editPanelForm'))}" />
+						</h:panelGroup>
+					</f:facet>
+					<!-- Content -->
+					<br />
+					<!-- Group data inputs -->
+					<h:panelGrid columns="2">
+						<h:outputLabel value="Name:" styleClass="preformattedtext" />
+						<h:panelGrid columns="2">
+							<h:inputText id="nameInput"
+								value="#{groupsManager.editedGroup.name}" maxlength="20"
+								size="20">
+								<rich:validator />
+								<f:validator binding="#{groupNameUniquenessValidator}" />
+							</h:inputText>
+							<rich:message for="nameInput" />
+						</h:panelGrid>
+						<h:outputLabel value="Starting Channel Number:"
+							styleClass="preformattedtext" />
+						<h:panelGrid columns="2">
+							<h:inputText id="startChannelNoInput"
+								value="#{groupsManager.editedGroup.startChannelNo}" maxlength="5"
+								size="5" converterMessage="Starting channel number must be a number">
+								<rich:validator />
+								<f:validator binding="#{groupStartChannelNoUniquenessValidator}" />
+							</h:inputText>
+							<rich:message for="startChannelNoInput" />
+						</h:panelGrid>
+						<h:outputLabel value="Description:" styleClass="preformattedtext" />
+						<h:panelGrid columns="2">
+							<h:inputText id="descriptionInput"
+								value="#{groupsManager.editedGroup.description}"
+								maxlength="50" size="50">
+								<rich:validator />
+							</h:inputText>
+							<rich:message for="descriptionInput" />
+						</h:panelGrid>
+						<h:outputLabel value="Ignored:" styleClass="preformattedtext" />
+						<h:selectBooleanCheckbox
+							value="#{groupsManager.editedGroup.ignored}" />
+					</h:panelGrid>
+					<!-- Action buttons -->
+					<h:panelGrid columns="2">
+						<a4j:commandButton id="okAddButton" value="OK"
+							rendered="#{empty groupsManager.editedGroup.id}"
+							onclick="this.disabled=true"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();document.getElementById('editPanelForm:okAddButton').disabled=false"
+							action="#{groupsBacking.doAddGroup()}" render="groupsContent" />
+						<a4j:commandButton id="okEditButton" value="OK"
+							rendered="#{not empty groupsManager.editedGroup.id}"
+							onclick="this.disabled=true"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();document.getElementById('editPanelForm:okEditButton').disabled=false"
+							action="#{groupsBacking.doUpdateGroup()}"
+							render="groupsContent" />
+						<a4j:commandButton id="cancelButton" value="Cancel"
+							immediate="true"
+							action="#{formResetter.resetForm(rich:findComponent('editPanelForm'))}"
+							onclick="#{rich:component('editPanel')}.hide()" />
+					</h:panelGrid>
+				</rich:popupPanel>
+			</h:form>
+			<!-- Outer form for the Remove panel -->
+			<h:form id="removePanelForm" styleClass="zerosize"
+				onkeypress="return removePanelFormKeyPressHandler(event)">
+				<!-- The Remove panel -->
+				<rich:popupPanel id="removePanel" modal="true" autosized="true"
+					domElementAttachment="form">
+					<!-- Header -->
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Remove Group(s)"></h:outputText>
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<h:commandLink value="Close" immediate="true"
+								onclick="#{rich:component('removePanel')}.hide()"
+								action="#{formResetter.resetForm(rich:findComponent('removePanelForm'))}" />
+						</h:panelGroup>
+					</f:facet>
+					<!-- Content -->
+					<h:outputText
+						value="Are you sure you want to remove the following group(s)"></h:outputText>
+					<br />
+					<h:outputText
+						value="along with all their channels?"></h:outputText>
+					<br />
+					<br />
+					<ui:repeat value="#{groupsManager.checkedGroups}" var="groupVar"
+						varStatus="loopVar">
+				            #{groupVar.name} (#{groupVar.description})
+				        <ui:fragment rendered="#{!loopVar.last}">
+							<br />
+						</ui:fragment>
+						<ui:fragment rendered="#{loopVar.last}">
+							<br />
+							<br />
+						</ui:fragment>
+					</ui:repeat>
+					<!-- Action buttons -->
+					<h:panelGrid columns="2">
+						<a4j:commandButton id="okButton" value="OK"
+							onclick="this.disabled=true"
+							oncomplete="#{rich:component('removePanel')}.hide();document.getElementById('removePanelForm:okButton').disabled=false"
+							action="#{groupsBacking.doRemoveGroups()}"
+							render="groupsContent" />
+						<a4j:commandButton id="cancelButton" value="Cancel"
+							onclick="#{rich:component('removePanel')}.hide()" />
+					</h:panelGrid>
+				</rich:popupPanel>
+			</h:form>
+		</h:panelGrid>
+	</ui:define>
+</ui:composition>

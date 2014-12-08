@@ -83,7 +83,7 @@ public class TransponderSourceFrequencyPolarityUniquenessValidator implements
 								.equals(editedTransponderId)) {
 					FacesMessage msg = new FacesMessage(
 							"Transponder parameters uniqueness validation failed",
-							"A Transponder with such Source, Frequency and Polarity already exists");
+							"A transponder with such source, frequency and polarity already exists");
 					msg.setSeverity(FacesMessage.SEVERITY_ERROR);
 					throw new ValidatorException(msg);
 				}

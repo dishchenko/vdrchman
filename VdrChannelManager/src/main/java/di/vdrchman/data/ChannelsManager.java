@@ -81,11 +81,7 @@ public class ChannelsManager implements Serializable {
 
 	// Fill in checkedChannels list with channels corresponding
 	// to checkboxes checked in the data table on the page
-	public void collectCheckedChannels(long sourceId, long transpId) {
-		List<Channel> channels;
-
-		channels = channelRepository.findAll(sourceId, transpId);
-
+	public void collectCheckedChannels() {
 		clearCheckedChannels();
 
 		for (Channel channel : channels) {
@@ -182,23 +178,6 @@ public class ChannelsManager implements Serializable {
 		}
 
 		return result;
-	}
-
-	// Build a string consisting of a comma delimited group descriptions
-	public String buildGroupDescriptionsString(List<Group> groups) {
-		StringBuilder sb;
-
-		sb = new StringBuilder();
-
-		if (!groups.isEmpty()) {
-			for (Group group : groups) {
-				sb.append(group.getDescription() + ", ");
-			}
-
-			sb.setLength(sb.length() - 2);
-		}
-
-		return sb.toString();
 	}
 
 	// Cleanup the ChannelManager's data on SourceAction if needed
@@ -316,6 +295,77 @@ public class ChannelsManager implements Serializable {
 
 			channelsRefreshNeeded = false;
 		}
+	}
+
+	// Build a string consisting of a comma delimited group descriptions
+	public String buildGroupDescriptionsString(List<Group> groups) {
+		StringBuilder sb;
+
+		sb = new StringBuilder();
+
+		if (!groups.isEmpty()) {
+			for (Group group : groups) {
+				sb.append(group.getName() + " (" + group.getDescription()
+						+ "), ");
+			}
+
+			sb.setLength(sb.length() - 2);
+		}
+
+		return sb.toString();
+	}
+
+	// Convert numeric video encoding value to string representation
+	public String decodeVenc(Integer venc) {
+		String result;
+
+		result = "";
+
+		if (venc != null) {
+			switch (venc) {
+			case 1:
+			case 2:
+				result = "MPEG-2";
+				break;
+			case 27:
+				result = "MPEG-4";
+				break;
+			default:
+				result = venc.toString();
+			}
+		}
+
+		return result;
+	}
+
+	// Convert numeric audio encoding value to string representation
+	public String decodeAenc(Integer aenc) {
+		String result;
+
+		result = "";
+
+		if (aenc != null) {
+			switch (aenc) {
+			case 3:
+			case 4:
+				result = "MPEG";
+				break;
+			case 15:
+				result = "ADTS";
+				break;
+			case 17:
+				result = "LATM";
+				break;
+			case 6:
+			case 129:
+				result = "AC3";
+				break;
+			default:
+				result = aenc.toString();
+			}
+		}
+
+		return result;
 	}
 
 	// (Re)Fill in the channel list

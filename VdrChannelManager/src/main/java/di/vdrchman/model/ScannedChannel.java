@@ -29,7 +29,7 @@ public class ScannedChannel implements Serializable {
 	@Column(name = "user_id")
 	private Long userId;
 
-	@NotNull(message = "Source Name must be defined")
+	@NotNull(message = "Source name must be defined")
 	@Size(max = 20)
 	@Column(name = "source_name")
 	private String sourceName;
@@ -38,7 +38,7 @@ public class ScannedChannel implements Serializable {
 	@Column(name = "dvbs_gen")
 	private Integer dvbsGen;
 
-	@NotNull(message = "Transponder Frequency must be defined")
+	@NotNull(message = "Transponder frequency must be defined")
 	@Digits(fraction = 0, integer = 5)
 	private Integer frequency;
 
@@ -46,7 +46,7 @@ public class ScannedChannel implements Serializable {
 	@Size(max = 1)
 	private String polarity;
 
-	@NotNull(message = "Transponder Symbol Rate must be defined")
+	@NotNull(message = "Transponder symbol rate must be defined")
 	@Digits(fraction = 0, integer = 5)
 	@Column(name = "symbol_rate")
 	private Integer symbolRate;

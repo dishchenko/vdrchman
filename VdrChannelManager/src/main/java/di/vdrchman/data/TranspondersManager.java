@@ -60,11 +60,7 @@ public class TranspondersManager implements Serializable {
 
 	// Fill in checkedTransponders list with transponders corresponding
 	// to checkboxes checked in the data table on the page
-	public void collectCheckedTransponders(long sourceId) {
-		List<Transponder> transponders;
-
-		transponders = transponderRepository.findAll(sourceId);
-
+	public void collectCheckedTransponders() {
 		clearCheckedTransponders();
 
 		for (Transponder transponder : transponders) {

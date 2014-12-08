@@ -61,9 +61,7 @@ public class ChannelsBacking {
 
 		channel = new Channel();
 		channel.setTranspId(channelsManager.getFilteredTranspId());
-		channelsManager.collectCheckedChannels(
-				channelsManager.getFilteredSourceId(),
-				channelsManager.getFilteredTranspId());
+		channelsManager.collectCheckedChannels();
 		channelsManager.setEditedChannel(channel);
 		channelsManager.setEditedChannelSeqno(channelRepository
 				.getSeqno(channelsManager.getCheckedChannels().get(0)) + 1);
@@ -79,18 +77,47 @@ public class ChannelsBacking {
 		channelsManager.retrieveOrClearEditedSourceTransponders();
 	}
 
+	// Really adding a new channel to the place specified
+	public void doAddChannel() {
+		channelRepository.add(channelsManager.getEditedChannel(),
+				channelsManager.getEditedChannelSeqno());
+		channelsManager.retrieveAllChannels();
+		channelsManager.clearCheckedChannels();
+		channelsManager.clearChannelCheckboxes();
+		channelsManager.turnScrollerPage(channelsManager.getEditedChannel());
+	}
+
+	// The user is going to update a channel
+	public void intendUpdateChannel(Channel channel) {
+		channelsManager.setEditedChannel(new Channel(channel));
+	}
+
+	// Really updating the channel
+	public void doUpdateChannel() {
+		channelRepository.update(channelsManager.getEditedChannel());
+		channelsManager.retrieveAllChannels();
+		channelsManager.clearCheckedChannels();
+		channelsManager.clearChannelCheckboxes();
+	}
+
 	// Going to remove some checked channels
 	public void intendRemoveChannels() {
-		channelsManager.collectCheckedChannels(
-				channelsManager.getFilteredSourceId(),
-				channelsManager.getFilteredTranspId());
+		channelsManager.collectCheckedChannels();
+	}
+
+	// Do that removal
+	public void doRemoveChannels() {
+		for (Channel channel : channelsManager.getCheckedChannels()) {
+			channelRepository.delete(channel);
+		}
+		channelsManager.retrieveAllChannels();
+		channelsManager.clearCheckedChannels();
+		channelsManager.clearChannelCheckboxes();
 	}
 
 	// Let's take the checked channel's data on the "clipboard"
 	public void takeChannel() {
-		channelsManager.collectCheckedChannels(
-				channelsManager.getFilteredSourceId(),
-				channelsManager.getFilteredTranspId());
+		channelsManager.collectCheckedChannels();
 		channelsManager.setTakenChannel(new Channel(channelsManager
 				.getCheckedChannels().get(0)));
 		channelsManager.clearCheckedChannels();
@@ -105,19 +132,27 @@ public class ChannelsBacking {
 		channelsManager.getEditedChannel().setId(null);
 		channelsManager.setEditedChannelSeqno(channelsManager
 				.calculateOnTopSeqno());
+		channelsManager
+				.setEditedSourceId(transponderRepository.findById(
+						channelsManager.getEditedChannel().getTranspId())
+						.getSourceId());
+		channelsManager.retrieveOrClearEditedSourceTransponders();
 	}
 
 	// The user is going to add a new channel using data from the
 	// "clipboard" and place it right after the checked channel in the list
 	public void intendCopyChannelAfter() {
-		channelsManager.collectCheckedChannels(
-				channelsManager.getFilteredSourceId(),
-				channelsManager.getFilteredTranspId());
+		channelsManager.collectCheckedChannels();
 		channelsManager.setEditedChannel(new Channel(channelsManager
 				.getTakenChannel()));
 		channelsManager.getEditedChannel().setId(null);
 		channelsManager.setEditedChannelSeqno(channelRepository
 				.getSeqno(channelsManager.getCheckedChannels().get(0)) + 1);
+		channelsManager
+				.setEditedSourceId(transponderRepository.findById(
+						channelsManager.getEditedChannel().getTranspId())
+						.getSourceId());
+		channelsManager.retrieveOrClearEditedSourceTransponders();
 	}
 
 	// Remember the channel taken on the "clipboard"?
@@ -137,9 +172,7 @@ public class ChannelsBacking {
 		int curSeqno;
 		int newSeqno;
 
-		channelsManager.collectCheckedChannels(
-				channelsManager.getFilteredSourceId(),
-				channelsManager.getFilteredTranspId());
+		channelsManager.collectCheckedChannels();
 		curSeqno = channelRepository
 				.getSeqno(channelsManager.getTakenChannel());
 		newSeqno = channelRepository.getSeqno(channelsManager

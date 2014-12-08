@@ -31,11 +31,11 @@ public class Source implements Serializable {
 	@Column(name = "user_id")
 	private Long userId;
 
-	@NotNull(message = "Source Name must be defined")
+	@NotNull(message = "Source name must be defined")
 	@Size(max = 20)
 	private String name;
 
-	@NotNull(message = "Source Description cannot be empty")
+	@NotNull(message = "Source description cannot be empty")
 	@Size(max = 50)
 	private String description;
 

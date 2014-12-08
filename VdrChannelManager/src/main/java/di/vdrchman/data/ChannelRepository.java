@@ -86,9 +86,8 @@ public class ChannelRepository {
 	}
 
 	/**
-	 * Finds a channel by the combination of transponder ID, SID and
-	 * APID given among the channels belonging to the current
-	 * application user.
+	 * Finds a channel by the combination of transponder ID, SID and APID given
+	 * among the channels belonging to the current application user.
 	 * 
 	 * @param transpId
 	 *            the transponder ID to find a channel within
@@ -98,8 +97,7 @@ public class ChannelRepository {
 	 *            the APID of channel to find
 	 * @return the channel found or null if no channel found
 	 */
-	public Channel findByTransponderSidApid(long transpId,
-			int sid, int apid) {
+	public Channel findByTransponderSidApid(long transpId, int sid, int apid) {
 		Channel result;
 		CriteriaBuilder cb;
 		CriteriaQuery<Channel> criteria;
@@ -207,6 +205,34 @@ public class ChannelRepository {
 	}
 
 	/**
+	 * Adds the channel to the persisted list of channels (stores it in the
+	 * database).
+	 * 
+	 * @param channel
+	 *            the channel to add
+	 * @param seqno
+	 *            the sequence number of the added channel
+	 */
+	public void add(Channel channel, int seqno) {
+
+		em.persist(channel);
+		em.flush();
+
+		move(channel, seqno);
+	}
+
+	/**
+	 * Updates the channel in the persisted list of channels (updates it in the
+	 * database).
+	 * 
+	 * @param channel
+	 *            the channel to update
+	 */
+	public void update(Channel channel) {
+		em.merge(channel);
+	}
+
+	/**
 	 * Moves the channel to the new sequence number in the list of channels of
 	 * the current application user.
 	 * 
@@ -260,6 +286,44 @@ public class ChannelRepository {
 			channelSeqno.setSeqno(seqno);
 			em.persist(channelSeqno);
 		}
+	}
+
+	/**
+	 * Deletes the channel from the persisted list of channels (deletes
+	 * it from the database).
+	 * 
+	 * @param channel
+	 *            the channel to delete
+	 */
+	public void delete(Channel channel) {
+		long channelId;
+		ChannelSeqno channelSeqno;
+		int seqno;
+		Query query;
+
+		channelId = channel.getId();
+
+		channelSeqno = em.find(ChannelSeqno.class, channelId);
+
+		if (channelSeqno != null) {
+			seqno = channelSeqno.getSeqno();
+
+			em.remove(channelSeqno);
+
+			query = em
+					.createQuery("update ChannelSeqno cs set cs.seqno = -cs.seqno where cs.userId = :userId and cs.seqno > :seqno");
+			query.setParameter("userId", user.getId());
+			query.setParameter("seqno", seqno);
+			query.executeUpdate();
+
+			query = em
+					.createQuery("update ChannelSeqno cs set cs.seqno = -cs.seqno - 1 where cs.userId = :userId and cs.seqno < -:seqno");
+			query.setParameter("userId", user.getId());
+			query.setParameter("seqno", seqno);
+			query.executeUpdate();
+		}
+
+		em.remove(em.merge(channel));
 	}
 
 }

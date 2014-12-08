@@ -32,16 +32,16 @@ public class Group implements Serializable {
 	@Column(name = "user_id")
 	private Long userId;
 
-	@NotNull(message = "Group Name must be defined")
+	@NotNull(message = "Group name must be defined")
 	@Size(max = 20)
 	private String name;
 
-	@NotNull(message = "Start Channel Number must be defined")
+	@NotNull(message = "Starting channel number must be defined")
 	@Digits(fraction = 0, integer = 5)
 	@Column(name = "start_channel_no")
 	private Integer startChannelNo;
 
-	@NotNull(message = "Group Description cannot be empty")
+	@NotNull(message = "Group description cannot be empty")
 	@Size(max = 50)
 	private String description;
 

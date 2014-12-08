@@ -128,12 +128,15 @@
 							<ui:param name="channelGroupsParam"
 								value="#{channelsManager.buildGroupDescriptionsString(channelRepository.findGroups(channelVar.id))}">
 							</ui:param>
-							<ui:fragment rendered="#{not empty channelVar.lang}">
-								<h:outputText styleClass="preformattedtext"
-									value="#{channelVar.lang}) " title="#{channelGroupsParam}" />
-							</ui:fragment>
-							<h:outputText styleClass="preformattedtext"
-								value="#{channelVar.name}" title="#{channelGroupsParam}" />
+							<ui:param name="langNameParam"
+								value="#{not empty channelVar.lang ? channelVar.lang.concat(')') : ''} #{channelVar.name}">
+							</ui:param>
+							<a4j:commandLink styleClass="preformattedtext"
+								value="#{langNameParam}" title="#{channelGroupsParam}"
+								onclick="this.setAttribute('onclick', 'return false')"
+								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus()"
+								action="#{channelsBacking.intendUpdateChannel(channelVar)}"
+								render="channelsContent, editPanel" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">SID</f:facet>
@@ -146,8 +149,13 @@
 								value="#{channelVar.vpid}" />
 							<ui:fragment rendered="#{not empty channelVar.venc}">
 								<h:outputText styleClass="preformattedtext"
-									value=" (#{channelVar.venc == 27 ? 'MPEG-4' : channelVar.venc})" />
+									value=" (#{channelsManager.decodeVenc(channelVar.venc)})" />
 							</ui:fragment>
+						</h:column>
+						<h:column>
+							<f:facet name="header">PCR</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.pcr}" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">APID</f:facet>
@@ -155,7 +163,7 @@
 								value="#{channelVar.apid}" />
 							<ui:fragment rendered="#{not empty channelVar.aenc}">
 								<h:outputText styleClass="preformattedtext"
-									value=" (#{channelVar.aenc == 129 ? 'AC3' : channelVar.aenc})" />
+									value=" (#{channelsManager.decodeAenc(channelVar.aenc)})" />
 							</ui:fragment>
 						</h:column>
 						<h:column>
@@ -171,11 +179,6 @@
 										value="#{channelVar.caid == 2600 ? 'BISS' : channelVar.caid}" />
 								</h:panelGroup>
 							</ui:fragment>
-						</h:column>
-						<h:column>
-							<f:facet name="header">RID</f:facet>
-							<h:outputText styleClass="preformattedtext"
-								value="#{channelVar.rid}" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">Scanned As</f:facet>
@@ -287,13 +290,17 @@
 						<h:outputLabel value="Transponder:" styleClass="preformattedtext" />
 						<ui:fragment
 							rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredTranspId lt 0}">
-							<h:selectOneMenu id="transpondersMenu"
-								value="#{channelsManager.editedChannel.transpId}">
-								<f:selectItems
-									value="#{channelsManager.editedSourceTransponders}"
-									var="transponderVar" itemValue="#{transponderVar.id}"
-									itemLabel="#{transponderVar.frequency} #{transponderVar.polarity}" />
-							</h:selectOneMenu>
+							<h:panelGrid columns="2">
+								<h:selectOneMenu id="transpondersMenu"
+									value="#{channelsManager.editedChannel.transpId}">
+									<f:selectItems
+										value="#{channelsManager.editedSourceTransponders}"
+										var="transponderVar" itemValue="#{transponderVar.id}"
+										itemLabel="#{transponderVar.frequency} #{transponderVar.polarity}" />
+									<rich:validator />
+								</h:selectOneMenu>
+								<rich:message for="transpondersMenu" />
+							</h:panelGrid>
 						</ui:fragment>
 						<ui:fragment
 							rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredTranspId ge 0}">
@@ -347,14 +354,12 @@
 						</h:panelGrid>
 						<h:outputLabel value="Video Encoding:"
 							styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="vencInput"
-								value="#{channelsManager.editedChannel.venc}" maxlength="5"
-								size="5" converterMessage="Video Encoding must be a number">
-								<rich:validator />
-							</h:inputText>
-							<rich:message for="vencInput" />
-						</h:panelGrid>
+						<h:selectOneMenu value="#{channelsManager.editedChannel.venc}">
+							<f:selectItem itemValue="" itemLabel="" />
+							<f:selectItem itemValue="1" itemLabel="1 - MPEG-2" />
+							<f:selectItem itemValue="2" itemLabel="2 - MPEG-2" />
+							<f:selectItem itemValue="27" itemLabel="27 - MPEG-4" />
+						</h:selectOneMenu>
 						<h:outputLabel value="Audio PID:" styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
 							<h:inputText id="apidInput"
@@ -366,14 +371,15 @@
 						</h:panelGrid>
 						<h:outputLabel value="Audio Encoding:"
 							styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="aencInput"
-								value="#{channelsManager.editedChannel.aenc}" maxlength="5"
-								size="5" converterMessage="Audio Encoding must be a number">
-								<rich:validator />
-							</h:inputText>
-							<rich:message for="aencInput" />
-						</h:panelGrid>
+						<h:selectOneMenu value="#{channelsManager.editedChannel.aenc}">
+							<f:selectItem itemValue="" itemLabel="" />
+							<f:selectItem itemValue="3" itemLabel="3 - MPEG" />
+							<f:selectItem itemValue="4" itemLabel="4 - MPEG" />
+							<f:selectItem itemValue="6" itemLabel="6 - AC3" />
+							<f:selectItem itemValue="15" itemLabel="15 - ADTS" />
+							<f:selectItem itemValue="17" itemLabel="17 - LATM" />
+							<f:selectItem itemValue="129" itemLabel="129 - AC3" />
+						</h:selectOneMenu>
 						<h:outputLabel value="Text PID:" styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
 							<h:inputText id="tpidInput"
@@ -385,19 +391,82 @@
 						</h:panelGrid>
 						<h:outputLabel value="Conditional Access ID:"
 							styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="caidInput"
-								value="#{channelsManager.editedChannel.caid}" maxlength="5"
-								size="5"
-								converterMessage="Conditional Access ID must be a number">
-								<rich:validator />
-							</h:inputText>
-							<rich:message for="caidInput" />
-						</h:panelGrid>
+						<h:selectOneMenu value="#{channelsManager.editedChannel.caid}">
+							<f:selectItem itemValue="" itemLabel="" />
+							<f:selectItem itemValue="2600" itemLabel="BISS" />
+						</h:selectOneMenu>
 						<h:outputLabel value="Locked:" styleClass="preformattedtext" />
 						<h:selectBooleanCheckbox id="lockedCheckbox"
 							value="#{channelsManager.editedChannel.locked}"
 							styleClass="preformattedtext" />
+					</h:panelGrid>
+					<!-- Action buttons -->
+					<h:panelGrid columns="2">
+						<a4j:commandButton id="okAddButton" value="OK"
+							rendered="#{empty channelsManager.editedChannel.id}"
+							onclick="this.disabled=true"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();document.getElementById('editPanelForm:okAddButton').disabled=false"
+							action="#{channelsBacking.doAddChannel()}"
+							render="channelsContent" />
+						<a4j:commandButton id="okEditButton" value="OK"
+							rendered="#{not empty channelsManager.editedChannel.id}"
+							onclick="this.disabled=true"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();document.getElementById('editPanelForm:okEditButton').disabled=false"
+							action="#{channelsBacking.doUpdateChannel()}"
+							render="channelsContent" />
+						<a4j:commandButton id="cancelButton" value="Cancel"
+							immediate="true"
+							action="#{formResetter.resetForm(rich:findComponent('editPanelForm'))}"
+							onclick="#{rich:component('editPanel')}.hide()" />
+					</h:panelGrid>
+				</rich:popupPanel>
+			</h:form>
+			<!-- Outer form for the Remove panel -->
+			<h:form id="removePanelForm" styleClass="zerosize"
+				onkeypress="return removePanelFormKeyPressHandler(event)">
+				<!-- The Remove panel -->
+				<rich:popupPanel id="removePanel" modal="true" autosized="true"
+					domElementAttachment="form">
+					<!-- Header -->
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Remove Channel(s)"></h:outputText>
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<h:commandLink value="Close" immediate="true"
+								onclick="#{rich:component('removePanel')}.hide()"
+								action="#{formResetter.resetForm(rich:findComponent('removePanelForm'))}" />
+						</h:panelGroup>
+					</f:facet>
+					<!-- Content -->
+					<h:outputText
+						value="Are you sure you want to remove the following channel(s)"></h:outputText>
+					<br />
+					<h:outputText value="from main list (and all groups)?"></h:outputText>
+					<br />
+					<br />
+					<ui:repeat value="#{channelsManager.checkedChannels}"
+						var="channelVar" varStatus="loopVar">
+				            #{not empty channelVar.lang ? channelVar.lang.concat(')') : ''} #{channelVar.name}
+				        <ui:fragment rendered="#{!loopVar.last}">
+							<br />
+						</ui:fragment>
+						<ui:fragment rendered="#{loopVar.last}">
+							<br />
+							<br />
+						</ui:fragment>
+					</ui:repeat>
+					<!-- Action buttons -->
+					<h:panelGrid columns="2">
+						<a4j:commandButton id="okButton" value="OK"
+							onclick="this.disabled=true"
+							oncomplete="#{rich:component('removePanel')}.hide();document.getElementById('removePanelForm:okButton').disabled=false"
+							action="#{channelsBacking.doRemoveChannels()}"
+							render="channelsContent" />
+						<a4j:commandButton id="cancelButton" value="Cancel"
+							onclick="#{rich:component('removePanel')}.hide()" />
 					</h:panelGrid>
 				</rich:popupPanel>
 			</h:form>

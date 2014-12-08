@@ -1,7 +1,7 @@
-// Return true if at least one of the channel checkboxes within the table is checked
-function isAtLeastOneChannelCheckboxChecked() {
+// Return true if at least one of the group checkboxes within the table is checked
+function isAtLeastOneGroupCheckboxChecked() {
 	var result = false;
-	var checkboxNameSuffix = 'channelCheckbox';
+	var checkboxNameSuffix = 'groupCheckbox';
 	var elements = document.getElementsByTagName('input');
 
 	for (var i = 0; i < elements.length; ++i) {
@@ -19,11 +19,10 @@ function isAtLeastOneChannelCheckboxChecked() {
 	return result;
 }
 
-// Return true if exactly one of the channel checkboxes within the table is
-// checked
-function isExactlyOneChannelCheckboxChecked() {
+// Return true if exactly one of the group checkboxes within the table is checked
+function isExactlyOneGroupCheckboxChecked() {
 	var result = false;
-	var checkboxNameSuffix = 'channelCheckbox';
+	var checkboxNameSuffix = 'groupCheckbox';
 	var elements = document.getElementsByTagName('input');
 	var checkedCount = 0;
 
@@ -77,49 +76,14 @@ function editPanelFormKeyPressHandler(event) {
 	if (event.keyCode == 9) {
 		if (event.shiftKey) {
 			if (document.activeElement == document
-					.getElementById('editPanelForm:sourcesMenu')) {
-				document.getElementById('editPanelForm:cancelButton').focus();
-				result = false;
-			}
-			if (document.activeElement == document
-					.getElementById('editPanelForm:transpondersMenu')) {
-				element = document.getElementById('editPanelForm:sourcesMenu');
-				if (element != null) {
-					element.focus();
-				} else {
-					document.getElementById('editPanelForm:cancelButton')
-							.focus();
-				}
-				result = false;
-			}
-			if (document.activeElement == document
 					.getElementById('editPanelForm:nameInput')) {
-				element = document
-						.getElementById('editPanelForm:transpondersMenu');
-				if (element != null) {
-					element.focus();
-				} else {
-					document.getElementById('editPanelForm:cancelButton')
-							.focus();
-				}
+				document.getElementById('editPanelForm:cancelButton').focus();
 				result = false;
 			}
 		} else {
 			if (document.activeElement == document
 					.getElementById('editPanelForm:cancelButton')) {
-				element = document.getElementById('editPanelForm:sourcesMenu');
-				if (element != null) {
-					element.focus();
-				} else {
-					element = document
-							.getElementById('editPanelForm:transpondersMenu');
-					if (element != null) {
-						element.focus();
-					} else {
-						document.getElementById('editPanelForm:nameInput')
-								.focus();
-					}
-				}
+				document.getElementById('editPanelForm:nameInput').focus();
 				result = false;
 			}
 		}
@@ -130,8 +94,7 @@ function editPanelFormKeyPressHandler(event) {
 
 // The Remove panel form key press listener
 // Emulates 'Cancel' button click on hitting the 'Esc' key
-// Loops input focus through 'OK' and 'Cancel' buttons on pressing 'Tab' /
-// 'Shift+Tab'
+// Loops input focus through 'OK' and 'Cancel' buttons on pressing 'Tab' / 'Shift+Tab'
 function removePanelFormKeyPressHandler(event) {
 	var result;
 

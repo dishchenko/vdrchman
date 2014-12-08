@@ -43,8 +43,7 @@ public class TranspondersBacking {
 
 		transponder = new Transponder();
 		transponder.setSourceId(transpondersManager.getFilteredSourceId());
-		transpondersManager.collectCheckedTransponders(transpondersManager
-				.getFilteredSourceId());
+		transpondersManager.collectCheckedTransponders();
 		transpondersManager.setEditedTransponder(transponder);
 		transpondersManager
 				.setEditedTransponderSeqno(transponderRepository
@@ -83,8 +82,7 @@ public class TranspondersBacking {
 
 	// Going to remove some checked transponders
 	public void intendRemoveTransponders() {
-		transpondersManager.collectCheckedTransponders(transpondersManager
-				.getFilteredSourceId());
+		transpondersManager.collectCheckedTransponders();
 	}
 
 	// Do that removal
@@ -102,8 +100,7 @@ public class TranspondersBacking {
 
 	// Let's take the checked transponder's data on the "clipboard"
 	public void takeTransponder() {
-		transpondersManager.collectCheckedTransponders(transpondersManager
-				.getFilteredSourceId());
+		transpondersManager.collectCheckedTransponders();
 		transpondersManager.setTakenTransponder(new Transponder(
 				transpondersManager.getCheckedTransponders().get(0)));
 		transpondersManager.clearCheckedTransponders();
@@ -123,8 +120,7 @@ public class TranspondersBacking {
 	// The user is going to add a new transponder using data from the
 	// "clipboard" and place it right after the checked transponder in the list
 	public void intendCopyTransponderAfter() {
-		transpondersManager.collectCheckedTransponders(transpondersManager
-				.getFilteredSourceId());
+		transpondersManager.collectCheckedTransponders();
 		transpondersManager.setEditedTransponder(new Transponder(
 				transpondersManager.getTakenTransponder()));
 		transpondersManager.getEditedTransponder().setId(null);
@@ -154,8 +150,7 @@ public class TranspondersBacking {
 		int curSeqno;
 		int newSeqno;
 
-		transpondersManager.collectCheckedTransponders(transpondersManager
-				.getFilteredSourceId());
+		transpondersManager.collectCheckedTransponders();
 		curSeqno = transponderRepository.getSeqno(transpondersManager
 				.getTakenTransponder());
 		newSeqno = transponderRepository.getSeqno(transpondersManager

@@ -87,7 +87,7 @@ public class ChannelTransponderSidApidUniquenessValidator implements
 								.equals(editedChannelId)) {
 					FacesMessage msg = new FacesMessage(
 							"Channel parameters uniqueness validation failed",
-							"A Channel with such Transponder, SID and APID already exists");
+							"A channel with such transponder, SID and APID already exists");
 					msg.setSeverity(FacesMessage.SEVERITY_ERROR);
 					throw new ValidatorException(msg);
 				}

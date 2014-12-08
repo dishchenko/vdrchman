@@ -27,7 +27,7 @@ public class Channel implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotNull
+	@NotNull(message = "Transponder must be defined")
 	@Column(name = "transp_id")
 	private Long transpId;
 
@@ -66,7 +66,7 @@ public class Channel implements Serializable {
 	@Column(name = "provider_name")
 	private String providerName;
 
-	@NotNull(message = "Channel Name must be defined")
+	@NotNull(message = "Channel name must be defined")
 	@Size(max = 50)
 	private String name;
 
