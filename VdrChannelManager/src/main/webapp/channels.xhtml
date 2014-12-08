@@ -20,7 +20,13 @@
 			<!-- Channels form -->
 			<h:form id="channelsForm">
 				<!-- 'Add', 'Remove' etc. buttons panel -->
-				<h:panelGrid columns="8">
+				<h:panelGrid columns="10">
+					<a4j:commandButton id="updateGroupsButton" value="Groups..."
+						action="#{channelsBacking.intendUpdateGroups()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('updateGroupsPanel')}.show();document.getElementById('updateGroupsPanelForm:okButton').focus();document.getElementById('channelsForm:updateGroupsButton').disabled=!isExactlyOneChannelCheckboxChecked()"
+						render="channelsContent, updateGroupsPanel" />
+					<h:outputText styleClass="preformattedtext" value="          " />
 					<a4j:commandButton id="addOnTopButton" value="Add on top..."
 						action="#{channelsBacking.intendAddChannelOnTop()}"
 						onclick="this.disabled=true"
@@ -30,7 +36,7 @@
 						action="#{channelsBacking.intendAddChannelAfter()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('channelsForm:addAfterButton').disabled=!isExactlyOneChannelCheckboxChecked()"
-						render="ChannelsContent, editPanel" />
+						render="channelsContent, editPanel" />
 					<a4j:commandButton id="removeButton" value="Remove..."
 						action="#{channelsBacking.intendRemoveChannels()}"
 						onclick="this.disabled=true"
@@ -103,7 +109,7 @@
 							<h:selectBooleanCheckbox id="channelCheckbox"
 								value="#{channelsManager.channelCheckboxes[channelVar.id]}"
 								styleClass="preformattedtext"
-								onclick="document.getElementById('channelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();document.getElementById('channelsForm:addAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();document.getElementById('channelsForm:takeButton').disabled=!isExactlyOneChannelCheckboxChecked();document.getElementById('channelsForm:copyAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();document.getElementById('channelsForm:moveAfterButton').disabled=!isExactlyOneChannelCheckboxChecked()" />
+								onclick="document.getElementById('channelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();document.getElementById('channelsForm:addAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();document.getElementById('channelsForm:takeButton').disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('channelsForm:copyAfterButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('channelsForm:moveAfterButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();document.getElementById('channelsForm:updateGroupsButton').disabled=!isExactlyOneChannelCheckboxChecked()" />
 							<h:outputText styleClass="preformattedtext" value="C"
 								rendered="#{not empty channelsManager.takenChannel and channelsManager.takenChannel.id eq channelVar.id}" />
 						</h:column>
@@ -212,9 +218,32 @@
 					if (document.getElementById('channelsForm:moveAfterButton') != null) {
 						document.getElementById('channelsForm:moveAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();
 					}
+					document.getElementById('channelsForm:updateGroupsButton').disabled=!isExactlyOneChannelCheckboxChecked();
 			</h:outputScript>
 		</h:panelGroup>
-		<h:panelGrid columns="2">
+		<h:panelGrid columns="3">
+			<!-- Outer form for the Update Groups panel -->
+			<h:form id="updateGroupsPanelForm" styleClass="zerosize"
+				onkeypress="return updateGroupsPanelFormKeyPressHandler(event)">
+				<!-- The Update Groups panel -->
+				<rich:popupPanel id="updateGroupsPanel" modal="true"
+					autosized="true" domElementAttachment="form">
+					<!-- Header -->
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Update Channel Groups"></h:outputText>
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<h:commandLink value="Close" immediate="true"
+								onclick="#{rich:component('updateGroupsPanel')}.hide()"
+								action="#{formResetter.resetForm(rich:findComponent('updateGroupsPanelForm'))}" />
+						</h:panelGroup>
+					</f:facet>
+					<!-- Content -->
+				</rich:popupPanel>
+			</h:form>
 			<!-- Outer form for the Edit panel -->
 			<h:form id="editPanelForm" styleClass="zerosize"
 				onkeypress="return editPanelFormKeyPressHandler(event)">

@@ -30,8 +30,7 @@
 						oncomplete="#{rich:component('removePanel')}.show();document.getElementById('removePanelForm:okButton').focus();document.getElementById('groupsForm:removeButton').disabled=!isAtLeastOneGroupCheckboxChecked()"
 						render="groupsContent, removePanel" />
 					<a4j:commandButton id="takeButton" value="Take"
-						action="#{groupsBacking.takeGroup()}"
-						onclick="this.disabled=true"
+						action="#{groupsBacking.takeGroup()}" onclick="this.disabled=true"
 						oncomplete="document.getElementById('groupsForm:takeButton').disabled=!isExactlyOneGroupCheckboxChecked()"
 						render="groupsContent" />
 					<a4j:commandButton id="copyButton" value="Copy..."
@@ -133,8 +132,9 @@
 							styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
 							<h:inputText id="startChannelNoInput"
-								value="#{groupsManager.editedGroup.startChannelNo}" maxlength="5"
-								size="5" converterMessage="Starting channel number must be a number">
+								value="#{groupsManager.editedGroup.startChannelNo}"
+								maxlength="5" size="5"
+								converterMessage="Starting channel number must be a number">
 								<rich:validator />
 								<f:validator binding="#{groupStartChannelNoUniquenessValidator}" />
 							</h:inputText>
@@ -143,15 +143,19 @@
 						<h:outputLabel value="Description:" styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
 							<h:inputText id="descriptionInput"
-								value="#{groupsManager.editedGroup.description}"
-								maxlength="50" size="50">
+								value="#{groupsManager.editedGroup.description}" maxlength="50"
+								size="50">
 								<rich:validator />
 							</h:inputText>
 							<rich:message for="descriptionInput" />
 						</h:panelGrid>
 						<h:outputLabel value="Ignored:" styleClass="preformattedtext" />
-						<h:selectBooleanCheckbox
-							value="#{groupsManager.editedGroup.ignored}" />
+						<h:panelGrid columns="2">
+							<h:selectBooleanCheckbox
+								value="#{groupsManager.editedGroup.ignored}" />
+							<h:outputText styleClass="preformattedtext"
+								value="                                                                                                                                                                                    " />
+						</h:panelGrid>
 					</h:panelGrid>
 					<!-- Action buttons -->
 					<h:panelGrid columns="2">
@@ -164,8 +168,7 @@
 							rendered="#{not empty groupsManager.editedGroup.id}"
 							onclick="this.disabled=true"
 							oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();document.getElementById('editPanelForm:okEditButton').disabled=false"
-							action="#{groupsBacking.doUpdateGroup()}"
-							render="groupsContent" />
+							action="#{groupsBacking.doUpdateGroup()}" render="groupsContent" />
 						<a4j:commandButton id="cancelButton" value="Cancel"
 							immediate="true"
 							action="#{formResetter.resetForm(rich:findComponent('editPanelForm'))}"
@@ -196,8 +199,7 @@
 					<h:outputText
 						value="Are you sure you want to remove the following group(s)"></h:outputText>
 					<br />
-					<h:outputText
-						value="along with all their channels?"></h:outputText>
+					<h:outputText value="along with all their channels?"></h:outputText>
 					<br />
 					<br />
 					<ui:repeat value="#{groupsManager.checkedGroups}" var="groupVar"
@@ -216,8 +218,7 @@
 						<a4j:commandButton id="okButton" value="OK"
 							onclick="this.disabled=true"
 							oncomplete="#{rich:component('removePanel')}.hide();document.getElementById('removePanelForm:okButton').disabled=false"
-							action="#{groupsBacking.doRemoveGroups()}"
-							render="groupsContent" />
+							action="#{groupsBacking.doRemoveGroups()}" render="groupsContent" />
 						<a4j:commandButton id="cancelButton" value="Cancel"
 							onclick="#{rich:component('removePanel')}.hide()" />
 					</h:panelGrid>
