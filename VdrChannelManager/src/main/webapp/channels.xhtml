@@ -5,6 +5,7 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:c="http://java.sun.com/jstl/core"
 	template="/WEB-INF/templates/default.xhtml">
 	<ui:define name="content">
 		<h:outputScript library="javax.faces" name="jsf.js" target="head" />
@@ -20,13 +21,7 @@
 			<!-- Channels form -->
 			<h:form id="channelsForm">
 				<!-- 'Add', 'Remove' etc. buttons panel -->
-				<h:panelGrid columns="10">
-					<a4j:commandButton id="updateGroupsButton" value="Groups..."
-						action="#{channelsBacking.intendUpdateGroups()}"
-						onclick="this.disabled=true"
-						oncomplete="#{rich:component('updateGroupsPanel')}.show();document.getElementById('updateGroupsPanelForm:okButton').focus();document.getElementById('channelsForm:updateGroupsButton').disabled=!isExactlyOneChannelCheckboxChecked()"
-						render="channelsContent, updateGroupsPanel" />
-					<h:outputText styleClass="preformattedtext" value="          " />
+				<h:panelGrid columns="8">
 					<a4j:commandButton id="addOnTopButton" value="Add on top..."
 						action="#{channelsBacking.intendAddChannelOnTop()}"
 						onclick="this.disabled=true"
@@ -109,8 +104,8 @@
 							<h:selectBooleanCheckbox id="channelCheckbox"
 								value="#{channelsManager.channelCheckboxes[channelVar.id]}"
 								styleClass="preformattedtext"
-								onclick="document.getElementById('channelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();document.getElementById('channelsForm:addAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();document.getElementById('channelsForm:takeButton').disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('channelsForm:copyAfterButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('channelsForm:moveAfterButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();document.getElementById('channelsForm:updateGroupsButton').disabled=!isExactlyOneChannelCheckboxChecked()" />
-							<h:outputText styleClass="preformattedtext" value="C"
+								onclick="document.getElementById('channelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();document.getElementById('channelsForm:addAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();document.getElementById('channelsForm:takeButton').disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('channelsForm:copyAfterButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('channelsForm:moveAfterButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked()" />
+							<h:outputText styleClass="preformattedtext" value="T"
 								rendered="#{not empty channelsManager.takenChannel and channelsManager.takenChannel.id eq channelVar.id}" />
 						</h:column>
 						<h:column rendered="#{channelsManager.filteredSourceId lt 0}">
@@ -119,7 +114,7 @@
 								value="#{sourceRepository.findById(transponderRepository.findById(channelVar.transpId).sourceId)}">
 							</ui:param>
 							<h:outputText styleClass="preformattedtext"
-								value="#{sourceParam.name} (#{sourceParam.description})" />
+								value="#{sourceParam.name}" title="#{sourceParam.description}" />
 						</h:column>
 						<h:column rendered="#{channelsManager.filteredTranspId lt 0}">
 							<f:facet name="header">Frequency</f:facet>
@@ -131,14 +126,11 @@
 						</h:column>
 						<h:column>
 							<f:facet name="header">Name</f:facet>
-							<ui:param name="channelGroupsParam"
-								value="#{channelsManager.buildGroupDescriptionsString(channelRepository.findGroups(channelVar.id))}">
-							</ui:param>
 							<ui:param name="langNameParam"
 								value="#{not empty channelVar.lang ? channelVar.lang.concat(')') : ''} #{channelVar.name}">
 							</ui:param>
 							<a4j:commandLink styleClass="preformattedtext"
-								value="#{langNameParam}" title="#{channelGroupsParam}"
+								value="#{langNameParam}"
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus()"
 								action="#{channelsBacking.intendUpdateChannel(channelVar)}"
@@ -152,16 +144,11 @@
 						<h:column>
 							<f:facet name="header">VPID</f:facet>
 							<h:outputText styleClass="preformattedtext"
-								value="#{channelVar.vpid}" />
+								value="#{channelVar.vpid}" title="#{channelVar.pcr}" />
 							<ui:fragment rendered="#{not empty channelVar.venc}">
 								<h:outputText styleClass="preformattedtext"
 									value=" (#{channelsManager.decodeVenc(channelVar.venc)})" />
 							</ui:fragment>
-						</h:column>
-						<h:column>
-							<f:facet name="header">PCR</f:facet>
-							<h:outputText styleClass="preformattedtext"
-								value="#{channelVar.pcr}" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">APID</f:facet>
@@ -189,17 +176,29 @@
 						<h:column>
 							<f:facet name="header">Scanned As</f:facet>
 							<h:outputText styleClass="preformattedtext"
-								value="#{channelVar.scannedName}" />
-						</h:column>
-						<h:column>
-							<f:facet name="header">Provider</f:facet>
-							<h:outputText styleClass="preformattedtext"
-								value="#{channelVar.providerName}" />
+								value="#{channelVar.scannedName}"
+								title="#{channelVar.providerName}" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">Locked</f:facet>
 							<h:outputText styleClass="preformattedtext"
 								value="#{channelVar.locked ? 'V' : ''}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Groups</f:facet>
+							<ui:param name="channelGroupNamesParam"
+								value="#{channelsManager.buildGroupNamesString(channelRepository.findGroups(channelVar.id))}">
+							</ui:param>
+							<ui:param name="channelGroupDescriptionsParam"
+								value="#{channelsManager.buildGroupDescriptionsString(channelRepository.findGroups(channelVar.id))}">
+							</ui:param>
+							<a4j:commandLink styleClass="preformattedtext"
+								value="#{channelGroupNamesParam}"
+								title="#{channelGroupDescriptionsParam}"
+								onclick="this.setAttribute('onclick', 'return false')"
+								oncomplete="#{rich:component('updateGroupsPanel')}.show();document.getElementById('updateGroupsPanelForm:okButton').focus()"
+								action="#{channelsBacking.intendUpdateGroups(channelVar)}"
+								render="channelsContent, updateGroupsPanel" />
 						</h:column>
 					</h:dataTable>
 					<rich:dataScroller for="channelsTable" maxPages="5" fastStep="5"
@@ -212,13 +211,8 @@
 					document.getElementById('channelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();
 					document.getElementById('channelsForm:addAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();
 					document.getElementById('channelsForm:takeButton').disabled=!isExactlyOneChannelCheckboxChecked();
-					if (document.getElementById('channelsForm:copyAfterButton') != null) {
-						document.getElementById('channelsForm:copyAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();
-					}
-					if (document.getElementById('channelsForm:moveAfterButton') != null) {
-						document.getElementById('channelsForm:moveAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();
-					}
-					document.getElementById('channelsForm:updateGroupsButton').disabled=!isExactlyOneChannelCheckboxChecked();
+					element = document.getElementById('channelsForm:copyAfterButton'); if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();
+					element = document.getElementById('channelsForm:moveAfterButton'); if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();
 			</h:outputScript>
 		</h:panelGroup>
 		<h:panelGrid columns="3">
@@ -231,7 +225,7 @@
 					<!-- Header -->
 					<f:facet name="header">
 						<h:panelGroup>
-							<h:outputText value="Update Channel Groups"></h:outputText>
+							<h:outputText value="Update Channel Groups" />
 						</h:panelGroup>
 					</f:facet>
 					<f:facet name="controls">
@@ -242,6 +236,25 @@
 						</h:panelGroup>
 					</f:facet>
 					<!-- Content -->
+					<h:panelGrid columns="8">
+						<c:forEach var="groupVar" items="#{groupRepository.findAll()}">
+							<h:selectBooleanCheckbox id="groupCheckbox#{groupVar.id}"
+								value="#{channelsManager.channelGroupCheckboxes[groupVar.id]}"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="#{groupVar.name} (#{groupVar.description})"
+								styleClass="preformattedtext" />
+						</c:forEach>
+					</h:panelGrid>
+					<!-- Action buttons -->
+					<h:panelGrid columns="2">
+						<a4j:commandButton id="okButton" value="OK"
+							onclick="this.disabled=true"
+							oncomplete="#{rich:component('updateGroupsPanel')}.hide();document.getElementById('updateGroupsPanelForm:okButton').disabled=false"
+							action="#{channelsBacking.doUpdateGroups()}"
+							render="channelsContent" />
+						<a4j:commandButton id="cancelButton" value="Cancel"
+							onclick="#{rich:component('updateGroupsPanel')}.hide()" />
+					</h:panelGrid>
 				</rich:popupPanel>
 			</h:form>
 			<!-- Outer form for the Edit panel -->
@@ -254,7 +267,7 @@
 					<f:facet name="header">
 						<h:panelGroup>
 							<h:outputText
-								value="#{empty channelsManager.editedChannel.id ? 'Add' : 'Edit'} Channel"></h:outputText>
+								value="#{empty channelsManager.editedChannel.id ? 'Add' : 'Edit'} Channel" />
 						</h:panelGroup>
 					</f:facet>
 					<f:facet name="controls">
@@ -420,10 +433,15 @@
 						</h:panelGrid>
 						<h:outputLabel value="Conditional Access ID:"
 							styleClass="preformattedtext" />
-						<h:selectOneMenu value="#{channelsManager.editedChannel.caid}">
-							<f:selectItem itemValue="" itemLabel="" />
-							<f:selectItem itemValue="2600" itemLabel="BISS" />
-						</h:selectOneMenu>
+						<h:panelGrid columns="2">
+							<h:inputText id="caidInput"
+								value="#{channelsManager.editedChannel.caid}" maxlength="20"
+								size="20" />
+							<h:outputLink value="#"
+								onclick="document.getElementById('editPanelForm:caidInput').value='2600'">
+								<h:outputText value="&lt;-- BISS" styleClass="preformattedtext" />
+							</h:outputLink>
+						</h:panelGrid>
 						<h:outputLabel value="Locked:" styleClass="preformattedtext" />
 						<h:selectBooleanCheckbox id="lockedCheckbox"
 							value="#{channelsManager.editedChannel.locked}"
@@ -459,7 +477,7 @@
 					<!-- Header -->
 					<f:facet name="header">
 						<h:panelGroup>
-							<h:outputText value="Remove Channel(s)"></h:outputText>
+							<h:outputText value="Remove Channel(s)" />
 						</h:panelGroup>
 					</f:facet>
 					<f:facet name="controls">
@@ -471,9 +489,9 @@
 					</f:facet>
 					<!-- Content -->
 					<h:outputText
-						value="Are you sure you want to remove the following channel(s)"></h:outputText>
+						value="Are you sure you want to remove the following channel(s)" />
 					<br />
-					<h:outputText value="from main list (and all groups)?"></h:outputText>
+					<h:outputText value="from main list (and all groups)?" />
 					<br />
 					<br />
 					<ui:repeat value="#{channelsManager.checkedChannels}"

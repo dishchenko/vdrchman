@@ -31,18 +31,6 @@ public class ChannelsBacking {
 	@Inject
 	private ChannelRepository channelRepository;
 
-	// The user is up to change the set of channel's groups
-	public void intendUpdateGroups() {
-		channelsManager.collectCheckedChannels();
-		channelsManager.setEditedChannel(new Channel(channelsManager
-				.getCheckedChannels().get(0)));
-	}
-
-	// Channel's group set change confirmed
-	public void doUpdateGroups() {
-		// TODO
-	}
-
 	// The user is going to add a new channel on top of the current channel list
 	public void intendAddChannelOnTop() {
 		Channel channel;
@@ -197,6 +185,22 @@ public class ChannelsBacking {
 		channelsManager.clearCheckedChannels();
 		channelsManager.clearChannelCheckboxes();
 		channelsManager.turnScrollerPage(channelsManager.getTakenChannel());
+	}
+
+	// The user is up to change the set of channel's groups
+	public void intendUpdateGroups(Channel channel) {
+		channelsManager.setEditedChannel(new Channel(channel));
+		channelsManager.setUpdatedGroups(channelRepository.findGroups(channel
+				.getId()));
+		channelsManager.collectChannelGroupCheckboxes();
+	}
+
+	// Channel's group set change confirmed
+	public void doUpdateGroups() {
+		channelsManager.collectCheckedChannelGroups();
+
+		channelRepository.updateGroups(channelsManager.getEditedChannel()
+				.getId(), channelsManager.getCheckedChannelGroups());
 	}
 
 	// On changing the source filter selection clear the "clipboard"

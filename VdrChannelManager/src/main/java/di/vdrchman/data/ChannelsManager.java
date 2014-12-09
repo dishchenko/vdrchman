@@ -35,6 +35,9 @@ public class ChannelsManager implements Serializable {
 	@Inject
 	private ChannelRepository channelRepository;
 
+	@Inject
+	private GroupRepository groupRepository;
+
 	// ID of the source to filter channel list on.
 	// No filtering if it's negative.
 	private long filteredSourceId = -1;
@@ -78,6 +81,14 @@ public class ChannelsManager implements Serializable {
 
 	// The "clipboard": the place to store the channel taken by user
 	private Channel takenChannel = null;
+
+	// The list of groups the edited channel is a member of
+	private List<Group> updatedGroups;
+
+	// Map of channel group IDs and checked checkboxes
+	private Map<Long, Boolean> channelGroupCheckboxes = new HashMap<Long, Boolean>();
+	// List of checked channel groups built on checkboxes map
+	private List<Group> checkedChannelGroups = new ArrayList<Group>();
 
 	// Fill in checkedChannels list with channels corresponding
 	// to checkboxes checked in the data table on the page
@@ -297,7 +308,76 @@ public class ChannelsManager implements Serializable {
 		}
 	}
 
-	// Build a string consisting of a comma delimited group descriptions
+	// Fill in channelGroupCheckboxes map with values indicating that
+	// the channel is (not) a member of groups
+	public void collectChannelGroupCheckboxes() {
+		List<Group> groups;
+		long groupId;
+
+		groups = groupRepository.findAll();
+
+		clearChannelGroupCheckboxes();
+
+		for (Group group : groups) {
+			groupId = group.getId();
+
+			for (Group channelGroup : updatedGroups) {
+				if (channelGroup.getId() == groupId) {
+					channelGroupCheckboxes.put(groupId, true);
+					break;
+				}
+			}
+		}
+	}
+
+	// Fill in checkedChannelGroups list with channel groups corresponding
+	// to checkboxes checked in the update channel groups dialog
+	public void collectCheckedChannelGroups() {
+		List<Group> groups;
+
+		groups = groupRepository.findAll();
+
+		clearCheckedChannelGroups();
+
+		for (Group group : groups) {
+			if (channelGroupCheckboxes.get(group.getId()) != null) {
+				if (channelGroupCheckboxes.get(group.getId())) {
+					checkedChannelGroups.add(group);
+				}
+			}
+		}
+	}
+
+	// Clear the list of checked channel groups
+	public void clearCheckedChannelGroups() {
+		checkedChannelGroups.clear();
+	}
+
+	// Clear the map of channel group checkboxes
+	public void clearChannelGroupCheckboxes() {
+		channelGroupCheckboxes.clear();
+	}
+
+	// Build a string consisting of comma delimited group names
+	public String buildGroupNamesString(List<Group> groups) {
+		StringBuilder sb;
+
+		sb = new StringBuilder();
+
+		if (!groups.isEmpty()) {
+			for (Group group : groups) {
+				sb.append(group.getName() + ", ");
+			}
+
+			sb.setLength(sb.length() - 2);
+		} else {
+			sb.append("--");
+		}
+
+		return sb.toString();
+	}
+
+	// Build a string consisting of comma delimited group names and descriptions
 	public String buildGroupDescriptionsString(List<Group> groups) {
 		StringBuilder sb;
 
@@ -466,6 +546,25 @@ public class ChannelsManager implements Serializable {
 
 	public void setTakenChannel(Channel takenChannel) {
 		this.takenChannel = takenChannel;
+	}
+
+	public List<Group> getUpdatedGroups() {
+
+		return updatedGroups;
+	}
+
+	public void setUpdatedGroups(List<Group> updatedGroups) {
+		this.updatedGroups = updatedGroups;
+	}
+
+	public Map<Long, Boolean> getChannelGroupCheckboxes() {
+
+		return channelGroupCheckboxes;
+	}
+
+	public List<Group> getCheckedChannelGroups() {
+
+		return checkedChannelGroups;
 	}
 
 }

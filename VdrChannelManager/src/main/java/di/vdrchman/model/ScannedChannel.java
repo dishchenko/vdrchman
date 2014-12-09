@@ -64,7 +64,7 @@ public class ScannedChannel implements Serializable {
 	@Digits(fraction = 0, integer = 5)
 	private Integer vpid;
 
-	// TODO: add pcr
+	private Integer pcr;
 
 	@NotNull(message = "Audio PID must be defined")
 	@Digits(fraction = 0, integer = 5)
@@ -73,8 +73,8 @@ public class ScannedChannel implements Serializable {
 	@Digits(fraction = 0, integer = 5)
 	private Integer tpid;
 
-	@Digits(fraction = 0, integer = 5)
-	private Integer caid;
+	@Size(max = 20)
+	private String caid;
 
 	private Integer rid;
 
@@ -109,9 +109,10 @@ public class ScannedChannel implements Serializable {
 		this.tid = scannedChannel.tid != null ? new Integer(scannedChannel.tid) : null;
 		this.sid = scannedChannel.sid != null ? new Integer(scannedChannel.sid) : null;
 		this.vpid = scannedChannel.vpid != null ? new Integer(scannedChannel.vpid) : null;
+		this.pcr = scannedChannel.pcr != null ? new Integer(scannedChannel.pcr) : null;
 		this.apid = scannedChannel.apid != null ? new Integer(scannedChannel.apid) : null;
 		this.tpid = scannedChannel.tpid != null ? new Integer(scannedChannel.tpid) : null;
-		this.caid = scannedChannel.caid != null ? new Integer(scannedChannel.caid) : null;
+		this.caid = scannedChannel.caid != null ? new String(scannedChannel.caid) : null;
 		this.rid = scannedChannel.rid != null ? new Integer(scannedChannel.rid) : null;
 		this.scannedName = scannedChannel.scannedName != null ? new String(
 				scannedChannel.scannedName) : null;
@@ -218,6 +219,15 @@ public class ScannedChannel implements Serializable {
 		this.vpid = vpid;
 	}
 
+	public Integer getPcr() {
+
+		return pcr;
+	}
+
+	public void setPcr(Integer pcr) {
+		this.pcr = pcr;
+	}
+
 	public Integer getApid() {
 
 		return apid;
@@ -236,12 +246,12 @@ public class ScannedChannel implements Serializable {
 		this.tpid = tpid;
 	}
 
-	public Integer getCaid() {
+	public String getCaid() {
 
 		return caid;
 	}
 
-	public void setCaid(Integer caid) {
+	public void setCaid(String caid) {
 		this.caid = caid;
 	}
 

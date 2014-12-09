@@ -80,7 +80,7 @@ create table ttransp_seqno (
 -- 'apid' - Audio PID
 -- 'aenc' - audio stream encoding
 -- 'tpid' - Text PID
--- 'caid' - Conditional Access system ID, 2600 for BISS
+-- 'caid' - Conditional Access system ID comma delimited set, 2600 for BISS
 -- 'rid' - so called Radio ID but it seems it's not used
 -- 'scanned_name' - channel's name as it is broadcasted in the stream
 -- 'provider_name' - channel provider's name
@@ -97,7 +97,7 @@ create table tchannel (
 	apid int(11) not null,
 	aenc int(11),
 	tpid int(11),
-	caid int(11),
+	caid varchar(20),
 	rid int(11),
 	scanned_name varchar(50),
 	provider_name varchar(50),
@@ -143,7 +143,8 @@ create table tchannel_group (
 	channel_id bigint(20) not null,
 	group_id bigint(20) not null,
 	unique (channel_id, group_id),
-	foreign key (channel_id) references tchannel (id) on delete cascade
+	foreign key (channel_id) references tchannel (id) on delete cascade,
+	foreign key (group_id) references tgroup (id) on delete cascade
 ) engine=InnoDB;
 
 -- Ignored Channel list
@@ -171,9 +172,10 @@ create table tscanned_channel (
 	tid int(11),
 	sid int(11) not null,
 	vpid int(11),
+	pcr int(11);
 	apid int(11) not null,
 	tpid int(11),
-	caid int(11),
+	caid varchar(20),
 	rid int(11),
 	scanned_name varchar(50),
 	provider_name varchar(50),

@@ -93,8 +93,8 @@
 							<h:selectBooleanCheckbox id="transponderCheckbox"
 								value="#{transpondersManager.transponderCheckboxes[transponderVar.id]}"
 								styleClass="preformattedtext"
-								onclick="document.getElementById('transpondersForm:removeButton').disabled=!isAtLeastOneTransponderCheckboxChecked();document.getElementById('transpondersForm:addAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();document.getElementById('transpondersForm:takeButton').disabled=!isExactlyOneTransponderCheckboxChecked();document.getElementById('transpondersForm:copyAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();document.getElementById('transpondersForm:moveAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked()" />
-							<h:outputText styleClass="preformattedtext" value="C"
+								onclick="document.getElementById('transpondersForm:removeButton').disabled=!isAtLeastOneTransponderCheckboxChecked();document.getElementById('transpondersForm:addAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();document.getElementById('transpondersForm:takeButton').disabled=!isExactlyOneTransponderCheckboxChecked();element=document.getElementById('transpondersForm:copyAfterButton'); if (element!=null) element.disabled=!isExactlyOneTransponderCheckboxChecked();element=document.getElementById('transpondersForm:moveAfterButton'); if (element!=null) element.disabled=!isExactlyOneTransponderCheckboxChecked()" />
+							<h:outputText styleClass="preformattedtext" value="T"
 								rendered="#{not empty transpondersManager.takenTransponder and transpondersManager.takenTransponder.id eq transponderVar.id}" />
 						</h:column>
 						<h:column rendered="#{transpondersManager.filteredSourceId lt 0}">
@@ -151,12 +151,8 @@
 					document.getElementById('transpondersForm:removeButton').disabled=!isAtLeastOneTransponderCheckboxChecked();
 					document.getElementById('transpondersForm:addAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
 					document.getElementById('transpondersForm:takeButton').disabled=!isExactlyOneTransponderCheckboxChecked();
-					if (document.getElementById('transpondersForm:copyAfterButton') != null) {
-						document.getElementById('transpondersForm:copyAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
-					}
-					if (document.getElementById('transpondersForm:moveAfterButton') != null) {
-						document.getElementById('transpondersForm:moveAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
-					}
+					element = document.getElementById('transpondersForm:copyAfterButton'); if (element != null) element.disabled=!isExactlyOneTransponderCheckboxChecked();
+					element = document.getElementById('transpondersForm:moveAfterButton'); if (element != null) element.disabled=!isExactlyOneTransponderCheckboxChecked();
 			</h:outputScript>
 		</h:panelGroup>
 		<h:panelGrid columns="2">
@@ -170,7 +166,7 @@
 					<f:facet name="header">
 						<h:panelGroup>
 							<h:outputText
-								value="#{empty transpondersManager.editedTransponder.id ? 'Add' : 'Edit'} Transponder"></h:outputText>
+								value="#{empty transpondersManager.editedTransponder.id ? 'Add' : 'Edit'} Transponder" />
 						</h:panelGroup>
 					</f:facet>
 					<f:facet name="controls">
@@ -305,7 +301,7 @@
 					<!-- Header -->
 					<f:facet name="header">
 						<h:panelGroup>
-							<h:outputText value="Remove Transponder(s)"></h:outputText>
+							<h:outputText value="Remove Transponder(s)" />
 						</h:panelGroup>
 					</f:facet>
 					<f:facet name="controls">
@@ -317,9 +313,9 @@
 					</f:facet>
 					<!-- Content -->
 					<h:outputText
-						value="Are you sure you want to remove the following transponder(s)"></h:outputText>
+						value="Are you sure you want to remove the following transponder(s)" />
 					<br />
-					<h:outputText value="along with all their channels?"></h:outputText>
+					<h:outputText value="along with all their channels?" />
 					<br />
 					<br />
 					<ui:repeat value="#{transpondersManager.checkedTransponders}"

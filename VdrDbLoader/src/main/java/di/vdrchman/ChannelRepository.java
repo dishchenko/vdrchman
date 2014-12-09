@@ -52,7 +52,7 @@ public class ChannelRepository {
 		int apid;
 		int aenc;
 		int tpid;
-		int caid;
+		String caid;
 		int rid;
 		String[] snInfo;
 		String scannedName;
@@ -64,7 +64,9 @@ public class ChannelRepository {
 		ChannelSeqno channelSeqno;
 
 		query = em
-				.createQuery("select max(cs.seqno) from ChannelSeqno cs where cs.userId = :userId", Integer.class);
+				.createQuery(
+						"select max(cs.seqno) from ChannelSeqno cs where cs.userId = :userId",
+						Integer.class);
 		query.setParameter("userId", userId);
 		queryResult = query.getSingleResult();
 
@@ -151,7 +153,7 @@ public class ChannelRepository {
 						aenc = 0;
 					}
 					tpid = Integer.parseInt(splitLine[4]);
-					caid = Integer.parseInt(splitLine[5]);
+					caid = splitLine[5];
 					rid = Integer.parseInt(splitLine[6]);
 					snInfo = Charset
 							.forName("ISO-8859-5")
@@ -196,9 +198,7 @@ public class ChannelRepository {
 					if (tpid != 0) {
 						channel.setTpid(tpid);
 					}
-					if (caid != 0) {
-						channel.setCaid(caid);
-					}
+					channel.setCaid(caid);
 					if (rid != 0) {
 						channel.setRid(rid);
 					}

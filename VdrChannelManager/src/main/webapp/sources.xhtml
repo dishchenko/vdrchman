@@ -55,7 +55,7 @@
 								value="#{sourcesManager.sourceCheckboxes[sourceVar.id]}"
 								styleClass="preformattedtext"
 								onclick="document.getElementById('sourcesForm:removeButton').disabled=!isAtLeastOneSourceCheckboxChecked();document.getElementById('sourcesForm:takeButton').disabled=!isExactlyOneSourceCheckboxChecked()" />
-							<h:outputText styleClass="preformattedtext" value="C"
+							<h:outputText styleClass="preformattedtext" value="T"
 								rendered="#{not empty sourcesManager.takenSource and sourcesManager.takenSource.id eq sourceVar.id}" />
 						</h:column>
 						<h:column>
@@ -114,7 +114,7 @@
 					<f:facet name="header">
 						<h:panelGroup>
 							<h:outputText
-								value="#{empty sourcesManager.editedSource.id ? 'Add' : 'Edit'} Source"></h:outputText>
+								value="#{empty sourcesManager.editedSource.id ? 'Add' : 'Edit'} Source" />
 						</h:panelGroup>
 					</f:facet>
 					<f:facet name="controls">
@@ -204,7 +204,7 @@
 					<!-- Header -->
 					<f:facet name="header">
 						<h:panelGroup>
-							<h:outputText value="Remove Source(s)"></h:outputText>
+							<h:outputText value="Remove Source(s)" />
 						</h:panelGroup>
 					</f:facet>
 					<f:facet name="controls">
@@ -216,10 +216,10 @@
 					</f:facet>
 					<!-- Content -->
 					<h:outputText
-						value="Are you sure you want to remove the following source(s)"></h:outputText>
+						value="Are you sure you want to remove the following source(s)" />
 					<br />
 					<h:outputText
-						value="along with all their transponders and channels?"></h:outputText>
+						value="along with all their transponders and channels?" />
 					<br />
 					<br />
 					<ui:repeat value="#{sourcesManager.checkedSources}" var="sourceVar"

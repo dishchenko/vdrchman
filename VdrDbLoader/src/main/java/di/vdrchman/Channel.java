@@ -53,8 +53,8 @@ public class Channel implements Serializable {
 	@Digits(fraction = 0, integer = 5)
 	private Integer tpid;
 
-	@Digits(fraction = 0, integer = 5)
-	private Integer caid;
+	@Size(max = 20)
+	private String caid;
 
 	private Integer rid;
 
@@ -158,12 +158,12 @@ public class Channel implements Serializable {
 		this.tpid = tpid;
 	}
 
-	public Integer getCaid() {
+	public String getCaid() {
 
 		return caid;
 	}
 
-	public void setCaid(Integer caid) {
+	public void setCaid(String caid) {
 		this.caid = caid;
 	}
 

@@ -16,6 +16,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import di.vdrchman.model.Channel;
+import di.vdrchman.model.ChannelGroup;
 import di.vdrchman.model.ChannelSeqno;
 import di.vdrchman.model.Group;
 
@@ -186,11 +187,11 @@ public class ChannelRepository {
 	}
 
 	/**
-	 * Builds a list of groups in which the channel with given ID is present.
+	 * Builds a list of groups which the channel with given ID is a member of.
 	 * 
 	 * @param channelId
 	 *            the ID of the channel to build the list of groups for
-	 * @return the list of groups in which the channel is present
+	 * @return the list of groups which the channel is a member of
 	 */
 	public List<Group> findGroups(long channelId) {
 		TypedQuery<Group> query;
@@ -289,8 +290,8 @@ public class ChannelRepository {
 	}
 
 	/**
-	 * Deletes the channel from the persisted list of channels (deletes
-	 * it from the database).
+	 * Deletes the channel from the persisted list of channels (deletes it from
+	 * the database).
 	 * 
 	 * @param channel
 	 *            the channel to delete
@@ -324,6 +325,66 @@ public class ChannelRepository {
 		}
 
 		em.remove(em.merge(channel));
+	}
+
+	/**
+	 * Updates groups which the channel with given ID is a member of.
+	 * 
+	 * @param channelId
+	 *            the ID of the channel to update groups for
+	 */
+	public void updateGroups(long channelId, List<Group> groups) {
+		TypedQuery<ChannelGroup> query;
+		List<ChannelGroup> curChannelGroups;
+		boolean isMember;
+		long curGroupId;
+		long groupId;
+		ChannelGroup channelGroup;
+
+		query = em
+				.createQuery(
+						"select cg from ChannelGroup cg where cg.channelId = :channelId",
+						ChannelGroup.class);
+		query.setParameter("channelId", channelId);
+
+		curChannelGroups = query.getResultList();
+
+		for (ChannelGroup curChannelGroup : curChannelGroups) {
+			curGroupId = curChannelGroup.getGroupId();
+
+			isMember = false;
+			for (Group group : groups) {
+				if (group.getId() == curGroupId) {
+					isMember = true;
+					break;
+				}
+			}
+
+			if (!isMember) {
+				em.remove(curChannelGroup);
+			}
+		}
+
+		for (Group group : groups) {
+			groupId = group.getId();
+
+			isMember = false;
+			for (ChannelGroup curChannelGroup : curChannelGroups) {
+				if (curChannelGroup.getGroupId() == groupId) {
+					isMember = true;
+					break;
+				}
+			}
+
+			if (!isMember) {
+				channelGroup = new ChannelGroup();
+
+				channelGroup.setChannelId(channelId);
+				channelGroup.setGroupId(groupId);
+
+				em.persist(channelGroup);
+			}
+		}
 	}
 
 }
