@@ -187,6 +187,60 @@ public class ChannelRepository {
 	}
 
 	/**
+	 * Returns a sequence number of the channel in the group given.
+	 * 
+	 * @param channelId
+	 *            the ID of the channel to get the sequence number for
+	 * @param groupId
+	 *            the group to get the sequence number of the channel in
+	 * @return the sequence number or null if no channel found
+	 */
+	public Integer getSeqno(long channelId, long groupId) {
+		TypedQuery<Integer> query;
+
+		query = em
+				.createQuery(
+						"select cg.seqno from ChannelGroup cg where cg.channelId = :channelId and cg.groupId = :groupId",
+						Integer.class);
+		query.setParameter("channelId", channelId);
+		query.setParameter("groupId", groupId);
+
+		return query.getSingleResult();
+	}
+
+	/**
+	 * Builds a list of channels in the group with given ID belonging to the
+	 * current application user. Channels are added to the list in ascending
+	 * sequence number order.
+	 * 
+	 * @param groupId
+	 *            the ID of the group which channels are added to the list
+	 * @return the list of channels found in the group for the current
+	 *         application user
+	 */
+	public List<Channel> findAllInGroup(long groupId) {
+		List<Channel> result;
+		TypedQuery<Object[]> query;
+		List<Object[]> queryResult;
+
+		query = em
+				.createQuery(
+						"select c, cg.seqno from Channel c, ChannelGroup cg where c.id = cg.channelId and cg.groupId = :groupId order by cg.seqno",
+						Object[].class);
+		query.setParameter("groupId", groupId);
+
+		queryResult = query.getResultList();
+
+		result = new ArrayList<Channel>();
+
+		for (Object[] row : queryResult) {
+			result.add((Channel) row[0]);
+		}
+
+		return result;
+	}
+
+	/**
 	 * Builds a list of groups which the channel with given ID is a member of.
 	 * 
 	 * @param channelId
@@ -239,23 +293,6 @@ public class ChannelRepository {
 		em.flush();
 
 		move(channel, seqno);
-	}
-
-	/**
-	 * Adds the channel to group relation to the persisted list of relations
-	 * (stores it in the database).
-	 * 
-	 * @param channelId
-	 *            the channel ID to add relation for
-	 * @param groupId
-	 *            the group ID to add relation for
-	 * @param seqno
-	 *            the sequence number of the added relation
-	 */
-	public void add(long channelId, long groupId, int seqno) {
-
-		// TODO
-		// move(channelId, groupId, seqno);
 	}
 
 	/**
@@ -326,21 +363,6 @@ public class ChannelRepository {
 	}
 
 	/**
-	 * Moves the channel to group relation to the new sequence number in the
-	 * persisted list of relations.
-	 * 
-	 * @param channelId
-	 *            the channel ID of the relation to move
-	 * @param groupId
-	 *            the group ID of the relation to move
-	 * @param seqno
-	 *            the new sequence number
-	 */
-	public void move(long channelId, long groupId, int seqno) {
-		// TODO
-	}
-
-	/**
 	 * Deletes the channel from the persisted list of channels (deletes it from
 	 * the database).
 	 * 
@@ -379,6 +401,85 @@ public class ChannelRepository {
 	}
 
 	/**
+	 * Adds the channel to group relation to the persisted list of relations
+	 * (stores it in the database).
+	 * 
+	 * @param channelId
+	 *            the channel ID to add relation for
+	 * @param groupId
+	 *            the group ID to add relation for
+	 * @param seqno
+	 *            the sequence number of the added relation
+	 */
+	public void add(long channelId, long groupId, int seqno) {
+		Query query;
+		ChannelGroup channelGroup;
+
+		query = em
+				.createQuery("update ChannelGroup cg set cg.seqno = -cg.seqno where cg.groupId = :groupId and cg.seqno >= :seqno");
+		query.setParameter("groupId", groupId);
+		query.setParameter("seqno", seqno);
+		query.executeUpdate();
+
+		query = em
+				.createQuery("update ChannelGroup cg set cg.seqno = -cg.seqno + 1 where cg.groupId = :groupId and cg.seqno <= -:seqno");
+		query.setParameter("groupId", groupId);
+		query.setParameter("seqno", seqno);
+		query.executeUpdate();
+
+		channelGroup = new ChannelGroup();
+
+		channelGroup.setChannelId(channelId);
+		channelGroup.setGroupId(groupId);
+		channelGroup.setSeqno(seqno);
+
+		em.persist(channelGroup);
+		em.flush();
+	}
+
+	/**
+	 * Moves the channel to group relation to the new sequence number in the
+	 * persisted list of relations.
+	 * 
+	 * @param channelId
+	 *            the channel ID of the relation to move
+	 * @param groupId
+	 *            the group ID of the relation to move
+	 * @param seqno
+	 *            the new sequence number
+	 */
+	public void move(long channelId, long groupId, int seqno) {
+		TypedQuery<ChannelGroup> query;
+		ChannelGroup channelGroup;
+
+		query = em
+				.createQuery(
+						"select cg from ChannelGroup cg where cg.channelId = :channelId and cg.groupId = :groupId",
+						ChannelGroup.class);
+		query.setParameter("channelId", channelId);
+		query.setParameter("groupId", groupId);
+
+		channelGroup = query.getSingleResult();
+
+		moveMerged(channelGroup, seqno);
+	}
+
+	/**
+	 * Moves the channel to group relation to the new sequence number in the
+	 * persisted list of relations.
+	 * 
+	 * @param channelGroup
+	 *            the channel to group relation to move
+	 * @param seqno
+	 *            the new sequence number
+	 */
+	public void move(ChannelGroup channelGroup, int seqno) {
+		moveMerged(em.merge(channelGroup), seqno);
+
+		channelGroup.setSeqno(seqno);
+	}
+
+	/**
 	 * Deletes the channel to group relation from the persisted list of
 	 * relations (deletes it from the database).
 	 * 
@@ -388,7 +489,30 @@ public class ChannelRepository {
 	 *            the group ID of the relation to delete
 	 */
 	public void delete(long channelId, long groupId) {
-		// TODO
+		TypedQuery<ChannelGroup> query;
+		ChannelGroup channelGroup;
+
+		query = em
+				.createQuery(
+						"select cg from ChannelGroup cg where cg.channelId = :channelId and cg.groupId = :groupId",
+						ChannelGroup.class);
+		query.setParameter("channelId", channelId);
+		query.setParameter("groupId", groupId);
+
+		channelGroup = query.getSingleResult();
+
+		deleteMerged(channelGroup);
+	}
+
+	/**
+	 * Deletes the channel to group relation from the persisted list of
+	 * relations (deletes it from the database).
+	 * 
+	 * @param channelGroup
+	 *            the channel to group relation to delete
+	 */
+	public void delete(ChannelGroup channelGroup) {
+		deleteMerged(em.merge(channelGroup));
 	}
 
 	/**
@@ -398,22 +522,21 @@ public class ChannelRepository {
 	 *            the ID of the channel to update groups for
 	 */
 	public void updateGroups(long channelId, List<Group> groups) {
-		TypedQuery<ChannelGroup> cgQuery;
+		TypedQuery<ChannelGroup> query;
 		List<ChannelGroup> curChannelGroups;
 		boolean isMember;
 		long curGroupId;
 		long groupId;
 		Integer maxGroupSeqno;
 		int seqno;
-		ChannelGroup channelGroup;
 
-		cgQuery = em
+		query = em
 				.createQuery(
 						"select cg from ChannelGroup cg where cg.channelId = :channelId",
 						ChannelGroup.class);
-		cgQuery.setParameter("channelId", channelId);
+		query.setParameter("channelId", channelId);
 
-		curChannelGroups = cgQuery.getResultList();
+		curChannelGroups = query.getResultList();
 
 		for (ChannelGroup curChannelGroup : curChannelGroups) {
 			curGroupId = curChannelGroup.getGroupId();
@@ -427,7 +550,7 @@ public class ChannelRepository {
 			}
 
 			if (!isMember) {
-				em.remove(curChannelGroup);
+				deleteMerged(curChannelGroup);
 			}
 		}
 
@@ -451,15 +574,72 @@ public class ChannelRepository {
 					seqno = 1;
 				}
 
-				channelGroup = new ChannelGroup();
-
-				channelGroup.setChannelId(channelId);
-				channelGroup.setGroupId(groupId);
-				channelGroup.setSeqno(seqno);
-
-				em.persist(channelGroup);
+				add(channelId, groupId, seqno);
 			}
 		}
+	}
+
+	// Move the (merged into EM) channel to group relation to the new sequence
+	// number
+	private void moveMerged(ChannelGroup mergedChannelGroup, int seqno) {
+		long groupId;
+		int curSeqno;
+		Query query;
+
+		groupId = mergedChannelGroup.getGroupId();
+		curSeqno = mergedChannelGroup.getSeqno();
+
+		mergedChannelGroup.setSeqno(0);
+
+		query = em
+				.createQuery("update ChannelGroup cg set cg.seqno = -cg.seqno where cg.groupId = :groupId and cg.seqno > :curSeqno");
+		query.setParameter("groupId", groupId);
+		query.setParameter("curSeqno", curSeqno);
+		query.executeUpdate();
+
+		query = em
+				.createQuery("update ChannelGroup cg set cg.seqno = -cg.seqno - 1 where cg.groupId = :groupId and cg.seqno < -:curSeqno");
+		query.setParameter("groupId", groupId);
+		query.setParameter("curSeqno", curSeqno);
+		query.executeUpdate();
+
+		query = em
+				.createQuery("update ChannelGroup cg set cg.seqno = -cg.seqno where cg.groupId = :groupId and cg.seqno >= :seqno");
+		query.setParameter("groupId", groupId);
+		query.setParameter("seqno", seqno);
+		query.executeUpdate();
+
+		query = em
+				.createQuery("update ChannelGroup cg set cg.seqno = -cg.seqno + 1 where cg.groupId = :groupId and cg.seqno <= -:seqno");
+		query.setParameter("groupId", groupId);
+		query.setParameter("seqno", seqno);
+		query.executeUpdate();
+
+		mergedChannelGroup.setSeqno(seqno);
+	}
+
+	// Delete the (merged into EM) channel to group relation
+	private void deleteMerged(ChannelGroup mergedChannelGroup) {
+		long groupId;
+		int seqno;
+		Query query;
+
+		groupId = mergedChannelGroup.getGroupId();
+		seqno = mergedChannelGroup.getSeqno();
+
+		em.remove(mergedChannelGroup);
+
+		query = em
+				.createQuery("update ChannelGroup cg set cg.seqno = -cg.seqno where cg.groupId = :groupId and cg.seqno > :seqno");
+		query.setParameter("groupId", groupId);
+		query.setParameter("seqno", seqno);
+		query.executeUpdate();
+
+		query = em
+				.createQuery("update ChannelGroup cg set cg.seqno = -cg.seqno - 1 where cg.groupId = :groupId and cg.seqno < -:seqno");
+		query.setParameter("groupId", groupId);
+		query.setParameter("seqno", seqno);
+		query.executeUpdate();
 	}
 
 }

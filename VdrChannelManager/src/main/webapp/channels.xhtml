@@ -5,7 +5,6 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:a4j="http://richfaces.org/a4j"
-	xmlns:c="http://java.sun.com/jstl/core"
 	template="/WEB-INF/templates/default.xhtml">
 	<ui:define name="content">
 		<h:outputScript library="javax.faces" name="jsf.js" target="head" />
@@ -220,8 +219,8 @@
 			<h:form id="updateGroupsPanelForm" styleClass="zerosize"
 				onkeypress="return updateGroupsPanelFormKeyPressHandler(event)">
 				<!-- The Update Groups panel -->
-				<rich:popupPanel id="updateGroupsPanel" modal="true"
-					autosized="true" domElementAttachment="form">
+				<rich:popupPanel id="updateGroupsPanel" modal="true" width="480"
+					height="800" domElementAttachment="form">
 					<!-- Header -->
 					<f:facet name="header">
 						<h:panelGroup>
@@ -236,15 +235,22 @@
 						</h:panelGroup>
 					</f:facet>
 					<!-- Content -->
-					<h:panelGrid columns="8">
-						<c:forEach var="groupVar" items="#{groupRepository.findAll()}">
-							<h:selectBooleanCheckbox id="groupCheckbox#{groupVar.id}"
-								value="#{channelsManager.channelGroupCheckboxes[groupVar.id]}"
-								styleClass="preformattedtext" />
-							<h:outputLabel value="#{groupVar.name} (#{groupVar.description})"
-								styleClass="preformattedtext" />
-						</c:forEach>
-					</h:panelGrid>
+					<div style="width: 450px; height: 720px; overflow: auto;">
+						<h:dataTable id="updateGroupsTable" var="groupVar"
+							value="#{groupRepository.findAll()}">
+							<h:column>
+								<h:selectBooleanCheckbox id="groupCheckbox#{groupVar.id}"
+									value="#{channelsManager.channelGroupCheckboxes[groupVar.id]}"
+									styleClass="preformattedtext" />
+							</h:column>
+							<h:column>
+								<h:outputLabel
+									value="#{groupVar.name} (#{groupVar.description})"
+									styleClass="preformattedtext" />
+							</h:column>
+						</h:dataTable>
+					</div>
+					<br />
 					<!-- Action buttons -->
 					<h:panelGrid columns="2">
 						<a4j:commandButton id="okButton" value="OK"

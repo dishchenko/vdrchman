@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j"
+	template="/WEB-INF/templates/default.xhtml">
+	<ui:define name="content">
+		<h:outputScript library="javax.faces" name="jsf.js" target="head" />
+		<h:outputScript library="js" name="jsf_fix.js" target="head" />
+		<h:outputScript library="js" name="group_channels.js" target="head" />
+		<!-- Clear channel checkboxes and possibly refresh item lists on page load -->
+		#{groupChannelsManager.clearChannelCheckboxes()}
+		#{groupChannelsManager.refreshChannelsIfNeeded()}
+		<!-- Main panel group -->
+		<h:panelGroup id="groupChannelsContent">
+			<h1>
+				<ui:param name="groupParam"
+					value="#{groupRepository.findById(groupChannelsManager.shownGroupId)}">
+				</ui:param>
+				<h:outputText styleClass="preformattedtext"
+					value="Channels in group: #{groupParam.name} (#{groupParam.description})" />
+			</h1>
+			<!-- Channels form -->
+			<h:form id="groupChannelsForm">
+				<!-- 'Add', 'Remove' etc. buttons panel -->
+				<h:panelGrid columns="4">
+					<a4j:commandButton id="removeButton" value="Remove..."
+						action="#{groupChannelsBacking.intendRemoveChannels()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('removePanel')}.show();document.getElementById('removePanelForm:okButton').focus();document.getElementById('groupChannelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked()"
+						render="groupChannelsContent, removePanel" />
+					<a4j:commandButton id="takeButton" value="Take"
+						action="#{groupChannelsBacking.takeChannel()}"
+						onclick="this.disabled=true"
+						oncomplete="document.getElementById('groupChannelsForm:takeButton').disabled=!isExactlyOneChannelCheckboxChecked()"
+						render="groupChannelsContent" />
+					<a4j:commandButton id="moveOnTopButton" value="Move on top"
+						rendered="#{not empty groupChannelsManager.takenChannel}"
+						action="#{groupChannelsBacking.moveChannelOnTop()}"
+						onclick="this.disabled=true"
+						oncomplete="document.getElementById('groupChannelsForm:moveOnTopButton').disabled=false"
+						render="groupChannelsContent" />
+					<a4j:commandButton id="moveAfterButton" value="Move after"
+						rendered="#{not empty groupChannelsManager.takenChannel}"
+						action="#{groupChannelsBacking.moveChannelAfter()}"
+						onclick="this.disabled=true"
+						oncomplete="document.getElementById('groupChannelsForm:moveAfterButton').disabled=!isExactlyOneChannelCheckboxChecked()"
+						render="groupChannelsContent" />
+				</h:panelGrid>
+				<!-- Group selection panel -->
+				<h:panelGrid columns="2">
+					<h:outputLabel styleClass="preformattedtext" value="Group" />
+					<h:selectOneMenu value="#{groupChannelsManager.shownGroupId}"
+						valueChangeListener="#{groupChannelsBacking.onGroupMenuSelection}"
+						onchange="document.getElementById('groupChannelsForm').submit()">
+						<f:selectItems value="#{groupsManager.groups}" var="groupVar"
+							itemValue="#{groupVar.id}"
+							itemLabel="#{groupVar.name} (#{groupVar.description})" />
+					</h:selectOneMenu>
+				</h:panelGrid>
+				<h:panelGroup rendered="#{empty groupChannelsManager.channels}">
+					<em>No channels in group.</em>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{not empty groupChannelsManager.channels}">
+					<h:dataTable var="channelVar"
+						value="#{groupChannelsManager.channels}"
+						styleClass="simpletablestyle" id="groupChannelsTable"
+						rows="#{groupChannelsManager.rowsPerPage}">
+						<h:column>
+							<f:facet name="header" />
+							<h:selectBooleanCheckbox id="channelCheckbox"
+								value="#{groupChannelsManager.channelCheckboxes[channelVar.id]}"
+								styleClass="preformattedtext"
+								onclick="document.getElementById('groupChannelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();document.getElementById('groupChannelsForm:takeButton').disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('groupChannelsForm:moveAfterButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked()" />
+							<h:outputText styleClass="preformattedtext" value="T"
+								rendered="#{not empty groupChannelsManager.takenChannel and groupChannelsManager.takenChannel.id eq channelVar.id}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Source</f:facet>
+							<ui:param name="sourceParam"
+								value="#{sourceRepository.findById(transponderRepository.findById(channelVar.transpId).sourceId)}">
+							</ui:param>
+							<h:outputText styleClass="preformattedtext"
+								value="#{sourceParam.name}" title="#{sourceParam.description}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Frequency</f:facet>
+							<ui:param name="transponderParam"
+								value="#{transponderRepository.findById(channelVar.transpId)}">
+							</ui:param>
+							<h:outputText styleClass="preformattedtext"
+								value="#{transponderParam.frequency} #{transponderParam.polarity}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Name</f:facet>
+							<ui:param name="langNameParam"
+								value="#{not empty channelVar.lang ? channelVar.lang.concat(')') : ''} #{channelVar.name}">
+							</ui:param>
+							<h:outputText styleClass="preformattedtext"
+								value="#{langNameParam}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">SID</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.sid}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">VPID</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.vpid}" title="#{channelVar.pcr}" />
+							<ui:fragment rendered="#{not empty channelVar.venc}">
+								<h:outputText styleClass="preformattedtext"
+									value=" (#{channelsManager.decodeVenc(channelVar.venc)})" />
+							</ui:fragment>
+						</h:column>
+						<h:column>
+							<f:facet name="header">APID</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.apid}" />
+							<ui:fragment rendered="#{not empty channelVar.aenc}">
+								<h:outputText styleClass="preformattedtext"
+									value=" (#{channelsManager.decodeAenc(channelVar.aenc)})" />
+							</ui:fragment>
+						</h:column>
+						<h:column>
+							<f:facet name="header">TPID</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.tpid}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">CAID</f:facet>
+							<ui:fragment rendered="#{not empty channelVar.caid}">
+								<h:panelGroup style="background-color: #ffcc99;">
+									<h:outputText styleClass="preformattedtext"
+										value="#{channelVar.caid == 2600 ? 'BISS' : channelVar.caid}" />
+								</h:panelGroup>
+							</ui:fragment>
+						</h:column>
+						<h:column>
+							<f:facet name="header">Scanned As</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.scannedName}"
+								title="#{channelVar.providerName}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Locked</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.locked ? 'V' : ''}" />
+						</h:column>
+					</h:dataTable>
+					<rich:dataScroller for="groupChannelsTable" maxPages="5"
+						fastStep="5" page="#{groupChannelsManager.scrollerPage}"
+						render="groupChannelsContent"
+						scrollListener="#{groupChannelsBacking.onDataTableScroll}" />
+				</h:panelGroup>
+			</h:form>
+			<!-- Set buttons enable/disable state on panel rendering -->
+			<h:outputScript library="js">
+					document.getElementById('groupChannelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();
+					document.getElementById('groupChannelsForm:takeButton').disabled=!isExactlyOneChannelCheckboxChecked();
+					element = document.getElementById('groupChannelsForm:moveAfterButton'); if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();
+			</h:outputScript>
+		</h:panelGroup>
+		<h:panelGrid columns="1">
+			<!-- Outer form for the Remove panel -->
+			<h:form id="removePanelForm" styleClass="zerosize"
+				onkeypress="return removePanelFormKeyPressHandler(event)">
+				<!-- The Remove panel -->
+				<rich:popupPanel id="removePanel" modal="true" autosized="true"
+					domElementAttachment="form">
+					<!-- Header -->
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Remove Channel(s) From Group" />
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<h:commandLink value="Close" immediate="true"
+								onclick="#{rich:component('removePanel')}.hide()"
+								action="#{formResetter.resetForm(rich:findComponent('removePanelForm'))}" />
+						</h:panelGroup>
+					</f:facet>
+					<!-- Content -->
+					<h:outputText
+						value="Are you sure you want to remove the following channel(s)" />
+					<br />
+					<h:outputText value="from the selected group?" />
+					<br />
+					<br />
+					<ui:repeat value="#{groupChannelsManager.checkedChannels}"
+						var="channelVar" varStatus="loopVar">
+				            #{not empty channelVar.lang ? channelVar.lang.concat(')') : ''} #{channelVar.name}
+				        <ui:fragment rendered="#{!loopVar.last}">
+							<br />
+						</ui:fragment>
+						<ui:fragment rendered="#{loopVar.last}">
+							<br />
+							<br />
+						</ui:fragment>
+					</ui:repeat>
+					<!-- Action buttons -->
+					<h:panelGrid columns="2">
+						<a4j:commandButton id="okButton" value="OK"
+							onclick="this.disabled=true"
+							oncomplete="#{rich:component('removePanel')}.hide();document.getElementById('removePanelForm:okButton').disabled=false"
+							action="#{groupChannelsBacking.doRemoveChannels()}"
+							render="groupChannelsContent" />
+						<a4j:commandButton id="cancelButton" value="Cancel"
+							immediate="true"
+							action="#{formResetter.resetForm(rich:findComponent('removePanelForm'))}"
+							onclick="#{rich:component('removePanel')}.hide()" />
+					</h:panelGrid>
+				</rich:popupPanel>
+			</h:form>
+		</h:panelGrid>
+	</ui:define>
+</ui:composition>

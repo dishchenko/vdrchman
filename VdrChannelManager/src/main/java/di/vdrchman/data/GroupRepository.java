@@ -108,6 +108,18 @@ public class GroupRepository {
 	}
 
 	/**
+	 * Finds a group by ID.
+	 * 
+	 * @param id
+	 *            the ID of the group to find
+	 * @return the group found or null if no group found
+	 */
+	public Group findById(long id) {
+
+		return em.find(Group.class, id);
+	}
+
+	/**
 	 * Adds the group to the persisted list of groups (stores it in the
 	 * database).
 	 * 

@@ -162,3 +162,49 @@ function removePanelFormKeyPressHandler(event) {
 
 	return result;
 }
+
+// The Update Groups panel form key press listener
+// Emulates 'OK' button click on hitting the 'Enter' key
+// Emulates 'Cancel' button click on hitting the 'Esc' key
+// Keeps input focus on 'OK' and 'Cancel' buttons on pressing 'Tab' /
+// 'Shift+Tab'
+function updateGroupsPanelFormKeyPressHandler(event) {
+	var result;
+
+	result = true;
+
+	event = event || window.event;
+
+	if (event.keyCode == 13) {
+		if (document.activeElement != document
+				.getElementById('updateGroupsPanelForm:cancelButton')) {
+			document.getElementById('updateGroupsPanelForm:okButton').click();
+			result = false;
+		}
+	}
+
+	if (event.keyCode == 27) {
+		document.getElementById('updateGroupsPanelForm:cancelButton').click();
+		result = false;
+	}
+
+	if (event.keyCode == 9) {
+		if (event.shiftKey) {
+			if (document.activeElement == document
+					.getElementById('updateGroupsPanelForm:okButton')) {
+				document.getElementById(
+						'updateGroupsPanelForm:updateGroupsTable').focus();
+				result = false;
+			}
+		} else {
+			if (document.activeElement == document
+					.getElementById('updateGroupsPanelForm:cancelButton')) {
+				document.getElementById(
+						'updateGroupsPanelForm:updateGroupsTable').focus();
+				result = false;
+			}
+		}
+	}
+
+	return result;
+}

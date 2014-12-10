@@ -2,6 +2,7 @@ package di.vdrchman.controller;
 
 import java.util.List;
 
+import javax.enterprise.event.Event;
 import javax.enterprise.inject.Model;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
@@ -13,6 +14,7 @@ import di.vdrchman.data.ChannelRepository;
 import di.vdrchman.data.ChannelsManager;
 import di.vdrchman.data.SourceRepository;
 import di.vdrchman.data.TransponderRepository;
+import di.vdrchman.event.ChannelAction;
 import di.vdrchman.model.Channel;
 import di.vdrchman.model.Source;
 
@@ -30,6 +32,9 @@ public class ChannelsBacking {
 
 	@Inject
 	private ChannelRepository channelRepository;
+
+	@Inject
+	private Event<ChannelAction> channelActionEvent;
 
 	// The user is going to add a new channel on top of the current channel list
 	public void intendAddChannelOnTop() {
@@ -81,6 +86,8 @@ public class ChannelsBacking {
 	public void doAddChannel() {
 		channelRepository.add(channelsManager.getEditedChannel(),
 				channelsManager.getEditedChannelSeqno());
+		channelActionEvent.fire(new ChannelAction(channelsManager
+				.getEditedChannel(), ChannelAction.Action.ADD));
 		channelsManager.retrieveAllChannels();
 		channelsManager.clearCheckedChannels();
 		channelsManager.clearChannelCheckboxes();
@@ -95,6 +102,8 @@ public class ChannelsBacking {
 	// Really updating the channel
 	public void doUpdateChannel() {
 		channelRepository.update(channelsManager.getEditedChannel());
+		channelActionEvent.fire(new ChannelAction(channelsManager
+				.getEditedChannel(), ChannelAction.Action.UPDATE));
 		channelsManager.retrieveAllChannels();
 		channelsManager.clearCheckedChannels();
 		channelsManager.clearChannelCheckboxes();
@@ -109,6 +118,8 @@ public class ChannelsBacking {
 	public void doRemoveChannels() {
 		for (Channel channel : channelsManager.getCheckedChannels()) {
 			channelRepository.delete(channel);
+			channelActionEvent.fire(new ChannelAction(channel,
+					ChannelAction.Action.DELETE));
 		}
 		channelsManager.retrieveAllChannels();
 		channelsManager.clearCheckedChannels();
@@ -198,9 +209,10 @@ public class ChannelsBacking {
 	// Channel's group set change confirmed
 	public void doUpdateGroups() {
 		channelsManager.collectCheckedChannelGroups();
-
 		channelRepository.updateGroups(channelsManager.getEditedChannel()
 				.getId(), channelsManager.getCheckedChannelGroups());
+		channelActionEvent.fire(new ChannelAction(channelsManager
+				.getEditedChannel(), ChannelAction.Action.UPDATE_GROUPS));
 	}
 
 	// On changing the source filter selection clear the "clipboard"
