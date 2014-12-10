@@ -142,7 +142,9 @@ create table tchannel_group (
 	id bigint(20) not null primary key auto_increment,
 	channel_id bigint(20) not null,
 	group_id bigint(20) not null,
+	seqno int(11) not null,
 	unique (channel_id, group_id),
+	unique (group_id, seqno),
 	foreign key (channel_id) references tchannel (id) on delete cascade,
 	foreign key (group_id) references tgroup (id) on delete cascade
 ) engine=InnoDB;
@@ -172,7 +174,7 @@ create table tscanned_channel (
 	tid int(11),
 	sid int(11) not null,
 	vpid int(11),
-	pcr int(11);
+	pcr int(11),
 	apid int(11) not null,
 	tpid int(11),
 	caid varchar(20),

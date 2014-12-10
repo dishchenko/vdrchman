@@ -220,6 +220,8 @@
 							oncomplete="#{rich:component('removePanel')}.hide();document.getElementById('removePanelForm:okButton').disabled=false"
 							action="#{groupsBacking.doRemoveGroups()}" render="groupsContent" />
 						<a4j:commandButton id="cancelButton" value="Cancel"
+							immediate="true"
+							action="#{formResetter.resetForm(rich:findComponent('removePanelForm'))}"
 							onclick="#{rich:component('removePanel')}.hide()" />
 					</h:panelGrid>
 				</rich:popupPanel>

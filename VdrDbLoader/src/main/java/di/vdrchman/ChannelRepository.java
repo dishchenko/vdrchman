@@ -154,6 +154,13 @@ public class ChannelRepository {
 					}
 					tpid = Integer.parseInt(splitLine[4]);
 					caid = splitLine[5];
+					try {
+						if (Integer.parseInt(caid) == 0) {
+							caid = null;
+						}
+					} catch (NumberFormatException ex) {
+						// do nothing
+					}
 					rid = Integer.parseInt(splitLine[6]);
 					snInfo = Charset
 							.forName("ISO-8859-5")
@@ -247,6 +254,9 @@ public class ChannelRepository {
 		Channel channel;
 		String[] groupInfo;
 		Group group;
+		TypedQuery<Integer> query;
+		Integer queryResult;
+		int seqno;
 		ChannelGroup channelGroup;
 
 		sr = new SourceRepository(em);
@@ -316,9 +326,23 @@ public class ChannelRepository {
 						for (int i = 0; i < groupInfo.length; ++i) {
 							group = gr.findByName(userId, groupInfo[i]);
 							if (group != null) {
+								query = em
+										.createQuery(
+												"select max(cg.seqno) from ChannelGroup cg where cg.groupId = :groupId",
+												Integer.class);
+								query.setParameter("groupId", group.getId());
+								queryResult = query.getSingleResult();
+
+								if (queryResult != null) {
+									seqno = queryResult + 1;
+								} else {
+									seqno = 1;
+								}
+
 								channelGroup = new ChannelGroup();
 								channelGroup.setChannelId(channel.getId());
 								channelGroup.setGroupId(group.getId());
+								channelGroup.setSeqno(seqno);
 								em.persist(channelGroup);
 								em.flush();
 							} else {

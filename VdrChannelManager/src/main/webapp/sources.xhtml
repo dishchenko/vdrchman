@@ -241,6 +241,8 @@
 							action="#{sourcesBacking.doRemoveSources()}"
 							render="sourcesContent" />
 						<a4j:commandButton id="cancelButton" value="Cancel"
+							immediate="true"
+							action="#{formResetter.resetForm(rich:findComponent('removePanelForm'))}"
 							onclick="#{rich:component('removePanel')}.hide()" />
 					</h:panelGrid>
 				</rich:popupPanel>

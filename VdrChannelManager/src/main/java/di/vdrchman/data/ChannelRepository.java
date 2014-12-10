@@ -206,6 +206,25 @@ public class ChannelRepository {
 	}
 
 	/**
+	 * Finds maximum sequence number of channel in the group with ID given.
+	 * 
+	 * @param groupId
+	 *            the group ID to find a channel's maximum sequence number
+	 * @return the maximum channel sequence number or null if no channels found
+	 */
+	public Integer findMaxGroupSeqno(long groupId) {
+		TypedQuery<Integer> query;
+
+		query = em
+				.createQuery(
+						"select max(cg.seqno) from ChannelGroup cg where cg.groupId = :groupId",
+						Integer.class);
+		query.setParameter("groupId", groupId);
+
+		return query.getSingleResult();
+	}
+
+	/**
 	 * Adds the channel to the persisted list of channels (stores it in the
 	 * database).
 	 * 
@@ -220,6 +239,23 @@ public class ChannelRepository {
 		em.flush();
 
 		move(channel, seqno);
+	}
+
+	/**
+	 * Adds the channel to group relation to the persisted list of relations
+	 * (stores it in the database).
+	 * 
+	 * @param channelId
+	 *            the channel ID to add relation for
+	 * @param groupId
+	 *            the group ID to add relation for
+	 * @param seqno
+	 *            the sequence number of the added relation
+	 */
+	public void add(long channelId, long groupId, int seqno) {
+
+		// TODO
+		// move(channelId, groupId, seqno);
 	}
 
 	/**
@@ -290,6 +326,21 @@ public class ChannelRepository {
 	}
 
 	/**
+	 * Moves the channel to group relation to the new sequence number in the
+	 * persisted list of relations.
+	 * 
+	 * @param channelId
+	 *            the channel ID of the relation to move
+	 * @param groupId
+	 *            the group ID of the relation to move
+	 * @param seqno
+	 *            the new sequence number
+	 */
+	public void move(long channelId, long groupId, int seqno) {
+		// TODO
+	}
+
+	/**
 	 * Deletes the channel from the persisted list of channels (deletes it from
 	 * the database).
 	 * 
@@ -328,26 +379,41 @@ public class ChannelRepository {
 	}
 
 	/**
+	 * Deletes the channel to group relation from the persisted list of
+	 * relations (deletes it from the database).
+	 * 
+	 * @param channelId
+	 *            the channel ID of the relation to delete
+	 * @param groupId
+	 *            the group ID of the relation to delete
+	 */
+	public void delete(long channelId, long groupId) {
+		// TODO
+	}
+
+	/**
 	 * Updates groups which the channel with given ID is a member of.
 	 * 
 	 * @param channelId
 	 *            the ID of the channel to update groups for
 	 */
 	public void updateGroups(long channelId, List<Group> groups) {
-		TypedQuery<ChannelGroup> query;
+		TypedQuery<ChannelGroup> cgQuery;
 		List<ChannelGroup> curChannelGroups;
 		boolean isMember;
 		long curGroupId;
 		long groupId;
+		Integer maxGroupSeqno;
+		int seqno;
 		ChannelGroup channelGroup;
 
-		query = em
+		cgQuery = em
 				.createQuery(
 						"select cg from ChannelGroup cg where cg.channelId = :channelId",
 						ChannelGroup.class);
-		query.setParameter("channelId", channelId);
+		cgQuery.setParameter("channelId", channelId);
 
-		curChannelGroups = query.getResultList();
+		curChannelGroups = cgQuery.getResultList();
 
 		for (ChannelGroup curChannelGroup : curChannelGroups) {
 			curGroupId = curChannelGroup.getGroupId();
@@ -377,10 +443,19 @@ public class ChannelRepository {
 			}
 
 			if (!isMember) {
+				maxGroupSeqno = findMaxGroupSeqno(group.getId());
+
+				if (maxGroupSeqno != null) {
+					seqno = maxGroupSeqno + 1;
+				} else {
+					seqno = 1;
+				}
+
 				channelGroup = new ChannelGroup();
 
 				channelGroup.setChannelId(channelId);
 				channelGroup.setGroupId(groupId);
+				channelGroup.setSeqno(seqno);
 
 				em.persist(channelGroup);
 			}

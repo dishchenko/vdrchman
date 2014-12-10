@@ -16,7 +16,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @Table(name = "tchannel_group", uniqueConstraints = {
 		@UniqueConstraint(columnNames = "id"),
-		@UniqueConstraint(columnNames = { "channel_id", "group_id" }) })
+		@UniqueConstraint(columnNames = { "channel_id", "group_id" }),
+		@UniqueConstraint(columnNames = { "group_id", "seqno" }) })
 public class ChannelGroup implements Serializable {
 
 	private static final long serialVersionUID = 462881540844939359L;
@@ -32,6 +33,9 @@ public class ChannelGroup implements Serializable {
 	@NotNull
 	@Column(name = "group_id")
 	private Long groupId;
+
+	@NotNull
+	private Integer seqno;
 
 	public Long getId() {
 
@@ -58,6 +62,15 @@ public class ChannelGroup implements Serializable {
 
 	public void setGroupId(Long groupId) {
 		this.groupId = groupId;
+	}
+
+	public Integer getSeqno() {
+
+		return seqno;
+	}
+
+	public void setSeqno(Integer seqno) {
+		this.seqno = seqno;
 	}
 
 }

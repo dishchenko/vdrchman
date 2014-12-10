@@ -253,6 +253,8 @@
 							action="#{channelsBacking.doUpdateGroups()}"
 							render="channelsContent" />
 						<a4j:commandButton id="cancelButton" value="Cancel"
+							immediate="true"
+							action="#{formResetter.resetForm(rich:findComponent('updateGroupsPanelForm'))}"
 							onclick="#{rich:component('updateGroupsPanel')}.hide()" />
 					</h:panelGrid>
 				</rich:popupPanel>
@@ -513,6 +515,8 @@
 							action="#{channelsBacking.doRemoveChannels()}"
 							render="channelsContent" />
 						<a4j:commandButton id="cancelButton" value="Cancel"
+							immediate="true"
+							action="#{formResetter.resetForm(rich:findComponent('removePanelForm'))}"
 							onclick="#{rich:component('removePanel')}.hide()" />
 					</h:panelGrid>
 				</rich:popupPanel>
