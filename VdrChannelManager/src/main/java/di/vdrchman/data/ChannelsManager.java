@@ -131,7 +131,7 @@ public class ChannelsManager implements Serializable {
 				++i;
 			}
 		} else {
-			scrollerPage = (channelRepository.getSeqno(channel) - 1)
+			scrollerPage = (channelRepository.findSeqno(channel) - 1)
 					/ rowsPerPage + 1;
 		}
 	}
@@ -185,7 +185,7 @@ public class ChannelsManager implements Serializable {
 				}
 			}
 		} else {
-			result = channelRepository.getSeqno(channels.get(0));
+			result = channelRepository.findSeqno(channels.get(0));
 		}
 
 		return result;
@@ -295,13 +295,15 @@ public class ChannelsManager implements Serializable {
 			retrieveAllChannels();
 
 			if (!channels.isEmpty()) {
-				if (channelRepository.findById(lastPageTopChannel.getId()) != null) {
-					turnScrollerPage(lastPageTopChannel);
+				if (lastPageTopChannel != null) {
+					if (channelRepository.findById(lastPageTopChannel.getId()) != null) {
+						turnScrollerPage(lastPageTopChannel);
+					} else {
+						scrollerPage = 1;
+					}
 				} else {
 					scrollerPage = 1;
 				}
-			} else {
-				scrollerPage = 1;
 			}
 
 			channelsRefreshNeeded = false;

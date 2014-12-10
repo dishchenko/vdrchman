@@ -172,7 +172,7 @@ public class ChannelRepository {
 	 *            the channel to get the sequence number for
 	 * @return the sequence number or null if no channel found
 	 */
-	public Integer getSeqno(Channel channel) {
+	public Integer findSeqno(Channel channel) {
 		Integer result;
 		ChannelSeqno channelSeqno;
 
@@ -195,7 +195,7 @@ public class ChannelRepository {
 	 *            the group to get the sequence number of the channel in
 	 * @return the sequence number or null if no channel found
 	 */
-	public Integer getSeqno(long channelId, long groupId) {
+	public Integer findSeqno(long channelId, long groupId) {
 		TypedQuery<Integer> query;
 
 		query = em

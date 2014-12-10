@@ -47,7 +47,7 @@ public class TranspondersBacking {
 		transpondersManager.setEditedTransponder(transponder);
 		transpondersManager
 				.setEditedTransponderSeqno(transponderRepository
-						.getSeqno(transpondersManager.getCheckedTransponders()
+						.findSeqno(transpondersManager.getCheckedTransponders()
 								.get(0)) + 1);
 	}
 
@@ -126,7 +126,7 @@ public class TranspondersBacking {
 		transpondersManager.getEditedTransponder().setId(null);
 		transpondersManager
 				.setEditedTransponderSeqno(transponderRepository
-						.getSeqno(transpondersManager.getCheckedTransponders()
+						.findSeqno(transpondersManager.getCheckedTransponders()
 								.get(0)) + 1);
 	}
 
@@ -151,9 +151,9 @@ public class TranspondersBacking {
 		int newSeqno;
 
 		transpondersManager.collectCheckedTransponders();
-		curSeqno = transponderRepository.getSeqno(transpondersManager
+		curSeqno = transponderRepository.findSeqno(transpondersManager
 				.getTakenTransponder());
-		newSeqno = transponderRepository.getSeqno(transpondersManager
+		newSeqno = transponderRepository.findSeqno(transpondersManager
 				.getCheckedTransponders().get(0));
 		if (newSeqno < curSeqno) {
 			++newSeqno;

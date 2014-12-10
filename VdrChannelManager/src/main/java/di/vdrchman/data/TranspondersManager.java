@@ -98,7 +98,7 @@ public class TranspondersManager implements Serializable {
 				++i;
 			}
 		} else {
-			scrollerPage = (transponderRepository.getSeqno(transponder) - 1)
+			scrollerPage = (transponderRepository.findSeqno(transponder) - 1)
 					/ rowsPerPage + 1;
 		}
 	}
@@ -128,7 +128,7 @@ public class TranspondersManager implements Serializable {
 				}
 			}
 		} else {
-			result = transponderRepository.getSeqno(transponders.get(0));
+			result = transponderRepository.findSeqno(transponders.get(0));
 		}
 
 		return result;
@@ -172,14 +172,16 @@ public class TranspondersManager implements Serializable {
 			retrieveAllTransponders();
 
 			if (!transponders.isEmpty()) {
-				if (transponderRepository.findById(lastPageTopTransponder
-						.getId()) != null) {
-					turnScrollerPage(lastPageTopTransponder);
+				if (lastPageTopTransponder != null) {
+					if (transponderRepository.findById(lastPageTopTransponder
+							.getId()) != null) {
+						turnScrollerPage(lastPageTopTransponder);
+					} else {
+						scrollerPage = 1;
+					}
 				} else {
 					scrollerPage = 1;
 				}
-			} else {
-				scrollerPage = 1;
 			}
 
 			transpondersRefreshNeeded = false;

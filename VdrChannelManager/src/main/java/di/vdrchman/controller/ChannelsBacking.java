@@ -69,7 +69,7 @@ public class ChannelsBacking {
 		channelsManager.collectCheckedChannels();
 		channelsManager.setEditedChannel(channel);
 		channelsManager.setEditedChannelSeqno(channelRepository
-				.getSeqno(channelsManager.getCheckedChannels().get(0)) + 1);
+				.findSeqno(channelsManager.getCheckedChannels().get(0)) + 1);
 		if (channelsManager.getFilteredSourceId() < 0) {
 			sources = sourceRepository.findAll();
 			if (!sources.isEmpty()) {
@@ -158,7 +158,7 @@ public class ChannelsBacking {
 				.getTakenChannel()));
 		channelsManager.getEditedChannel().setId(null);
 		channelsManager.setEditedChannelSeqno(channelRepository
-				.getSeqno(channelsManager.getCheckedChannels().get(0)) + 1);
+				.findSeqno(channelsManager.getCheckedChannels().get(0)) + 1);
 		channelsManager
 				.setEditedSourceId(transponderRepository.findById(
 						channelsManager.getEditedChannel().getTranspId())
@@ -185,8 +185,8 @@ public class ChannelsBacking {
 
 		channelsManager.collectCheckedChannels();
 		curSeqno = channelRepository
-				.getSeqno(channelsManager.getTakenChannel());
-		newSeqno = channelRepository.getSeqno(channelsManager
+				.findSeqno(channelsManager.getTakenChannel());
+		newSeqno = channelRepository.findSeqno(channelsManager
 				.getCheckedChannels().get(0));
 		if (newSeqno < curSeqno) {
 			++newSeqno;

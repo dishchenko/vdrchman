@@ -64,10 +64,10 @@ public class GroupChannelsBacking {
 		int newSeqno;
 
 		groupChannelsManager.collectCheckedChannels();
-		curSeqno = channelRepository.getSeqno(groupChannelsManager
+		curSeqno = channelRepository.findSeqno(groupChannelsManager
 				.getTakenChannel().getId(), groupChannelsManager
 				.getShownGroupId());
-		newSeqno = channelRepository.getSeqno(groupChannelsManager
+		newSeqno = channelRepository.findSeqno(groupChannelsManager
 				.getCheckedChannels().get(0).getId(),
 				groupChannelsManager.getShownGroupId());
 		if (newSeqno < curSeqno) {

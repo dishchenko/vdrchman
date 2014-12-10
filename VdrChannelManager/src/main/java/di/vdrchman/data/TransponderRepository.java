@@ -161,7 +161,7 @@ public class TransponderRepository {
 	 *            the transponder to get the sequence number for
 	 * @return the sequence number or null if no transponder found
 	 */
-	public Integer getSeqno(Transponder transponder) {
+	public Integer findSeqno(Transponder transponder) {
 		Integer result;
 		TranspSeqno transpSeqno;
 
@@ -221,7 +221,7 @@ public class TransponderRepository {
 	 */
 	public Transponder findPrevious(Transponder transponder) {
 
-		return findBySeqno(getSeqno(transponder) - 1);
+		return findBySeqno(findSeqno(transponder) - 1);
 	}
 
 	/**
@@ -236,7 +236,7 @@ public class TransponderRepository {
 	 */
 	public Transponder findPrevious(long id) {
 
-		return findBySeqno(getSeqno(findById(id)) - 1);
+		return findBySeqno(findSeqno(findById(id)) - 1);
 	}
 
 	/**

@@ -13,6 +13,7 @@ import javax.enterprise.event.Reception;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import di.vdrchman.event.ChannelAction;
 import di.vdrchman.event.SourceAction;
 import di.vdrchman.event.TransponderAction;
 import di.vdrchman.model.Channel;
@@ -82,7 +83,7 @@ public class GroupChannelsManager implements Serializable {
 
 	// Find and set the table scroller page to show the channel given
 	public void turnScrollerPage(Channel channel) {
-		scrollerPage = (channelRepository.getSeqno(channel.getId(),
+		scrollerPage = (channelRepository.findSeqno(channel.getId(),
 				shownGroupId) - 1) / rowsPerPage + 1;
 	}
 
@@ -95,7 +96,8 @@ public class GroupChannelsManager implements Serializable {
 		if (channels.isEmpty()) {
 			result = 1;
 		} else {
-			result = channelRepository.getSeqno(channels.get(0));
+			result = channelRepository.findSeqno(channels.get(0).getId(),
+					shownGroupId);
 		}
 
 		return result;
@@ -127,7 +129,6 @@ public class GroupChannelsManager implements Serializable {
 	// Cleanup the GroupChannelManager's data on TransponderAction if needed
 	public void onTransponderAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final TransponderAction transponderAction) {
-
 		if (transponderAction.getAction() == TransponderAction.Action.DELETE) {
 			channelsRefreshNeeded = true;
 
@@ -138,6 +139,27 @@ public class GroupChannelsManager implements Serializable {
 				}
 			}
 		}
+	}
+
+	// Cleanup the GroupChannelManager's data on ChannelAction if needed
+	public void onChannelAction(
+			@Observes(notifyObserver = Reception.IF_EXISTS) final ChannelAction channelAction) {
+		if (channelAction.getAction() == ChannelAction.Action.DELETE) {
+			channelsRefreshNeeded = true;
+
+			if (takenChannel != null) {
+				if (channelAction.getChannel().getId()
+						.equals(takenChannel.getId())) {
+					takenChannel = null;
+				}
+			}
+		}
+
+		if ((channelAction.getAction() == ChannelAction.Action.UPDATE)
+				|| (channelAction.getAction() == ChannelAction.Action.UPDATE_GROUPS)) {
+			channelsRefreshNeeded = true;
+		}
+
 	}
 
 	// Re(Fill) in the channel list only if it is suggested. Also try to
@@ -155,13 +177,15 @@ public class GroupChannelsManager implements Serializable {
 			retrieveAllChannels();
 
 			if (!channels.isEmpty()) {
-				if (channelRepository.findById(lastPageTopChannel.getId()) != null) {
-					turnScrollerPage(lastPageTopChannel);
+				if (lastPageTopChannel != null) {
+					if (channelRepository.findById(lastPageTopChannel.getId()) != null) {
+						turnScrollerPage(lastPageTopChannel);
+					} else {
+						scrollerPage = 1;
+					}
 				} else {
 					scrollerPage = 1;
 				}
-			} else {
-				scrollerPage = 1;
 			}
 
 			channelsRefreshNeeded = false;
