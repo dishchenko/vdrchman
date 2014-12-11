@@ -331,14 +331,11 @@ public class TransponderRepository {
 	 *            the transponder to delete
 	 */
 	public void delete(Transponder transponder) {
-		long transpId;
 		TranspSeqno transpSeqno;
 		int seqno;
 		Query query;
 
-		transpId = transponder.getId();
-
-		transpSeqno = em.find(TranspSeqno.class, transpId);
+		transpSeqno = em.find(TranspSeqno.class, transponder.getId());
 
 		if (transpSeqno != null) {
 			seqno = transpSeqno.getSeqno();

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j"
+	template="/WEB-INF/templates/default.xhtml">
+	<ui:define name="content">
+		<h:outputScript library="javax.faces" name="jsf.js" target="head" />
+		<h:outputScript library="js" name="jsf_fix.js" target="head" />
+		<h:outputScript library="js" name="ignored_channels.js" target="head" />
+		<!-- Clear channel checkboxes and possibly refresh item lists on page load -->
+		#{ignoredChannelsManager.clearChannelCheckboxes()}
+		#{ignoredChannelsManager.refreshChannelsIfNeeded()}
+		#{ignoredChannelsManager.refreshFilteredSourceTranspondersIfNeeded()}
+		<!-- Main panel group -->
+		<h:panelGroup id="ignoredChannelsContent">
+			<h1>Ignored Channels</h1>
+			<!-- Ignored channels form -->
+			<h:form id="ignoredChannelsForm">
+				<!-- 'Remove' button panel -->
+				<h:panelGrid columns="1">
+					<a4j:commandButton id="removeButton" value="Remove..."
+						action="#{ignoredChannelsBacking.intendRemoveChannels()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('removePanel')}.show();document.getElementById('removePanelForm:okButton').focus();document.getElementById('ignoredChannelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked()"
+						render="ignoredChannelsContent, removePanel" />
+				</h:panelGrid>
+				<!-- Filter(s) panel -->
+				<h:panelGrid columns="5">
+					<h:outputText styleClass="preformattedtext" value="Filter by:" />
+					<h:outputLabel styleClass="preformattedtext" value="Source" />
+					<h:selectOneMenu value="#{ignoredChannelsManager.filteredSourceId}"
+						valueChangeListener="#{ignoredChannelsBacking.onSourceMenuSelection}"
+						onchange="document.getElementById('ignoredChannelsForm').submit()">
+						<f:selectItem itemValue="-1" itemLabel="--" />
+						<f:selectItems value="#{sourcesManager.sources}" var="sourceVar"
+							itemValue="#{sourceVar.id}"
+							itemLabel="#{sourceVar.name} (#{sourceVar.description})" />
+					</h:selectOneMenu>
+					<h:outputLabel styleClass="preformattedtext" value="Transponder"
+						rendered="#{not empty ignoredChannelsManager.filteredSourceTransponders}" />
+					<h:selectOneMenu value="#{ignoredChannelsManager.filteredTranspId}"
+						valueChangeListener="#{ignoredChannelsBacking.onTransponderMenuSelection}"
+						onchange="document.getElementById('ignoredChannelsForm').submit()"
+						rendered="#{not empty ignoredChannelsManager.filteredSourceTransponders}">
+						<f:selectItem itemValue="-1" itemLabel="--" />
+						<f:selectItems
+							value="#{ignoredChannelsManager.filteredSourceTransponders}"
+							var="transponderVar" itemValue="#{transponderVar.id}"
+							itemLabel="#{transponderVar.frequency} #{transponderVar.polarity}" />
+					</h:selectOneMenu>
+				</h:panelGrid>
+				<h:panelGroup rendered="#{empty ignoredChannelsManager.channels}">
+					<em>No ignored channels.</em>
+				</h:panelGroup>
+				<h:panelGroup
+					rendered="#{not empty ignoredChannelsManager.channels}">
+					<h:dataTable var="channelVar"
+						value="#{ignoredChannelsManager.channels}"
+						styleClass="simpletablestyle" id="ignoredChannelsTable"
+						rows="#{ignoredChannelsManager.rowsPerPage}">
+						<h:column>
+							<f:facet name="header" />
+							<h:selectBooleanCheckbox id="channelCheckbox"
+								value="#{ignoredChannelsManager.channelCheckboxes[channelVar.id]}"
+								styleClass="preformattedtext"
+								onclick="document.getElementById('ignoredChannelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked()" />
+						</h:column>
+						<h:column
+							rendered="#{ignoredChannelsManager.filteredSourceId lt 0}">
+							<f:facet name="header">Source</f:facet>
+							<ui:param name="sourceParam"
+								value="#{sourceRepository.findById(transponderRepository.findById(channelVar.transpId).sourceId)}">
+							</ui:param>
+							<h:outputText styleClass="preformattedtext"
+								value="#{sourceParam.name}" title="#{sourceParam.description}" />
+						</h:column>
+						<h:column
+							rendered="#{ignoredChannelsManager.filteredTranspId lt 0}">
+							<f:facet name="header">Frequency</f:facet>
+							<ui:param name="transponderParam"
+								value="#{transponderRepository.findById(channelVar.transpId)}">
+							</ui:param>
+							<h:outputText styleClass="preformattedtext"
+								value="#{transponderParam.frequency} #{transponderParam.polarity}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">SID</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.sid}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">VPID</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.vpid}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">APID</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.apid}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">CAID</f:facet>
+							<ui:fragment rendered="#{not empty channelVar.caid}">
+								<h:panelGroup style="background-color: #ffcc99;">
+									<h:outputText styleClass="preformattedtext"
+										value="#{channelVar.caid == 2600 ? 'BISS' : channelVar.caid}" />
+								</h:panelGroup>
+							</ui:fragment>
+						</h:column>
+						<h:column>
+							<f:facet name="header">Scanned As</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelVar.scannedName}"
+								title="#{channelVar.providerName}" />
+						</h:column>
+					</h:dataTable>
+					<rich:dataScroller for="ignoredChannelsTable" maxPages="5"
+						fastStep="5" page="#{ignoredChannelsManager.scrollerPage}"
+						render="ignoredChannelsContent"
+						scrollListener="#{ignoredChannelsBacking.onDataTableScroll}" />
+				</h:panelGroup>
+			</h:form>
+			<!-- Set buttons enable/disable state on panel rendering -->
+			<h:outputScript library="js">
+					document.getElementById('ignoredChannelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();
+			</h:outputScript>
+		</h:panelGroup>
+		<h:panelGrid columns="1">
+			<!-- Outer form for the Remove panel -->
+			<h:form id="removePanelForm" styleClass="zerosize"
+				onkeypress="return removePanelFormKeyPressHandler(event)">
+				<!-- The Remove panel -->
+				<rich:popupPanel id="removePanel" modal="true" autosized="true"
+					domElementAttachment="form">
+					<!-- Header -->
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Remove Ignored Channel(s)" />
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<h:commandLink value="Close" immediate="true"
+								onclick="#{rich:component('removePanel')}.hide()"
+								action="#{formResetter.resetForm(rich:findComponent('removePanelForm'))}" />
+						</h:panelGroup>
+					</f:facet>
+					<!-- Content -->
+					<h:outputText
+						value="Are you sure you want to remove the following channel(s)" />
+					<br />
+					<h:outputText value="from ignored channels list?" />
+					<br />
+					<br />
+					<ui:repeat value="#{ignoredChannelsManager.checkedChannels}"
+						var="channelVar" varStatus="loopVar">
+				            #{channelVar.scannedName}
+						<ui:param name="transponderParam"
+							value="#{transponderRepository.findById(channelVar.transpId)}">
+						</ui:param>
+							(on #{transponderParam.frequency} #{transponderParam.polarity}
+						<ui:param name="sourceParam"
+							value="#{sourceRepository.findById(transponderParam.sourceId)}">
+						</ui:param>
+							at #{sourceParam.name} (#{sourceParam.description}))
+				        <ui:fragment rendered="#{!loopVar.last}">
+							<br />
+						</ui:fragment>
+						<ui:fragment rendered="#{loopVar.last}">
+							<br />
+							<br />
+						</ui:fragment>
+					</ui:repeat>
+					<!-- Action buttons -->
+					<h:panelGrid columns="2">
+						<a4j:commandButton id="okButton" value="OK"
+							onclick="this.disabled=true"
+							oncomplete="#{rich:component('removePanel')}.hide();document.getElementById('removePanelForm:okButton').disabled=false"
+							action="#{ignoredChannelsBacking.doRemoveChannels()}"
+							render="ignoredChannelsContent" />
+						<a4j:commandButton id="cancelButton" value="Cancel"
+							immediate="true"
+							action="#{formResetter.resetForm(rich:findComponent('removePanelForm'))}"
+							onclick="#{rich:component('removePanel')}.hide()" />
+					</h:panelGrid>
+				</rich:popupPanel>
+			</h:form>
+		</h:panelGrid>
+	</ui:define>
+</ui:composition>

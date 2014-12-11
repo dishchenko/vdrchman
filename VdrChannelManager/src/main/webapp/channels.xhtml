@@ -146,7 +146,7 @@
 								value="#{channelVar.vpid}" title="#{channelVar.pcr}" />
 							<ui:fragment rendered="#{not empty channelVar.venc}">
 								<h:outputText styleClass="preformattedtext"
-									value=" (#{channelsManager.decodeVenc(channelVar.venc)})" />
+									value=" (#{tools.decodeVenc(channelVar.venc)})" />
 							</ui:fragment>
 						</h:column>
 						<h:column>
@@ -155,7 +155,7 @@
 								value="#{channelVar.apid}" />
 							<ui:fragment rendered="#{not empty channelVar.aenc}">
 								<h:outputText styleClass="preformattedtext"
-									value=" (#{channelsManager.decodeAenc(channelVar.aenc)})" />
+									value=" (#{tools.decodeAenc(channelVar.aenc)})" />
 							</ui:fragment>
 						</h:column>
 						<h:column>
@@ -186,10 +186,10 @@
 						<h:column>
 							<f:facet name="header">Groups</f:facet>
 							<ui:param name="channelGroupNamesParam"
-								value="#{channelsManager.buildGroupNamesString(channelRepository.findGroups(channelVar.id))}">
+								value="#{tools.buildGroupNamesString(channelRepository.findGroups(channelVar.id))}">
 							</ui:param>
 							<ui:param name="channelGroupDescriptionsParam"
-								value="#{channelsManager.buildGroupDescriptionsString(channelRepository.findGroups(channelVar.id))}">
+								value="#{tools.buildGroupDescriptionsString(channelRepository.findGroups(channelVar.id))}">
 							</ui:param>
 							<a4j:commandLink styleClass="preformattedtext"
 								value="#{channelGroupNamesParam}"
@@ -505,6 +505,14 @@
 					<ui:repeat value="#{channelsManager.checkedChannels}"
 						var="channelVar" varStatus="loopVar">
 				            #{not empty channelVar.lang ? channelVar.lang.concat(')') : ''} #{channelVar.name}
+						<ui:param name="transponderParam"
+							value="#{transponderRepository.findById(channelVar.transpId)}">
+						</ui:param>
+							(on #{transponderParam.frequency} #{transponderParam.polarity}
+						<ui:param name="sourceParam"
+							value="#{sourceRepository.findById(transponderParam.sourceId)}">
+						</ui:param>
+							at #{sourceParam.name} (#{sourceParam.description}))
 				        <ui:fragment rendered="#{!loopVar.last}">
 							<br />
 						</ui:fragment>

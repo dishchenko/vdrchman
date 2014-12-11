@@ -20,11 +20,11 @@
 					value="#{groupRepository.findById(groupChannelsManager.shownGroupId)}">
 				</ui:param>
 				<h:outputText styleClass="preformattedtext"
-					value="Channels in group: #{groupParam.name} (#{groupParam.description})" />
+					value="Channels in Group: #{groupParam.name} (#{groupParam.description})" />
 			</h1>
-			<!-- Channels form -->
+			<!-- Group channels form -->
 			<h:form id="groupChannelsForm">
-				<!-- 'Add', 'Remove' etc. buttons panel -->
+				<!-- 'Remove', 'Take' etc. buttons panel -->
 				<h:panelGrid columns="4">
 					<a4j:commandButton id="removeButton" value="Remove..."
 						action="#{groupChannelsBacking.intendRemoveChannels()}"
@@ -112,7 +112,7 @@
 								value="#{channelVar.vpid}" title="#{channelVar.pcr}" />
 							<ui:fragment rendered="#{not empty channelVar.venc}">
 								<h:outputText styleClass="preformattedtext"
-									value=" (#{channelsManager.decodeVenc(channelVar.venc)})" />
+									value=" (#{tools.decodeVenc(channelVar.venc)})" />
 							</ui:fragment>
 						</h:column>
 						<h:column>
@@ -121,7 +121,7 @@
 								value="#{channelVar.apid}" />
 							<ui:fragment rendered="#{not empty channelVar.aenc}">
 								<h:outputText styleClass="preformattedtext"
-									value=" (#{channelsManager.decodeAenc(channelVar.aenc)})" />
+									value=" (#{tools.decodeAenc(channelVar.aenc)})" />
 							</ui:fragment>
 						</h:column>
 						<h:column>
@@ -193,6 +193,14 @@
 					<ui:repeat value="#{groupChannelsManager.checkedChannels}"
 						var="channelVar" varStatus="loopVar">
 				            #{not empty channelVar.lang ? channelVar.lang.concat(')') : ''} #{channelVar.name}
+						<ui:param name="transponderParam"
+							value="#{transponderRepository.findById(channelVar.transpId)}">
+						</ui:param>
+							(on #{transponderParam.frequency} #{transponderParam.polarity}
+						<ui:param name="sourceParam"
+							value="#{sourceRepository.findById(transponderParam.sourceId)}">
+						</ui:param>
+							at #{sourceParam.name} (#{sourceParam.description}))
 				        <ui:fragment rendered="#{!loopVar.last}">
 							<br />
 						</ui:fragment>

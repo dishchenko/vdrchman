@@ -370,14 +370,11 @@ public class ChannelRepository {
 	 *            the channel to delete
 	 */
 	public void delete(Channel channel) {
-		long channelId;
 		ChannelSeqno channelSeqno;
 		int seqno;
 		Query query;
 
-		channelId = channel.getId();
-
-		channelSeqno = em.find(ChannelSeqno.class, channelId);
+		channelSeqno = em.find(ChannelSeqno.class, channel.getId());
 
 		if (channelSeqno != null) {
 			seqno = channelSeqno.getSeqno();

@@ -35,9 +35,15 @@ public class IgnoredChannel implements Serializable {
 	@Digits(fraction = 0, integer = 5)
 	private Integer sid;
 
+	@Digits(fraction = 0, integer = 5)
+	private Integer vpid;
+
 	@NotNull(message = "Audio PID must be defined")
 	@Digits(fraction = 0, integer = 5)
 	private Integer apid;
+
+	@Size(max = 20)
+	private String caid;
 
 	@Size(max = 50)
 	@Column(name = "scanned_name")
@@ -93,6 +99,15 @@ public class IgnoredChannel implements Serializable {
 		this.sid = sid;
 	}
 
+	public Integer getVpid() {
+
+		return vpid;
+	}
+
+	public void setVpid(Integer vpid) {
+		this.vpid = vpid;
+	}
+
 	public Integer getApid() {
 
 		return apid;
@@ -100,6 +115,15 @@ public class IgnoredChannel implements Serializable {
 
 	public void setApid(Integer apid) {
 		this.apid = apid;
+	}
+
+	public String getCaid() {
+
+		return caid;
+	}
+
+	public void setCaid(String caid) {
+		this.caid = caid;
 	}
 
 	public String getScannedName() {
