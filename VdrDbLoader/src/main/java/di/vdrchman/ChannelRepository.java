@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -53,6 +55,9 @@ public class ChannelRepository {
 		int aenc;
 		int tpid;
 		String caid;
+		String[] caidInfo;
+		SortedSet<Integer> caidSet;
+		StringBuilder caidSb;
 		int rid;
 		String[] snInfo;
 		String scannedName;
@@ -154,6 +159,21 @@ public class ChannelRepository {
 					}
 					tpid = Integer.parseInt(splitLine[4]);
 					caid = splitLine[5];
+					try {
+						caidInfo = caid.split(",");
+						caidSet = new TreeSet<Integer>();
+						for (String caidItem : caidInfo) {
+							caidSet.add(Integer.parseInt(caidItem));
+						}
+						caidSb = new StringBuilder();
+						for (Integer caidItem : caidSet) {
+							caidSb.append(caidItem.toString() + ",");
+						}
+						caidSb.setLength(caidSb.length() - 1);
+						caid = caidSb.toString();
+					} catch (NumberFormatException ex) {
+						// do nothing
+					}
 					try {
 						if (Integer.parseInt(caid) == 0) {
 							caid = null;
