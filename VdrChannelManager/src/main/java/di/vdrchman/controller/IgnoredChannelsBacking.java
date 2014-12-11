@@ -39,10 +39,9 @@ public class IgnoredChannelsBacking {
 		ignoredChannelsManager.clearChannelCheckboxes();
 	}
 
-	// On changing the source filter selection clear the "clipboard"
-	// if a source is selected and it is not the one taken channel
-	// relates to. Clear the transponder filter selection if a source is
-	// selected and it is not the one selected transponder relates to.
+	// On changing the source filter selection clear the transponder filter
+	// selection if a source is selected and it is not the one selected
+	// transponder relates to.
 	// Also try to stay on the scroller page which includes the previous shown
 	// page top channel
 	public void onSourceMenuSelection(ValueChangeEvent event) {
@@ -69,23 +68,23 @@ public class IgnoredChannelsBacking {
 					ignoredChannelsManager.turnScrollerPage(lastPageTopChannel);
 				} else {
 					if (filteredSourceId < 0) {
-						ignoredChannelsManager.turnScrollerPage(lastPageTopChannel);
+						ignoredChannelsManager
+								.turnScrollerPage(lastPageTopChannel);
 					} else {
-						ignoredChannelsManager.turnScrollerPage(ignoredChannelsManager
-								.getChannels().get(0));
+						ignoredChannelsManager
+								.turnScrollerPage(ignoredChannelsManager
+										.getChannels().get(0));
 					}
 				}
 			} else {
-				ignoredChannelsManager.turnScrollerPage(ignoredChannelsManager.getChannels()
-						.get(0));
+				ignoredChannelsManager.turnScrollerPage(ignoredChannelsManager
+						.getChannels().get(0));
 			}
 		}
 	}
 
-	// On changing the transponder filter selection clear the "clipboard"
-	// if a transponder is selected and it is not the one taken channel
-	// relates to. Also try to stay on the scroller page which includes the
-	// previous shown page top channel
+	// On changing the transponder filter selection try to stay on the scroller
+	// page which includes the previous shown page top channel
 	public void onTransponderMenuSelection(ValueChangeEvent event) {
 		IgnoredChannel lastPageTopChannel;
 		long filteredTranspId;
@@ -107,15 +106,17 @@ public class IgnoredChannelsBacking {
 					ignoredChannelsManager.turnScrollerPage(lastPageTopChannel);
 				} else {
 					if (filteredTranspId < 0) {
-						ignoredChannelsManager.turnScrollerPage(lastPageTopChannel);
+						ignoredChannelsManager
+								.turnScrollerPage(lastPageTopChannel);
 					} else {
-						ignoredChannelsManager.turnScrollerPage(ignoredChannelsManager
-								.getChannels().get(0));
+						ignoredChannelsManager
+								.turnScrollerPage(ignoredChannelsManager
+										.getChannels().get(0));
 					}
 				}
 			} else {
-				ignoredChannelsManager.turnScrollerPage(ignoredChannelsManager.getChannels()
-						.get(0));
+				ignoredChannelsManager.turnScrollerPage(ignoredChannelsManager
+						.getChannels().get(0));
 			}
 		}
 	}
