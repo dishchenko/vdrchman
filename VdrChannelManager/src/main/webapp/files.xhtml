@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j"
+	template="/WEB-INF/templates/default.xhtml">
+	<ui:define name="content">
+		<h:outputScript library="javax.faces" name="jsf.js" target="head" />
+		<h:outputScript library="js" name="jsf_fix.js" target="head" />
+		<!-- Main panel group -->
+		<h:panelGroup id="filesContent">
+			<h1>Files</h1>
+			<h2>Import</h2>
+			<!-- Upload Scan form -->
+			<h:panelGroup id="uploadScanPanel">
+				<h:form id="uploadScanForm">
+					<h:panelGrid columns="1">
+						<h:outputText styleClass="preformattedtext"
+							value="Upload SCANNED channels here" />
+						<ui:fragment rendered="#{filesManager.scanFiles.size() > 0}">
+							<h:outputText
+								value="Scans uploaded: #{tools.buildUploadedFileNamesString(filesManager.scanFiles)}" />
+						</ui:fragment>
+						<br />
+						<rich:fileUpload
+							fileUploadListener="#{filesBacking.scanFileUploadListener}"
+							id="upload" acceptedTypes="scanned"
+							ontyperejected="alert('Only SCANNED files are accepted');"
+							autoclear="true" immediateUpload="true" listHeight="1px"
+							maxFilesQuantity="1" onerror="alert('Upload error!');">
+							<a4j:ajax event="uploadcomplete" execute="@form" render="@form" />
+						</rich:fileUpload>
+					</h:panelGrid>
+				</h:form>
+			</h:panelGroup>
+			<h2>Export</h2>
+		</h:panelGroup>
+	</ui:define>
+</ui:composition>

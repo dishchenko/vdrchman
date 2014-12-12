@@ -25,6 +25,10 @@ public class ScannedChannelsBacking {
 	@Inject
 	private TransponderRepository transponderRepository;
 
+	public void doProcessUploadedScans() {
+		// TODO
+	}
+
 	// On changing the source filter selection clear the transponder filter
 	// selection if a source is selected and it is not the one selected
 	// transponder relates to.
