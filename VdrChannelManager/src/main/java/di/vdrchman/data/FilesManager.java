@@ -7,20 +7,35 @@ import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
-import org.richfaces.model.UploadedFile;
-
 @SessionScoped
 @Named
 public class FilesManager implements Serializable {
 
 	private static final long serialVersionUID = 8655706926659652902L;
 
-	// The list of scanned channels files
-	private List<UploadedFile> scanFiles = new ArrayList<UploadedFile>();
+	// The list of scans (scanned channel file datas)
+	private List<Scan> scans = new ArrayList<Scan>();
 
-	public List<UploadedFile> getScanFiles() {
+	public void addScan(String fileName, byte[] data) {
+		Scan scan;
 
-		return scanFiles;
+		scan = new Scan();
+
+		scan.setFileName(fileName);
+		scan.setData(new byte[data.length]);
+		System.arraycopy(data, 0, scan.getData(), 0, data.length);
+
+		scans.add(scan);
+	}
+
+	// Clear the list of scans
+	public void clearScans() {
+		scans.clear();
+	}
+
+	public List<Scan> getScans() {
+
+		return scans;
 	}
 
 }

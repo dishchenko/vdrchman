@@ -5,8 +5,7 @@ import java.util.List;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.richfaces.model.UploadedFile;
-
+import di.vdrchman.data.Scan;
 import di.vdrchman.model.Group;
 
 @Named
@@ -103,15 +102,15 @@ public class Tools {
 		return result;
 	}
 
-	// Build a string consisting of comma delimited uploaded file names
-	public String buildUploadedFileNamesString(List<UploadedFile> files) {
+	// Build a string consisting of comma delimited uploaded scan file names
+	public String buildUploadedScanFileNamesString(List<Scan> scans) {
 		StringBuilder sb;
 
 		sb = new StringBuilder();
 
-		if (!files.isEmpty()) {
-			for (UploadedFile file : files) {
-				sb.append(file.getName() + ", ");
+		if (!scans.isEmpty()) {
+			for (Scan scan : scans) {
+				sb.append(scan.getFileName() + ", ");
 			}
 
 			sb.setLength(sb.length() - 2);

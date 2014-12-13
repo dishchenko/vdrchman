@@ -51,4 +51,12 @@
 		<param-name>javax.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL</param-name>
 		<param-value>true</param-value>
 	</context-param>
+	<context-param>
+		<param-name>createTempFiles</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>maxRequestSize</param-name>
+		<param-value>500000</param-value>
+	</context-param>
 </web-app>

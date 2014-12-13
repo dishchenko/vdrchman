@@ -6,6 +6,8 @@ import javax.inject.Inject;
 
 import org.richfaces.event.DataScrollEvent;
 
+import di.vdrchman.data.FilesManager;
+import di.vdrchman.data.Scan;
 import di.vdrchman.data.ScannedChannelsManager;
 import di.vdrchman.data.SourceRepository;
 import di.vdrchman.data.TransponderRepository;
@@ -20,13 +22,23 @@ public class ScannedChannelsBacking {
 	private ScannedChannelsManager scannedChannelsManager;
 
 	@Inject
+	private FilesManager filesManager;
+
+	@Inject
 	private SourceRepository sourceRepository;
 
 	@Inject
 	private TransponderRepository transponderRepository;
 
+	// Process all uploaded scanned channel files (scans) one by one. Store
+	// results of processing in the scanned channels table
 	public void doProcessUploadedScans() {
-		// TODO
+		scannedChannelsManager.clearScanProcessingReports();
+		for (Scan scan : filesManager.getScans()) {
+			scannedChannelsManager.addScanProcessingReport(scan.getFileName(),
+					scannedChannelsManager.processScanData(scan.getData()));
+		}
+		filesManager.clearScans();
 	}
 
 	// On changing the source filter selection clear the transponder filter
@@ -38,7 +50,7 @@ public class ScannedChannelsBacking {
 		ScannedChannel lastPageTopChannel;
 		long filteredSourceId;
 		Source source;
-		
+
 		lastPageTopChannel = null;
 		if (!scannedChannelsManager.getChannels().isEmpty()) {
 			lastPageTopChannel = scannedChannelsManager.getChannels().get(

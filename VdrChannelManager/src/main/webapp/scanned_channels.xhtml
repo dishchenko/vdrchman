@@ -24,9 +24,9 @@
 					<a4j:commandButton id="processUploadedScansButton"
 						value="Process uploaded scans"
 						action="#{scannedChannelsBacking.doProcessUploadedScans()}"
-						onclick="this.disabled=true;#{rich:component('processUploadedScansPanel')}.show();"
-						oncomplete="#{rich:component('processUploadedScansPanel')}.hide();document.getElementById('scannedChannelsForm:processUploadedScansButton').disabled=(#{filesManager.scanFiles.size() le 0})"
-						render="scannedChannelsContent, processUploadedScansPanel" />
+						onclick="this.disabled=true;#{rich:component('uploadedScansProcessingPanel')}.show()"
+						oncomplete="#{rich:component('uploadedScansProcessingPanel')}.hide();document.getElementById('scannedChannelsForm:processUploadedScansButton').disabled=(#{filesManager.scans.size() le 0});#{rich:component('uploadedScansProcessedPanel')}.show()"
+						render="uploadedScansProcessedPanel" />
 				</h:panelGrid>
 				<!-- Filter(s) panel -->
 				<h:panelGrid columns="5">
@@ -124,11 +124,65 @@
 			</h:form>
 			<!-- Set buttons enable/disable state on panel rendering -->
 			<h:outputScript library="js">
-			document.getElementById('scannedChannelsForm:processUploadedScansButton').disabled=(#{filesManager.scanFiles.size() le 0});
+			document.getElementById('scannedChannelsForm:processUploadedScansButton').disabled=(#{filesManager.scans.size() le 0});
 			</h:outputScript>
 		</h:panelGroup>
 		<!-- Pop-up forms panel -->
-		<h:panelGrid columns="1">
+		<h:panelGrid columns="2">
+			<!-- Outer form for the Uploaded Scans Processing panel -->
+			<h:form id="uploadedScansProcessingPanelForm" styleClass="zerosize">
+				<!-- The Uploaded Scans Processing panel -->
+				<rich:popupPanel id="uploadedScansProcessingPanel" modal="true"
+					autosized="true" domElementAttachment="form">
+					<!-- Content -->
+					<h:outputText value="Please wait..." />
+					<br />
+					<h:outputText value="Processing the following uploaded scans:" />
+					<br />
+					<br />
+					<ui:repeat value="#{filesManager.scans}" var="scanVar"
+						varStatus="loopVar">
+				            #{scanVar.fileName}
+				        <ui:fragment rendered="#{!loopVar.last}">
+							<br />
+						</ui:fragment>
+						<ui:fragment rendered="#{loopVar.last}">
+							<br />
+							<br />
+						</ui:fragment>
+					</ui:repeat>
+				</rich:popupPanel>
+			</h:form>
+			<!-- Outer form for the Uploaded Scans Processed panel -->
+			<h:form id="uploadedScansProcessedPanelForm" styleClass="zerosize">
+				<!-- The Uploaded Scans Processed panel -->
+				<rich:popupPanel id="uploadedScansProcessedPanel" modal="true"
+					autosized="true" domElementAttachment="form">
+					<!-- Content -->
+					<h:outputText value="Scans processed." />
+					<br />
+					<br />
+					<ui:repeat value="#{scannedChannelsManager.scanProcessingReports}"
+						var="reportVar" varStatus="loopVar">
+						<h:outputText value="#{reportVar[0]} - #{reportVar[1]}"
+							styleClass="preformattedtext" />
+						<ui:fragment rendered="#{!loopVar.last}">
+							<br />
+						</ui:fragment>
+						<ui:fragment rendered="#{loopVar.last}">
+							<br />
+							<br />
+						</ui:fragment>
+					</ui:repeat>
+					<!-- 'OK' button -->
+					<h:panelGrid columns="1">
+						<a4j:commandButton id="okButton" value="OK"
+							onclick="this.disabled=true"
+							oncomplete="#{rich:component('uploadedScansProcessedPanel')}.hide();document.getElementById('uploadedScansProcessedPanelForm:okButton').disabled=false"
+							render="scannedChannelsContent" />
+					</h:panelGrid>
+				</rich:popupPanel>
+			</h:form>
 		</h:panelGrid>
 	</ui:define>
 </ui:composition>

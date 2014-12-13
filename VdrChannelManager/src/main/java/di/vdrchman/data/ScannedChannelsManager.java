@@ -59,6 +59,11 @@ public class ScannedChannelsManager implements Serializable {
 	// List of checked channels built on checkboxes map
 	private List<ScannedChannel> checkedChannels = new ArrayList<ScannedChannel>();
 
+	// List of arrays containing information on how scans were processed.
+	// First element of each array contains the name of processed scan file,
+	// second - processing details
+	private List<String[]> scanProcessingReports = new ArrayList<String[]>();
+
 	// Fill in checkedChannels list with channels corresponding
 	// to checkboxes checked in the data table on the page
 	public void collectCheckedChannels() {
@@ -175,7 +180,8 @@ public class ScannedChannelsManager implements Serializable {
 
 			if (!channels.isEmpty()) {
 				if (lastPageTopChannel != null) {
-					if (scannedChannelRepository.findById(lastPageTopChannel.getId()) != null) {
+					if (scannedChannelRepository.findById(lastPageTopChannel
+							.getId()) != null) {
 						turnScrollerPage(lastPageTopChannel);
 					} else {
 						scrollerPage = 1;
@@ -189,11 +195,27 @@ public class ScannedChannelsManager implements Serializable {
 		}
 	}
 
+	// Process scan data and store results in the scanned channels table
+	public String processScanData(byte[] data) {
+
+		return "OK";
+	}
+
+	// Add information on processed scan into the list
+	public void addScanProcessingReport(String scanFileName, String details) {
+		scanProcessingReports.add(new String[] { scanFileName, details });
+	}
+
+	// Clear the list of scan processing information
+	public void clearScanProcessingReports() {
+		scanProcessingReports.clear();
+	}
+
 	// (Re)Fill in the channel list
 	@PostConstruct
 	public void retrieveAllChannels() {
-		channels = scannedChannelRepository
-				.findAll(filteredSourceId, filteredTranspId);
+		channels = scannedChannelRepository.findAll(filteredSourceId,
+				filteredTranspId);
 	}
 
 	public long getFilteredSourceId() {
@@ -246,6 +268,11 @@ public class ScannedChannelsManager implements Serializable {
 	public List<ScannedChannel> getCheckedChannels() {
 
 		return checkedChannels;
+	}
+
+	public List<String[]> getScanProcessingReports() {
+
+		return scanProcessingReports;
 	}
 
 }
