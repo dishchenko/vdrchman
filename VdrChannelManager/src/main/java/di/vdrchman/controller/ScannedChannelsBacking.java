@@ -32,7 +32,7 @@ public class ScannedChannelsBacking {
 
 	// Process all uploaded scanned channel files (scans) one by one. Store
 	// results of processing in the scanned channels table
-	public void doProcessUploadedScans() {
+	public void processUploadedScans() {
 		scannedChannelsManager.clearScanProcessingReports();
 		for (Scan scan : filesManager.getScans()) {
 			scannedChannelsManager.addScanProcessingReport(scan.getFileName(),

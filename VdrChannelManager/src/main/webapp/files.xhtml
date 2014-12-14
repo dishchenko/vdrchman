@@ -20,7 +20,7 @@
 						<h:outputText styleClass="preformattedtext"
 							value="Upload SCANNED channels (scans) here" />
 						<ui:fragment rendered="#{filesManager.scans.size() > 0}">
-							<h:outputText
+							<h:outputText style="font-weight: bold;"
 								value="Scans uploaded: #{tools.buildUploadedScanFileNamesString(filesManager.scans)}" />
 						</ui:fragment>
 						<br />

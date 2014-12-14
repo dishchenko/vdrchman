@@ -23,7 +23,7 @@
 				<h:panelGrid columns="1">
 					<a4j:commandButton id="processUploadedScansButton"
 						value="Process uploaded scans"
-						action="#{scannedChannelsBacking.doProcessUploadedScans()}"
+						action="#{scannedChannelsBacking.processUploadedScans()}"
 						onclick="this.disabled=true;#{rich:component('uploadedScansProcessingPanel')}.show()"
 						oncomplete="#{rich:component('uploadedScansProcessingPanel')}.hide();document.getElementById('scannedChannelsForm:processUploadedScansButton').disabled=(#{filesManager.scans.size() le 0});#{rich:component('uploadedScansProcessedPanel')}.show()"
 						render="uploadedScansProcessedPanel" />

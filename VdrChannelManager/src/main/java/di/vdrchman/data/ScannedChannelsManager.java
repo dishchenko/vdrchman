@@ -1,10 +1,15 @@
 package di.vdrchman.data;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -29,6 +34,9 @@ public class ScannedChannelsManager implements Serializable {
 
 	@Inject
 	private ScannedChannelRepository scannedChannelRepository;
+
+	@Inject
+	Logger logger;
 
 	// ID of the source to filter scanned channel list on.
 	// No filtering if it's negative.
@@ -197,8 +205,102 @@ public class ScannedChannelsManager implements Serializable {
 
 	// Process scan data and store results in the scanned channels table
 	public String processScanData(byte[] data) {
+		String result;
+		int lineNo;
+		BufferedReader br;
+		String line;
+		String[] splitLine;
+		String[] snInfo;
+		String scannedName;
+		String providerName;
+		Integer frequency;
+		String polarity;
+		Integer dvbsGen;
+		String sourceName;
+		Integer symbolRate;
+		String[] vInfo;
+		Integer vpid;
+		Integer pcr;
 
-		return "OK";
+		result = "OK";
+		lineNo = 0;
+
+		try {
+			br = new BufferedReader(new InputStreamReader(
+					new ByteArrayInputStream(data), "ISO-8859-5"));
+
+			while ((line = br.readLine()) != null) {
+
+				++lineNo;
+
+				if (line.length() == 0) {
+					continue;
+				}
+				if (line.charAt(0) == '#') {
+					continue;
+				}
+				splitLine = line.split(":");
+
+				if (splitLine.length != 13) {
+					result = "Error: line " + lineNo + ": invalid format";
+
+					break;
+				}
+
+				snInfo = splitLine[0].split(";");
+				scannedName = snInfo[0];
+				if (snInfo.length == 2) {
+					providerName = snInfo[1];
+				} else {
+					providerName = null;
+				}
+
+				frequency = Integer.parseInt(splitLine[1]);
+
+				polarity = null;
+				if (splitLine[2].contains("H")) {
+					polarity = "H";
+				}
+				if (splitLine[2].contains("V")) {
+					polarity = "V";
+				}
+				if (splitLine[2].contains("L")) {
+					polarity = "L";
+				}
+				if (splitLine[2].contains("R")) {
+					polarity = "R";
+				}
+
+				dvbsGen = null;
+				if (splitLine[2].contains("S0")) {
+					dvbsGen = 1;
+				}
+				if (splitLine[2].contains("S1")) {
+					dvbsGen = 2;
+				}
+
+				sourceName = splitLine[3];
+
+				symbolRate = Integer.parseInt(splitLine[4]);
+
+				vInfo = splitLine[5].split("\\+");
+				vpid = Integer.parseInt(vInfo[0]);
+				if (vInfo.length == 2) {
+					pcr = Integer.parseInt(vInfo[1]);
+				} else {
+					pcr = null;
+				}
+			}
+		}
+
+		catch (Exception ex) {
+			logger.log(Level.WARNING,
+					"Scan line " + lineNo + ": " + ex.getMessage(), ex);
+
+			result = "Error: line " + lineNo + ": " + ex.getMessage();
+		}
+
+		return result;
 	}
 
 	// Add information on processed scan into the list
