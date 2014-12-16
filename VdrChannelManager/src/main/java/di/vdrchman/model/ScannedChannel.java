@@ -16,7 +16,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
 @XmlRootElement
-@Table(name = "tscanned_channel", uniqueConstraints = { @UniqueConstraint(columnNames = "id") })
+@Table(name = "tscanned_channel", uniqueConstraints = {
+		@UniqueConstraint(columnNames = "id"),
+		@UniqueConstraint(columnNames = { "source_name", "frequency",
+				"polarity", "sid", "apid" }) })
 public class ScannedChannel implements Serializable {
 
 	private static final long serialVersionUID = -5089338070282762299L;
@@ -64,11 +67,17 @@ public class ScannedChannel implements Serializable {
 	@Digits(fraction = 0, integer = 5)
 	private Integer vpid;
 
+	@Digits(fraction = 0, integer = 3)
+	private Integer venc;
+
 	private Integer pcr;
 
 	@NotNull(message = "Audio PID must be defined")
 	@Digits(fraction = 0, integer = 5)
 	private Integer apid;
+
+	@Digits(fraction = 0, integer = 3)
+	private Integer aenc;
 
 	@Digits(fraction = 0, integer = 5)
 	private Integer tpid;
@@ -105,15 +114,24 @@ public class ScannedChannel implements Serializable {
 				scannedChannel.polarity) : null;
 		this.symbolRate = scannedChannel.symbolRate != null ? new Integer(
 				scannedChannel.symbolRate) : null;
-		this.nid = scannedChannel.nid != null ? new Integer(scannedChannel.nid) : null;
-		this.tid = scannedChannel.tid != null ? new Integer(scannedChannel.tid) : null;
-		this.sid = scannedChannel.sid != null ? new Integer(scannedChannel.sid) : null;
-		this.vpid = scannedChannel.vpid != null ? new Integer(scannedChannel.vpid) : null;
-		this.pcr = scannedChannel.pcr != null ? new Integer(scannedChannel.pcr) : null;
-		this.apid = scannedChannel.apid != null ? new Integer(scannedChannel.apid) : null;
-		this.tpid = scannedChannel.tpid != null ? new Integer(scannedChannel.tpid) : null;
-		this.caid = scannedChannel.caid != null ? new String(scannedChannel.caid) : null;
-		this.rid = scannedChannel.rid != null ? new Integer(scannedChannel.rid) : null;
+		this.nid = scannedChannel.nid != null ? new Integer(scannedChannel.nid)
+				: null;
+		this.tid = scannedChannel.tid != null ? new Integer(scannedChannel.tid)
+				: null;
+		this.sid = scannedChannel.sid != null ? new Integer(scannedChannel.sid)
+				: null;
+		this.vpid = scannedChannel.vpid != null ? new Integer(
+				scannedChannel.vpid) : null;
+		this.pcr = scannedChannel.pcr != null ? new Integer(scannedChannel.pcr)
+				: null;
+		this.apid = scannedChannel.apid != null ? new Integer(
+				scannedChannel.apid) : null;
+		this.tpid = scannedChannel.tpid != null ? new Integer(
+				scannedChannel.tpid) : null;
+		this.caid = scannedChannel.caid != null ? new String(
+				scannedChannel.caid) : null;
+		this.rid = scannedChannel.rid != null ? new Integer(scannedChannel.rid)
+				: null;
 		this.scannedName = scannedChannel.scannedName != null ? new String(
 				scannedChannel.scannedName) : null;
 		this.providerName = scannedChannel.providerName != null ? new String(
@@ -219,6 +237,15 @@ public class ScannedChannel implements Serializable {
 		this.vpid = vpid;
 	}
 
+	public Integer getVenc() {
+
+		return venc;
+	}
+
+	public void setVenc(Integer venc) {
+		this.venc = venc;
+	}
+
 	public Integer getPcr() {
 
 		return pcr;
@@ -235,6 +262,15 @@ public class ScannedChannel implements Serializable {
 
 	public void setApid(Integer apid) {
 		this.apid = apid;
+	}
+
+	public Integer getAenc() {
+
+		return aenc;
+	}
+
+	public void setAenc(Integer aenc) {
+		this.aenc = aenc;
 	}
 
 	public Integer getTpid() {

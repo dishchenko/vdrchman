@@ -168,7 +168,7 @@
 							<ui:fragment rendered="#{not empty channelVar.caid}">
 								<h:panelGroup style="background-color: #ffcc99;">
 									<h:outputText styleClass="preformattedtext"
-										value="#{channelVar.caid == 2600 ? 'BISS' : channelVar.caid}" />
+										value="#{channelVar.caid eq '2600' ? 'BISS' : channelVar.caid}" />
 								</h:panelGroup>
 							</ui:fragment>
 						</h:column>

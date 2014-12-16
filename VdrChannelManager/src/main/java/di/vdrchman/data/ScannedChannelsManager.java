@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -219,8 +221,24 @@ public class ScannedChannelsManager implements Serializable {
 		String sourceName;
 		Integer symbolRate;
 		String[] vInfo;
+		Integer venc;
 		Integer vpid;
 		Integer pcr;
+		String[] tInfo;
+		Integer tpid;
+		String caid;
+		String[] caidInfo;
+		SortedSet<String> caidSet;
+		StringBuilder caidSb;
+		Integer sid;
+		Integer nid;
+		Integer tid;
+		Integer rid;
+		String[] aStreams;
+		String[] aInfo;
+		Integer apid;
+		Integer aenc;
+		ScannedChannel scannedChannel;
 
 		result = "OK";
 		lineNo = 0;
@@ -283,12 +301,124 @@ public class ScannedChannelsManager implements Serializable {
 
 				symbolRate = Integer.parseInt(splitLine[4]);
 
-				vInfo = splitLine[5].split("\\+");
+				vInfo = splitLine[5].split("=");
+				if (vInfo.length == 2) {
+					venc = Integer.parseInt(vInfo[1]);
+				} else {
+					venc = 0;
+				}
+				if (venc == 0) {
+					venc = null;
+				}
+				vInfo = vInfo[0].split("\\+");
 				vpid = Integer.parseInt(vInfo[0]);
+				if (vpid == 0) {
+					vpid = null;
+				}
 				if (vInfo.length == 2) {
 					pcr = Integer.parseInt(vInfo[1]);
 				} else {
+					pcr = 0;
+				}
+				if (pcr == 0) {
 					pcr = null;
+				}
+
+				tInfo = splitLine[7].split(";");
+				tpid = Integer.parseInt(tInfo[0]);
+				if (tpid == 0) {
+					tpid = null;
+				}
+
+				caid = splitLine[8];
+				try {
+					caidInfo = caid.split(",");
+					caidSet = new TreeSet<String>();
+					for (String caidItem : caidInfo) {
+						caidSet.add(caidItem);
+					}
+					caidSb = new StringBuilder();
+					for (String caidItem : caidSet) {
+						caidSb.append(caidItem + ",");
+					}
+					caidSb.setLength(caidSb.length() - 1);
+					caid = caidSb.toString();
+				} catch (NumberFormatException ex) {
+					// do nothing
+				}
+				try {
+					if (Integer.parseInt(caid) == 0) {
+						caid = null;
+					}
+				} catch (NumberFormatException ex) {
+					// do nothing
+				}
+
+				sid = Integer.parseInt(splitLine[9]);
+
+				nid = Integer.parseInt(splitLine[10]);
+				if (nid == 0) {
+					nid = null;
+				}
+
+				tid = Integer.parseInt(splitLine[11]);
+				if (tid == 0) {
+					tid = null;
+				}
+
+				rid = Integer.parseInt(splitLine[12]);
+				if (rid == 0) {
+					rid = null;
+				}
+
+				aStreams = splitLine[6].split(",|;");
+				for (String aStream : aStreams) {
+					aInfo = aStream.split("=");
+					apid = Integer.parseInt(aInfo[0]);
+					aenc = 0;
+					if (aInfo.length == 2) {
+						aInfo = aInfo[1].split("@");
+						if (aInfo.length == 2) {
+							aenc = Integer.parseInt(aInfo[1]);
+						}
+					}
+					if (aenc == 0) {
+						aenc = null;
+					}
+
+					scannedChannel = scannedChannelRepository
+							.findBySourceFrequencyPolaritySidApid(sourceName,
+									frequency, polarity, sid, apid);
+
+					if (scannedChannel == null) {
+						scannedChannel = new ScannedChannel();
+
+						scannedChannel.setSourceName(sourceName);
+						scannedChannel.setFrequency(frequency);
+						scannedChannel.setPolarity(polarity);
+						scannedChannel.setSid(sid);
+						scannedChannel.setApid(apid);
+					}
+
+					scannedChannel.setScannedName(scannedName);
+					scannedChannel.setProviderName(providerName);
+					scannedChannel.setDvbsGen(dvbsGen);
+					scannedChannel.setSymbolRate(symbolRate);
+					scannedChannel.setVenc(venc);
+					scannedChannel.setVpid(vpid);
+					scannedChannel.setPcr(pcr);
+					scannedChannel.setTpid(tpid);
+					scannedChannel.setCaid(caid);
+					scannedChannel.setNid(nid);
+					scannedChannel.setTid(tid);
+					scannedChannel.setRid(rid);
+					scannedChannel.setAenc(aenc);
+
+					if (scannedChannel.getId() != null) {
+						scannedChannelRepository.update(scannedChannel);
+					} else {
+						scannedChannelRepository.add(scannedChannel);
+					}
 				}
 			}
 		}

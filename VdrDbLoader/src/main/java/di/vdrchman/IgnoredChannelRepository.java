@@ -42,8 +42,7 @@ public class IgnoredChannelRepository {
 		String[] snInfo;
 		String scannedName;
 		String providerName;
-		String[] aInfo;
-		String[] aInfo2;
+		String[] aStreams;
 		int apid;
 		IgnoredChannel ignoredChannel;
 
@@ -104,23 +103,21 @@ public class IgnoredChannelRepository {
 				} else {
 					providerName = null;
 				}
-				aInfo = splitLine[4].split(",");
-				for (int i = 0; i < aInfo.length; ++i) {
-					aInfo2 = aInfo[i].split(";");
-					for (int j = 0; j < aInfo2.length; ++j) {
-						apid = Integer.parseInt(aInfo2[j].split("=")[0]);
+				aStreams = splitLine[4].split(",|;");
+				for (String aStream : aStreams) {
+					apid = Integer.parseInt(aStream.split("=")[0]);
 
-						ignoredChannel = findByTransponderSidApid(transponder.getId(), sid, apid);
-						if (ignoredChannel == null) {
-							ignoredChannel = new IgnoredChannel();
-							ignoredChannel.setTranspId(transponder.getId());
-							ignoredChannel.setSid(sid);
-							ignoredChannel.setApid(apid);
-							ignoredChannel.setScannedName(scannedName);
-							ignoredChannel.setProviderName(providerName);
-							em.persist(ignoredChannel);
-							em.flush();
-						}
+					ignoredChannel = findByTransponderSidApid(
+							transponder.getId(), sid, apid);
+					if (ignoredChannel == null) {
+						ignoredChannel = new IgnoredChannel();
+						ignoredChannel.setTranspId(transponder.getId());
+						ignoredChannel.setSid(sid);
+						ignoredChannel.setApid(apid);
+						ignoredChannel.setScannedName(scannedName);
+						ignoredChannel.setProviderName(providerName);
+						em.persist(ignoredChannel);
+						em.flush();
 					}
 				}
 			}
@@ -130,7 +127,8 @@ public class IgnoredChannelRepository {
 	// Find an Ignored Channel with given SID and APID which relates to
 	// the Transponder with the ID given.
 	// Return null if no Ignored Channel found
-	public IgnoredChannel findByTransponderSidApid(long transpId, int sid, int apid) {
+	public IgnoredChannel findByTransponderSidApid(long transpId, int sid,
+			int apid) {
 		IgnoredChannel result;
 		CriteriaBuilder cb;
 		CriteriaQuery<IgnoredChannel> criteria;

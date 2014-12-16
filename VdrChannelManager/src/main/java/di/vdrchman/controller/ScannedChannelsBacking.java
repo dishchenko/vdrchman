@@ -38,6 +38,7 @@ public class ScannedChannelsBacking {
 			scannedChannelsManager.addScanProcessingReport(scan.getFileName(),
 					scannedChannelsManager.processScanData(scan.getData()));
 		}
+		scannedChannelsManager.retrieveAllChannels();
 		filesManager.clearScans();
 	}
 

@@ -47,8 +47,8 @@ public class ChannelRepository {
 		String polarity;
 		Transponder transponder;
 		String[] vInfo;
-		int vpid;
 		int venc;
+		int vpid;
 		int pcr;
 		String[] aInfo;
 		int apid;
@@ -56,7 +56,7 @@ public class ChannelRepository {
 		int tpid;
 		String caid;
 		String[] caidInfo;
-		SortedSet<Integer> caidSet;
+		SortedSet<String> caidSet;
 		StringBuilder caidSb;
 		int rid;
 		String[] snInfo;
@@ -161,13 +161,13 @@ public class ChannelRepository {
 					caid = splitLine[5];
 					try {
 						caidInfo = caid.split(",");
-						caidSet = new TreeSet<Integer>();
+						caidSet = new TreeSet<String>();
 						for (String caidItem : caidInfo) {
-							caidSet.add(Integer.parseInt(caidItem));
+							caidSet.add(caidItem);
 						}
 						caidSb = new StringBuilder();
-						for (Integer caidItem : caidSet) {
-							caidSb.append(caidItem.toString() + ",");
+						for (String caidItem : caidSet) {
+							caidSb.append(caidItem + ",");
 						}
 						caidSb.setLength(caidSb.length() - 1);
 						caid = caidSb.toString();

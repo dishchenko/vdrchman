@@ -176,12 +176,15 @@ create table tscanned_channel (
 	tid int(11),
 	sid int(11) not null,
 	vpid int(11),
+	venc int(11),
 	pcr int(11),
 	apid int(11) not null,
+	aenc int(11),
 	tpid int(11),
 	caid varchar(20),
 	rid int(11),
 	scanned_name varchar(50),
 	provider_name varchar(50),
+	unique (source_name, frequency, polarity, sid, apid)
 	foreign key (user_id) references tuser (id) on delete cascade
 ) engine=InnoDB;
