@@ -242,7 +242,6 @@ public class ChannelRepository {
 					channelSeqno.setUserId(userId);
 					channelSeqno.setSeqno(seqno);
 					em.persist(channelSeqno);
-					em.flush();
 
 					++seqno;
 				}
@@ -364,7 +363,6 @@ public class ChannelRepository {
 								channelGroup.setGroupId(group.getId());
 								channelGroup.setSeqno(seqno);
 								em.persist(channelGroup);
-								em.flush();
 							} else {
 								Logger.getLogger(this.getClass()).log(
 										Level.ERROR,

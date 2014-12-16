@@ -117,7 +117,6 @@ public class IgnoredChannelRepository {
 						ignoredChannel.setScannedName(scannedName);
 						ignoredChannel.setProviderName(providerName);
 						em.persist(ignoredChannel);
-						em.flush();
 					}
 				}
 			}

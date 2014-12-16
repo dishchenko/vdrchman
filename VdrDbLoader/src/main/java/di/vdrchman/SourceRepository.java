@@ -59,7 +59,6 @@ public class SourceRepository {
 			sb.setLength(sb.length() - 1);
 			source.setDescription(sb.toString());
 			em.persist(source);
-			em.flush();
 		}
 
 		while ((line = diseqcConf.readLine()) != null) {

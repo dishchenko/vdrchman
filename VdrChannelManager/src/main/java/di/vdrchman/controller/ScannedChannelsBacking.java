@@ -142,6 +142,38 @@ public class ScannedChannelsBacking {
 		}
 	}
 
+	// On changing the comparison result filter selection try to stay
+	// on the scroller page which includes the previous shown page top channel
+	public void onComparisonMenuSelection(ValueChangeEvent event) {
+		ScannedChannel lastPageTopChannel;
+		int comparisonFilter;
+
+		lastPageTopChannel = null;
+		if (!scannedChannelsManager.getChannels().isEmpty()) {
+			lastPageTopChannel = scannedChannelsManager.getChannels().get(
+					(scannedChannelsManager.getScrollerPage() - 1)
+							* scannedChannelsManager.getRowsPerPage());
+		}
+		comparisonFilter = (Integer) event.getNewValue();
+		scannedChannelsManager.setComparisonFilter(comparisonFilter);
+		scannedChannelsManager.retrieveAllChannels();
+		scannedChannelsManager.clearCheckedChannels();
+		scannedChannelsManager.clearChannelCheckboxes();
+		if (!scannedChannelsManager.getChannels().isEmpty()) {
+			if (lastPageTopChannel != null) {
+				if (!scannedChannelsManager
+						.turnScrollerPage(lastPageTopChannel)) {
+					scannedChannelsManager
+							.turnScrollerPage(scannedChannelsManager
+									.getChannels().get(0));
+				}
+			} else {
+				scannedChannelsManager.turnScrollerPage(scannedChannelsManager
+						.getChannels().get(0));
+			}
+		}
+	}
+
 	// Well this method is called when the user changes the table scroller page
 	public void onDataTableScroll(DataScrollEvent event) {
 		scannedChannelsManager.clearCheckedChannels();

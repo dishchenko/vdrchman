@@ -29,7 +29,7 @@
 						render="uploadedScansProcessedPanel" />
 				</h:panelGrid>
 				<!-- Filter(s) panel -->
-				<h:panelGrid columns="5">
+				<h:panelGrid columns="7">
 					<h:outputText styleClass="preformattedtext" value="Filter by:" />
 					<h:outputLabel styleClass="preformattedtext" value="Source" />
 					<h:selectOneMenu value="#{scannedChannelsManager.filteredSourceId}"
@@ -51,6 +51,14 @@
 							value="#{scannedChannelsManager.filteredSourceTransponders}"
 							var="transponderVar" itemValue="#{transponderVar.id}"
 							itemLabel="#{transponderVar.frequency} #{transponderVar.polarity}" />
+					</h:selectOneMenu>
+					<h:outputLabel styleClass="preformattedtext" value="Comparison result" />
+					<h:selectOneMenu value="#{scannedChannelsManager.comparisonFilter}"
+						valueChangeListener="#{scannedChannelsBacking.onComparisonMenuSelection}"
+						onchange="document.getElementById('scannedChannelsForm').submit()">
+						<f:selectItem itemValue="0" itemLabel="All" />
+						<f:selectItem itemValue="1" itemLabel="New" />
+						<f:selectItem itemValue="2" itemLabel="Changed" />
 					</h:selectOneMenu>
 				</h:panelGrid>
 				<h:panelGroup rendered="#{empty scannedChannelsManager.channels}">

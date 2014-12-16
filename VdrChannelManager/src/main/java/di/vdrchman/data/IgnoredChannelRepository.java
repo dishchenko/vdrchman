@@ -6,7 +6,12 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import di.vdrchman.model.IgnoredChannel;
 
@@ -62,6 +67,45 @@ public class IgnoredChannelRepository {
 		}
 
 		return query.getResultList();
+	}
+
+	/**
+	 * Finds an channel by the combination of transponder ID, SID and APID given
+	 * among the ignored channels belonging to the current application user.
+	 * 
+	 * @param transpId
+	 *            the transponder ID to find an ignored channel within
+	 * @param sid
+	 *            the SID of ignored channel to find
+	 * @param apid
+	 *            the APID of ignored channel to find
+	 * @return the ignored channel found or null if no channel found
+	 */
+	public IgnoredChannel findByTransponderSidApid(long transpId, int sid,
+			int apid) {
+		IgnoredChannel result;
+		CriteriaBuilder cb;
+		CriteriaQuery<IgnoredChannel> criteria;
+		Root<IgnoredChannel> ignoredChannelRoot;
+		Predicate p;
+
+		cb = em.getCriteriaBuilder();
+		criteria = cb.createQuery(IgnoredChannel.class);
+		ignoredChannelRoot = criteria.from(IgnoredChannel.class);
+		criteria.select(ignoredChannelRoot);
+		p = cb.conjunction();
+		p = cb.and(p, cb.equal(ignoredChannelRoot.get("transpId"), transpId));
+		p = cb.and(p, cb.equal(ignoredChannelRoot.get("sid"), sid));
+		p = cb.and(p, cb.equal(ignoredChannelRoot.get("apid"), apid));
+		criteria.where(p);
+
+		try {
+			result = em.createQuery(criteria).getSingleResult();
+		} catch (NoResultException ex) {
+			result = null;
+		}
+
+		return result;
 	}
 
 	/**

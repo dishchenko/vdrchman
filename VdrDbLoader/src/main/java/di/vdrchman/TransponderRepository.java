@@ -76,7 +76,6 @@ public class TransponderRepository {
 			transpSeqno.setUserId(userId);
 			transpSeqno.setSeqno(seqno);
 			em.persist(transpSeqno);
-			em.flush();
 
 			++seqno;
 		}

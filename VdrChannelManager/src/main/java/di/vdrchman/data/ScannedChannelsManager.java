@@ -23,6 +23,7 @@ import javax.inject.Named;
 import di.vdrchman.event.SourceAction;
 import di.vdrchman.event.TransponderAction;
 import di.vdrchman.model.ScannedChannel;
+import di.vdrchman.model.Source;
 import di.vdrchman.model.Transponder;
 
 @SessionScoped
@@ -32,10 +33,19 @@ public class ScannedChannelsManager implements Serializable {
 	private static final long serialVersionUID = 6811121080345239295L;
 
 	@Inject
+	private ScannedChannelRepository scannedChannelRepository;
+
+	@Inject
+	private SourceRepository sourceRepository;
+
+	@Inject
 	private TransponderRepository transponderRepository;
 
 	@Inject
-	private ScannedChannelRepository scannedChannelRepository;
+	private ChannelRepository channelRepository;
+
+	@Inject
+	private IgnoredChannelRepository ignoredChannelRepository;
 
 	@Inject
 	Logger logger;
@@ -74,6 +84,12 @@ public class ScannedChannelsManager implements Serializable {
 	// second - processing details
 	private List<String[]> scanProcessingReports = new ArrayList<String[]>();
 
+	// Comparison result filter value
+	// 0 - all channels (no filtering)
+	// 1 - new channels only
+	// 2 - changed channels only
+	private int comparisonFilter = 0;
+
 	// Fill in checkedChannels list with channels corresponding
 	// to checkboxes checked in the data table on the page
 	public void collectCheckedChannels() {
@@ -98,21 +114,28 @@ public class ScannedChannelsManager implements Serializable {
 		channelCheckboxes.clear();
 	}
 
-	// Find and set the table scroller page to show the channel given
-	public void turnScrollerPage(ScannedChannel channel) {
+	// Find and set the table scroller page to show the channel given.
+	// Return true if the page with the channel is found, false otherwise
+	public boolean turnScrollerPage(ScannedChannel channel) {
+		boolean result;
 		List<ScannedChannel> channels;
 		int i;
 
-		channels = scannedChannelRepository.findAll(filteredSourceId,
-				filteredTranspId);
+		result = false;
+
+		channels = filterByComparison(scannedChannelRepository.findAll(
+				filteredSourceId, filteredTranspId));
 		i = 0;
 		for (ScannedChannel theChannel : channels) {
 			if (theChannel.getId().equals(channel.getId())) {
 				scrollerPage = i / rowsPerPage + 1;
+				result = true;
 				break;
 			}
 			++i;
 		}
+
+		return result;
 	}
 
 	// Cleanup the ScannedChannelManager's data on SourceAction if needed
@@ -443,11 +466,58 @@ public class ScannedChannelsManager implements Serializable {
 		scanProcessingReports.clear();
 	}
 
+	public List<ScannedChannel> filterByComparison(List<ScannedChannel> channels) {
+		List<ScannedChannel> result;
+		Source source;
+		Transponder transponder;
+
+		if (comparisonFilter != 0) {
+			result = new ArrayList<ScannedChannel>();
+
+			if (comparisonFilter == 1) {
+				for (ScannedChannel channel : channels) {
+					source = sourceRepository.findByName(channel
+							.getSourceName());
+					if (source != null) {
+						transponder = transponderRepository
+								.findBySourceFrequencyPolarity(source.getId(),
+										channel.getFrequency(),
+										channel.getPolarity());
+						if (transponder != null) {
+							if (ignoredChannelRepository
+									.findByTransponderSidApid(
+											transponder.getId(),
+											channel.getSid(), channel.getApid()) == null) {
+								if (channelRepository.findByTransponderSidApid(
+										transponder.getId(), channel.getSid(),
+										channel.getApid()) == null) {
+									result.add(channel);
+								}
+							}
+						} else {
+							result.add(channel);
+						}
+					} else {
+						result.add(channel);
+					}
+				}
+			}
+
+			if (comparisonFilter == 2) {
+				// TODO
+			}
+		} else {
+			result = channels;
+		}
+
+		return result;
+	}
+
 	// (Re)Fill in the channel list
 	@PostConstruct
 	public void retrieveAllChannels() {
-		channels = scannedChannelRepository.findAll(filteredSourceId,
-				filteredTranspId);
+		channels = filterByComparison(scannedChannelRepository.findAll(
+				filteredSourceId, filteredTranspId));
 	}
 
 	public long getFilteredSourceId() {
@@ -505,6 +575,15 @@ public class ScannedChannelsManager implements Serializable {
 	public List<String[]> getScanProcessingReports() {
 
 		return scanProcessingReports;
+	}
+
+	public int getComparisonFilter() {
+
+		return comparisonFilter;
+	}
+
+	public void setComparisonFilter(int comparisonFilter) {
+		this.comparisonFilter = comparisonFilter;
 	}
 
 }
