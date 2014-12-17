@@ -1,5 +1,6 @@
 package di.vdrchman.controller;
 
+import javax.enterprise.event.Event;
 import javax.enterprise.inject.Model;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
@@ -9,6 +10,7 @@ import org.richfaces.event.DataScrollEvent;
 import di.vdrchman.data.IgnoredChannelRepository;
 import di.vdrchman.data.IgnoredChannelsManager;
 import di.vdrchman.data.TransponderRepository;
+import di.vdrchman.event.IgnoredChannelAction;
 import di.vdrchman.model.IgnoredChannel;
 
 @Model
@@ -23,6 +25,9 @@ public class IgnoredChannelsBacking {
 	@Inject
 	private IgnoredChannelRepository ignoredChannelRepository;
 
+	@Inject
+	private Event<IgnoredChannelAction> ignoredChannelActionEvent;
+
 	// The user is going to remove some checked channels
 	public void intendRemoveChannels() {
 		ignoredChannelsManager.collectCheckedChannels();
@@ -33,6 +38,8 @@ public class IgnoredChannelsBacking {
 		for (IgnoredChannel channel : ignoredChannelsManager
 				.getCheckedChannels()) {
 			ignoredChannelRepository.delete(channel);
+			ignoredChannelActionEvent.fire(new IgnoredChannelAction(channel,
+					IgnoredChannelAction.Action.DELETE));
 		}
 		ignoredChannelsManager.retrieveAllChannels();
 		ignoredChannelsManager.clearCheckedChannels();
@@ -113,6 +120,38 @@ public class IgnoredChannelsBacking {
 								.turnScrollerPage(ignoredChannelsManager
 										.getChannels().get(0));
 					}
+				}
+			} else {
+				ignoredChannelsManager.turnScrollerPage(ignoredChannelsManager
+						.getChannels().get(0));
+			}
+		}
+	}
+
+	// On changing the comparison result filter selection try to stay
+	// on the scroller page which includes the previous shown page top channel
+	public void onComparisonMenuSelection(ValueChangeEvent event) {
+		IgnoredChannel lastPageTopChannel;
+		int comparisonFilter;
+
+		lastPageTopChannel = null;
+		if (!ignoredChannelsManager.getChannels().isEmpty()) {
+			lastPageTopChannel = ignoredChannelsManager.getChannels().get(
+					(ignoredChannelsManager.getScrollerPage() - 1)
+							* ignoredChannelsManager.getRowsPerPage());
+		}
+		comparisonFilter = (Integer) event.getNewValue();
+		ignoredChannelsManager.setComparisonFilter(comparisonFilter);
+		ignoredChannelsManager.retrieveAllChannels();
+		ignoredChannelsManager.clearCheckedChannels();
+		ignoredChannelsManager.clearChannelCheckboxes();
+		if (!ignoredChannelsManager.getChannels().isEmpty()) {
+			if (lastPageTopChannel != null) {
+				if (!ignoredChannelsManager
+						.turnScrollerPage(lastPageTopChannel)) {
+					ignoredChannelsManager
+							.turnScrollerPage(ignoredChannelsManager
+									.getChannels().get(0));
 				}
 			} else {
 				ignoredChannelsManager.turnScrollerPage(ignoredChannelsManager

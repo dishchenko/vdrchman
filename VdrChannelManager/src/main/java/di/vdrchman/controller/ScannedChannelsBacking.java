@@ -1,5 +1,6 @@
 package di.vdrchman.controller;
 
+import javax.enterprise.event.Event;
 import javax.enterprise.inject.Model;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
@@ -11,6 +12,7 @@ import di.vdrchman.data.Scan;
 import di.vdrchman.data.ScannedChannelsManager;
 import di.vdrchman.data.SourceRepository;
 import di.vdrchman.data.TransponderRepository;
+import di.vdrchman.event.ScannedChannelAction;
 import di.vdrchman.model.ScannedChannel;
 import di.vdrchman.model.Source;
 import di.vdrchman.model.Transponder;
@@ -30,6 +32,9 @@ public class ScannedChannelsBacking {
 	@Inject
 	private TransponderRepository transponderRepository;
 
+	@Inject
+	private Event<ScannedChannelAction> scannedChannelActionEvent;
+
 	// Process all uploaded scanned channel files (scans) one by one. Store
 	// results of processing in the scanned channels table
 	public void processUploadedScans() {
@@ -40,6 +45,8 @@ public class ScannedChannelsBacking {
 		}
 		scannedChannelsManager.retrieveAllChannels();
 		filesManager.clearScans();
+		scannedChannelActionEvent.fire(new ScannedChannelAction(
+				ScannedChannelAction.Action.SCAN_PROCESSED));
 	}
 
 	// On changing the source filter selection clear the transponder filter

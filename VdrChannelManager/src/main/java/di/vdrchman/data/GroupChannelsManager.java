@@ -197,7 +197,7 @@ public class GroupChannelsManager implements Serializable {
 	public void retrieveAllChannels() {
 		List<Group> groups;
 
-		if (shownGroupId == -1) {
+		if (shownGroupId < 0) {
 			groups = groupRepository.findAll();
 			if (!groups.isEmpty()) {
 				shownGroupId = groups.get(0).getId();

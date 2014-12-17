@@ -145,7 +145,7 @@ public class TranspondersManager implements Serializable {
 			if (sourceId == filteredSourceId) {
 				filteredSourceId = -1;
 			}
-			if (filteredSourceId == -1) {
+			if (filteredSourceId < 0) {
 				transpondersRefreshNeeded = true;
 			}
 

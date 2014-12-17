@@ -184,8 +184,8 @@ public class ChannelsBacking {
 		int newSeqno;
 
 		channelsManager.collectCheckedChannels();
-		curSeqno = channelRepository
-				.findSeqno(channelsManager.getTakenChannel());
+		curSeqno = channelRepository.findSeqno(channelsManager
+				.getTakenChannel());
 		newSeqno = channelRepository.findSeqno(channelsManager
 				.getCheckedChannels().get(0));
 		if (newSeqno < curSeqno) {
@@ -307,6 +307,36 @@ public class ChannelsBacking {
 						channelsManager.turnScrollerPage(channelsManager
 								.getChannels().get(0));
 					}
+				}
+			} else {
+				channelsManager.turnScrollerPage(channelsManager.getChannels()
+						.get(0));
+			}
+		}
+	}
+
+	// On changing the comparison result filter selection try to stay
+	// on the scroller page which includes the previous shown page top channel
+	public void onComparisonMenuSelection(ValueChangeEvent event) {
+		Channel lastPageTopChannel;
+		int comparisonFilter;
+
+		lastPageTopChannel = null;
+		if (!channelsManager.getChannels().isEmpty()) {
+			lastPageTopChannel = channelsManager.getChannels().get(
+					(channelsManager.getScrollerPage() - 1)
+							* channelsManager.getRowsPerPage());
+		}
+		comparisonFilter = (Integer) event.getNewValue();
+		channelsManager.setComparisonFilter(comparisonFilter);
+		channelsManager.retrieveAllChannels();
+		channelsManager.clearCheckedChannels();
+		channelsManager.clearChannelCheckboxes();
+		if (!channelsManager.getChannels().isEmpty()) {
+			if (lastPageTopChannel != null) {
+				if (!channelsManager.turnScrollerPage(lastPageTopChannel)) {
+					channelsManager.turnScrollerPage(channelsManager
+							.getChannels().get(0));
 				}
 			} else {
 				channelsManager.turnScrollerPage(channelsManager.getChannels()

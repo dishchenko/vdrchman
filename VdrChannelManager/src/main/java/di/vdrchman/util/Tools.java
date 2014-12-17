@@ -1,6 +1,8 @@
 package di.vdrchman.util;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -11,6 +13,30 @@ import di.vdrchman.model.Group;
 @Named
 @Singleton
 public class Tools {
+
+	// Comparison filter modes
+	// 0 - no filtering
+	public static final int COMPARISON_NONE = 0;
+	// 1 - new channels
+	public static final int COMPARISON_NEW = 1;
+	// 2 - changed main list channels
+	public static final int COMPARISON_CHANGED_MAIN = 2;
+	// 3 - changed ignored list channels
+	public static final int COMPARISON_CHANGED_IGNORED = 3;
+	// 4 - not scanned channels
+	public static final int COMPARISON_NOT_SCANNED = 4;
+
+	// JSF EL accessible map of comparison constants
+	public static final Map<String, Integer> comparisonConst = new HashMap<String, Integer>();
+
+	// Initialize the above map etc.
+	static {
+		comparisonConst.put("NONE", COMPARISON_NONE);
+		comparisonConst.put("NEW", COMPARISON_NEW);
+		comparisonConst.put("CHANGED_MAIN", COMPARISON_CHANGED_MAIN);
+		comparisonConst.put("CHANGED_IGNORED", COMPARISON_CHANGED_IGNORED);
+		comparisonConst.put("NOT_SCANNED", COMPARISON_NOT_SCANNED);
+	}
 
 	// Build a string consisting of comma delimited group names
 	public String buildGroupNamesString(List<Group> groups) {
@@ -117,6 +143,11 @@ public class Tools {
 		}
 
 		return sb.toString();
+	}
+
+	public Map<String, Integer> getComparisonConst() {
+
+		return comparisonConst;
 	}
 
 }

@@ -1,5 +1,7 @@
 package di.vdrchman.data;
 
+import static di.vdrchman.util.Tools.*;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +15,7 @@ import javax.enterprise.event.Reception;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import di.vdrchman.event.ScannedChannelAction;
 import di.vdrchman.event.SourceAction;
 import di.vdrchman.event.TransponderAction;
 import di.vdrchman.model.Channel;
@@ -90,6 +93,9 @@ public class ChannelsManager implements Serializable {
 	// List of checked channel groups built on checkboxes map
 	private List<Group> checkedChannelGroups = new ArrayList<Group>();
 
+	// Comparison result filter value. See Tools.COMPARISON_*
+	private int comparisonFilter = 0;
+
 	// Fill in checkedChannels list with channels corresponding
 	// to checkboxes checked in the data table on the page
 	public void collectCheckedChannels() {
@@ -114,10 +120,14 @@ public class ChannelsManager implements Serializable {
 		channelCheckboxes.clear();
 	}
 
-	// Find and set the table scroller page to show the channel given
-	public void turnScrollerPage(Channel channel) {
+	// Find and set the table scroller page to show the channel given.
+	// Return true if the page with the channel is found, false otherwise
+	public boolean turnScrollerPage(Channel channel) {
+		boolean result;
 		List<Channel> channels;
 		int i;
+
+		result = false;
 
 		if ((filteredSourceId >= 0) || (filteredTranspId >= 0)) {
 			channels = channelRepository.findAll(filteredSourceId,
@@ -126,6 +136,7 @@ public class ChannelsManager implements Serializable {
 			for (Channel theChannel : channels) {
 				if (theChannel.getId().equals(channel.getId())) {
 					scrollerPage = i / rowsPerPage + 1;
+					result = true;
 					break;
 				}
 				++i;
@@ -133,7 +144,10 @@ public class ChannelsManager implements Serializable {
 		} else {
 			scrollerPage = (channelRepository.findSeqno(channel) - 1)
 					/ rowsPerPage + 1;
+			result = true;
 		}
+
+		return result;
 	}
 
 	// Calculate the sequence number for the channel to be placed on top
@@ -204,7 +218,7 @@ public class ChannelsManager implements Serializable {
 				filteredSourceId = -1;
 				filteredSourceTranspondersRefreshNeeded = true;
 			}
-			if (filteredSourceId == -1) {
+			if (filteredSourceId < 0) {
 				channelsRefreshNeeded = true;
 			}
 
@@ -237,7 +251,7 @@ public class ChannelsManager implements Serializable {
 			if (transpId == filteredTranspId) {
 				filteredTranspId = -1;
 			}
-			if (filteredTranspId == -1) {
+			if (filteredTranspId < 0) {
 				channelsRefreshNeeded = true;
 			}
 
@@ -245,6 +259,16 @@ public class ChannelsManager implements Serializable {
 				if (transpId == takenChannel.getTranspId()) {
 					takenChannel = null;
 				}
+			}
+		}
+	}
+
+	// Cleanup the ChannelManager's data on ScannedChannelAction if needed
+	public void onScannedChannelAction(
+			@Observes(notifyObserver = Reception.IF_EXISTS) final ScannedChannelAction scannedChannelAction) {
+		if (scannedChannelAction.getAction() == ScannedChannelAction.Action.SCAN_PROCESSED) {
+			if (comparisonFilter != COMPARISON_NONE) {
+				channelsRefreshNeeded = true;
 			}
 		}
 	}
@@ -477,6 +501,15 @@ public class ChannelsManager implements Serializable {
 	public List<Group> getCheckedChannelGroups() {
 
 		return checkedChannelGroups;
+	}
+
+	public int getComparisonFilter() {
+
+		return comparisonFilter;
+	}
+
+	public void setComparisonFilter(int comparisonFilter) {
+		this.comparisonFilter = comparisonFilter;
 	}
 
 }

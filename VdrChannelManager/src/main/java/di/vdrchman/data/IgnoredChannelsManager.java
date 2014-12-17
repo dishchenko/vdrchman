@@ -1,5 +1,7 @@
 package di.vdrchman.data;
 
+import static di.vdrchman.util.Tools.COMPARISON_NONE;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +15,7 @@ import javax.enterprise.event.Reception;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import di.vdrchman.event.ScannedChannelAction;
 import di.vdrchman.event.SourceAction;
 import di.vdrchman.event.TransponderAction;
 import di.vdrchman.model.IgnoredChannel;
@@ -59,6 +62,9 @@ public class IgnoredChannelsManager implements Serializable {
 	// List of checked channels built on checkboxes map
 	private List<IgnoredChannel> checkedChannels = new ArrayList<IgnoredChannel>();
 
+	// Comparison result filter value. See Tools.COMPARISON_*
+	private int comparisonFilter = 0;
+
 	// Fill in checkedChannels list with channels corresponding
 	// to checkboxes checked in the data table on the page
 	public void collectCheckedChannels() {
@@ -83,10 +89,14 @@ public class IgnoredChannelsManager implements Serializable {
 		channelCheckboxes.clear();
 	}
 
-	// Find and set the table scroller page to show the channel given
-	public void turnScrollerPage(IgnoredChannel channel) {
+	// Find and set the table scroller page to show the channel given.
+	// Return true if the page with the channel is found, false otherwise
+	public boolean turnScrollerPage(IgnoredChannel channel) {
+		boolean result;
 		List<IgnoredChannel> channels;
 		int i;
+
+		result = false;
 
 		channels = ignoredChannelRepository.findAll(filteredSourceId,
 				filteredTranspId);
@@ -94,10 +104,13 @@ public class IgnoredChannelsManager implements Serializable {
 		for (IgnoredChannel theChannel : channels) {
 			if (theChannel.getId().equals(channel.getId())) {
 				scrollerPage = i / rowsPerPage + 1;
+				result = true;
 				break;
 			}
 			++i;
 		}
+
+		return result;
 	}
 
 	// Cleanup the IgnoredChannelManager's data on SourceAction if needed
@@ -112,7 +125,7 @@ public class IgnoredChannelsManager implements Serializable {
 				filteredSourceId = -1;
 				filteredSourceTranspondersRefreshNeeded = true;
 			}
-			if (filteredSourceId == -1) {
+			if (filteredSourceId < 0) {
 				channelsRefreshNeeded = true;
 			}
 		}
@@ -133,7 +146,18 @@ public class IgnoredChannelsManager implements Serializable {
 			if (transpId == filteredTranspId) {
 				filteredTranspId = -1;
 			}
-			if (filteredTranspId == -1) {
+			if (filteredTranspId < 0) {
+				channelsRefreshNeeded = true;
+			}
+		}
+	}
+
+	// Cleanup the IgnoredChannelManager's data on ScannedChannelAction if
+	// needed
+	public void onScannedChannelAction(
+			@Observes(notifyObserver = Reception.IF_EXISTS) final ScannedChannelAction scannedChannelAction) {
+		if (scannedChannelAction.getAction() == ScannedChannelAction.Action.SCAN_PROCESSED) {
+			if (comparisonFilter != COMPARISON_NONE) {
 				channelsRefreshNeeded = true;
 			}
 		}
@@ -175,7 +199,8 @@ public class IgnoredChannelsManager implements Serializable {
 
 			if (!channels.isEmpty()) {
 				if (lastPageTopChannel != null) {
-					if (ignoredChannelRepository.findById(lastPageTopChannel.getId()) != null) {
+					if (ignoredChannelRepository.findById(lastPageTopChannel
+							.getId()) != null) {
 						turnScrollerPage(lastPageTopChannel);
 					} else {
 						scrollerPage = 1;
@@ -192,8 +217,8 @@ public class IgnoredChannelsManager implements Serializable {
 	// (Re)Fill in the channel list
 	@PostConstruct
 	public void retrieveAllChannels() {
-		channels = ignoredChannelRepository
-				.findAll(filteredSourceId, filteredTranspId);
+		channels = ignoredChannelRepository.findAll(filteredSourceId,
+				filteredTranspId);
 	}
 
 	public long getFilteredSourceId() {
@@ -246,6 +271,15 @@ public class IgnoredChannelsManager implements Serializable {
 	public List<IgnoredChannel> getCheckedChannels() {
 
 		return checkedChannels;
+	}
+
+	public int getComparisonFilter() {
+
+		return comparisonFilter;
+	}
+
+	public void setComparisonFilter(int comparisonFilter) {
+		this.comparisonFilter = comparisonFilter;
 	}
 
 }

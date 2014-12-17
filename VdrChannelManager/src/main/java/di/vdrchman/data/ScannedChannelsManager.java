@@ -1,5 +1,7 @@
 package di.vdrchman.data;
 
+import static di.vdrchman.util.Tools.*;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
@@ -20,6 +22,8 @@ import javax.enterprise.event.Reception;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import di.vdrchman.event.ChannelAction;
+import di.vdrchman.event.IgnoredChannelAction;
 import di.vdrchman.event.SourceAction;
 import di.vdrchman.event.TransponderAction;
 import di.vdrchman.model.ScannedChannel;
@@ -74,10 +78,7 @@ public class ScannedChannelsManager implements Serializable {
 	// second - processing details
 	private List<String[]> scanProcessingReports = new ArrayList<String[]>();
 
-	// Comparison result filter value
-	// 0 - all channels (no filtering)
-	// 1 - new channels only
-	// 2 - changed channels only
+	// Comparison result filter value. See Tools.COMPARISON_*
 	private int comparisonFilter = 0;
 
 	// Fill in checkedChannels list with channels corresponding
@@ -140,7 +141,7 @@ public class ScannedChannelsManager implements Serializable {
 				filteredSourceId = -1;
 				filteredSourceTranspondersRefreshNeeded = true;
 			}
-			if (filteredSourceId == -1) {
+			if (filteredSourceId < 0) {
 				channelsRefreshNeeded = true;
 			}
 		}
@@ -161,8 +162,106 @@ public class ScannedChannelsManager implements Serializable {
 			if (transpId == filteredTranspId) {
 				filteredTranspId = -1;
 			}
-			if (filteredTranspId == -1) {
+			if (filteredTranspId < 0) {
 				channelsRefreshNeeded = true;
+			}
+		}
+	}
+
+	// Cleanup the ScannedChannelManager's data on ChannelAction if needed
+	public void onChannelAction(
+			@Observes(notifyObserver = Reception.IF_EXISTS) final ChannelAction channelAction) {
+		long transpId;
+		long sourceId;
+
+		if (comparisonFilter == COMPARISON_NEW) {
+			transpId = channelAction.getChannel().getTranspId();
+			if (filteredTranspId == transpId) {
+				channelsRefreshNeeded = true;
+			} else {
+				if (filteredTranspId < 0) {
+					if (filteredSourceId >= 0) {
+						sourceId = transponderRepository.findById(transpId)
+								.getSourceId();
+						if (filteredSourceId == sourceId) {
+							channelsRefreshNeeded = true;
+						}
+					} else {
+						channelsRefreshNeeded = true;
+					}
+				}
+			}
+		}
+
+		if (comparisonFilter == COMPARISON_CHANGED_MAIN) {
+			if ((channelAction.getAction() == ChannelAction.Action.UPDATE)
+					|| (channelAction.getAction() == ChannelAction.Action.DELETE)) {
+				transpId = channelAction.getChannel().getTranspId();
+				if (filteredTranspId == transpId) {
+					channelsRefreshNeeded = true;
+				} else {
+					if (filteredTranspId < 0) {
+						if (filteredSourceId >= 0) {
+							sourceId = transponderRepository.findById(transpId)
+									.getSourceId();
+							if (filteredSourceId == sourceId) {
+								channelsRefreshNeeded = true;
+							}
+						} else {
+							channelsRefreshNeeded = true;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Cleanup the ScannedChannelManager's data on IgnoredChannelAction if
+	// needed
+	public void onIgnoredChannelAction(
+			@Observes(notifyObserver = Reception.IF_EXISTS) final IgnoredChannelAction ignoredChannelAction) {
+		long transpId;
+		long sourceId;
+
+		if (comparisonFilter == COMPARISON_NEW) {
+			transpId = ignoredChannelAction.getChannel().getTranspId();
+			if (filteredTranspId == transpId) {
+				channelsRefreshNeeded = true;
+			} else {
+				if (filteredTranspId < 0) {
+					if (filteredSourceId >= 0) {
+						sourceId = transponderRepository.findById(transpId)
+								.getSourceId();
+						if (filteredSourceId == sourceId) {
+							channelsRefreshNeeded = true;
+						}
+					} else {
+						channelsRefreshNeeded = true;
+					}
+				}
+			}
+		}
+
+		if (comparisonFilter == COMPARISON_CHANGED_IGNORED) {
+			if ((ignoredChannelAction.getAction() == IgnoredChannelAction.Action.UPDATE)
+					|| (ignoredChannelAction.getAction() == IgnoredChannelAction.Action.DELETE)) {
+				transpId = ignoredChannelAction.getChannel()
+						.getTranspId();
+				if (filteredTranspId == transpId) {
+					channelsRefreshNeeded = true;
+				} else {
+					if (filteredTranspId < 0) {
+						if (filteredSourceId >= 0) {
+							sourceId = transponderRepository.findById(transpId)
+									.getSourceId();
+							if (filteredSourceId == sourceId) {
+								channelsRefreshNeeded = true;
+							}
+						} else {
+							channelsRefreshNeeded = true;
+						}
+					}
+				}
 			}
 		}
 	}

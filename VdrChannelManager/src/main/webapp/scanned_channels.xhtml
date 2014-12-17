@@ -52,13 +52,19 @@
 							var="transponderVar" itemValue="#{transponderVar.id}"
 							itemLabel="#{transponderVar.frequency} #{transponderVar.polarity}" />
 					</h:selectOneMenu>
-					<h:outputLabel styleClass="preformattedtext" value="Comparison result" />
+					<h:outputLabel styleClass="preformattedtext"
+						value="Comparison result" />
 					<h:selectOneMenu value="#{scannedChannelsManager.comparisonFilter}"
 						valueChangeListener="#{scannedChannelsBacking.onComparisonMenuSelection}"
 						onchange="document.getElementById('scannedChannelsForm').submit()">
-						<f:selectItem itemValue="0" itemLabel="All" />
-						<f:selectItem itemValue="1" itemLabel="New" />
-						<f:selectItem itemValue="2" itemLabel="Changed" />
+						<f:selectItem itemValue="#{tools.comparisonConst['NONE']}"
+							itemLabel="--" />
+						<f:selectItem itemValue="#{tools.comparisonConst['NEW']}"
+							itemLabel="New" />
+						<f:selectItem itemValue="#{tools.comparisonConst['CHANGED_MAIN']}"
+							itemLabel="Changed Main" />
+						<f:selectItem itemValue="#{tools.comparisonConst['CHANGED_IGNORED']}"
+							itemLabel="Changed Ignored" />
 					</h:selectOneMenu>
 				</h:panelGrid>
 				<h:panelGroup rendered="#{empty scannedChannelsManager.channels}">
