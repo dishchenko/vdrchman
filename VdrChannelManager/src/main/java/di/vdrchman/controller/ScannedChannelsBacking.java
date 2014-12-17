@@ -40,8 +40,10 @@ public class ScannedChannelsBacking {
 	public void processUploadedScans() {
 		scannedChannelsManager.clearScanProcessingReports();
 		for (Scan scan : filesManager.getScans()) {
-			scannedChannelsManager.addScanProcessingReport(scan.getFileName(),
-					scannedChannelsManager.processScanData(scan.getData()));
+			scannedChannelsManager.addScanProcessingReport(
+					scan.getFileName(),
+					scannedChannelsManager.processScanData(
+							scan.buildSourceName(), scan.getData()));
 		}
 		scannedChannelsManager.retrieveAllChannels();
 		filesManager.clearScans();

@@ -245,8 +245,7 @@ public class ScannedChannelsManager implements Serializable {
 		if (comparisonFilter == COMPARISON_CHANGED_IGNORED) {
 			if ((ignoredChannelAction.getAction() == IgnoredChannelAction.Action.UPDATE)
 					|| (ignoredChannelAction.getAction() == IgnoredChannelAction.Action.DELETE)) {
-				transpId = ignoredChannelAction.getChannel()
-						.getTranspId();
+				transpId = ignoredChannelAction.getChannel().getTranspId();
 				if (filteredTranspId == transpId) {
 					channelsRefreshNeeded = true;
 				} else {
@@ -318,7 +317,7 @@ public class ScannedChannelsManager implements Serializable {
 	}
 
 	// Process scan data and store results in the scanned channels table
-	public String processScanData(byte[] data) {
+	public String processScanData(String scanSourceName, byte[] data) {
 		String result;
 		int lineNo;
 		BufferedReader br;
@@ -356,6 +355,8 @@ public class ScannedChannelsManager implements Serializable {
 		lineNo = 0;
 
 		try {
+			scannedChannelRepository.makeNotRefreshed(scanSourceName);
+
 			br = new BufferedReader(new InputStreamReader(
 					new ByteArrayInputStream(data), "ISO-8859-5"));
 
@@ -525,6 +526,7 @@ public class ScannedChannelsManager implements Serializable {
 					scannedChannel.setTid(tid);
 					scannedChannel.setRid(rid);
 					scannedChannel.setAenc(aenc);
+					scannedChannel.setRefreshed(true);
 
 					if (scannedChannel.getId() != null) {
 						scannedChannelRepository.update(scannedChannel);
@@ -533,6 +535,8 @@ public class ScannedChannelsManager implements Serializable {
 					}
 				}
 			}
+
+			scannedChannelRepository.deleteNotRefreshed(scanSourceName);
 		}
 
 		catch (Exception ex) {

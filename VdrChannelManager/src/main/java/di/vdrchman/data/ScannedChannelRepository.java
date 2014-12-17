@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -243,6 +244,41 @@ public class ScannedChannelRepository {
 	 */
 	public void update(ScannedChannel channel) {
 		em.merge(channel);
+	}
+
+	/**
+	 * Marks all channels of the source with name given which belong to the
+	 * current application user as 'not refreshed' i.e. not inserted/updated
+	 * during the last source channels scan processing
+	 * 
+	 * @param sourceName
+	 *            the name of the source which channels are marked
+	 */
+	public void makeNotRefreshed(String sourceName) {
+		Query query;
+
+		query = em
+				.createQuery("update ScannedChannel sc set sc.refreshed = false where sc.sourceName = :sourceName and sc.userId = :userId");
+		query.setParameter("sourceName", sourceName);
+		query.setParameter("userId", user.getId());
+		query.executeUpdate();
+	}
+
+	/**
+	 * Deletes 'not refreshed' (i.e. not inserted/updated during the last source
+	 * channels scan processing) channels from the source given
+	 * 
+	 * @param sourceName
+	 *            the name of the source which files are deleted
+	 */
+	public void deleteNotRefreshed(String sourceName) {
+		Query query;
+
+		query = em
+				.createQuery("delete from ScannedChannel sc where sc.refreshed = false and sc.sourceName = :sourceName and sc.userId = :userId");
+		query.setParameter("sourceName", sourceName);
+		query.setParameter("userId", user.getId());
+		query.executeUpdate();
 	}
 
 }

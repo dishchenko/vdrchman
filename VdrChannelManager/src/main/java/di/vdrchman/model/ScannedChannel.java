@@ -95,6 +95,10 @@ public class ScannedChannel implements Serializable {
 	@Column(name = "provider_name")
 	private String providerName;
 
+	@NotNull
+	@Column(columnDefinition = "BIT", length = 1)
+	private Boolean refreshed;
+
 	public ScannedChannel() {
 		// do nothing
 	}
@@ -316,6 +320,15 @@ public class ScannedChannel implements Serializable {
 
 	public void setProviderName(String providerName) {
 		this.providerName = providerName;
+	}
+
+	public Boolean getRefreshed() {
+
+		return refreshed;
+	}
+
+	public void setRefreshed(Boolean refreshed) {
+		this.refreshed = refreshed;
 	}
 
 }

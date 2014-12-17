@@ -18,7 +18,7 @@
 				<h:form id="uploadScanForm">
 					<h:panelGrid columns="1">
 						<h:outputText styleClass="preformattedtext"
-							value="Upload SCANNED channels (scans) here" />
+							value="Upload scans (scanned channels in files named '&lt;sourceName&gt;.scanned') here" />
 						<ui:fragment rendered="#{filesManager.scans.size() > 0}">
 							<h:outputText style="font-weight: bold;"
 								value="Scans uploaded: #{tools.buildUploadedScanFileNamesString(filesManager.scans)}" />
