@@ -23,7 +23,6 @@ import javax.inject.Named;
 import di.vdrchman.event.SourceAction;
 import di.vdrchman.event.TransponderAction;
 import di.vdrchman.model.ScannedChannel;
-import di.vdrchman.model.Source;
 import di.vdrchman.model.Transponder;
 
 @SessionScoped
@@ -33,19 +32,10 @@ public class ScannedChannelsManager implements Serializable {
 	private static final long serialVersionUID = 6811121080345239295L;
 
 	@Inject
-	private ScannedChannelRepository scannedChannelRepository;
-
-	@Inject
-	private SourceRepository sourceRepository;
-
-	@Inject
 	private TransponderRepository transponderRepository;
 
 	@Inject
-	private ChannelRepository channelRepository;
-
-	@Inject
-	private IgnoredChannelRepository ignoredChannelRepository;
+	private ScannedChannelRepository scannedChannelRepository;
 
 	@Inject
 	Logger logger;
@@ -123,8 +113,8 @@ public class ScannedChannelsManager implements Serializable {
 
 		result = false;
 
-		channels = filterByComparison(scannedChannelRepository.findAll(
-				filteredSourceId, filteredTranspId));
+		channels = scannedChannelRepository.findAll(filteredSourceId,
+				filteredTranspId, comparisonFilter);
 		i = 0;
 		for (ScannedChannel theChannel : channels) {
 			if (theChannel.getId().equals(channel.getId())) {
@@ -466,58 +456,11 @@ public class ScannedChannelsManager implements Serializable {
 		scanProcessingReports.clear();
 	}
 
-	public List<ScannedChannel> filterByComparison(List<ScannedChannel> channels) {
-		List<ScannedChannel> result;
-		Source source;
-		Transponder transponder;
-
-		if (comparisonFilter != 0) {
-			result = new ArrayList<ScannedChannel>();
-
-			if (comparisonFilter == 1) {
-				for (ScannedChannel channel : channels) {
-					source = sourceRepository.findByName(channel
-							.getSourceName());
-					if (source != null) {
-						transponder = transponderRepository
-								.findBySourceFrequencyPolarity(source.getId(),
-										channel.getFrequency(),
-										channel.getPolarity());
-						if (transponder != null) {
-							if (ignoredChannelRepository
-									.findByTransponderSidApid(
-											transponder.getId(),
-											channel.getSid(), channel.getApid()) == null) {
-								if (channelRepository.findByTransponderSidApid(
-										transponder.getId(), channel.getSid(),
-										channel.getApid()) == null) {
-									result.add(channel);
-								}
-							}
-						} else {
-							result.add(channel);
-						}
-					} else {
-						result.add(channel);
-					}
-				}
-			}
-
-			if (comparisonFilter == 2) {
-				// TODO
-			}
-		} else {
-			result = channels;
-		}
-
-		return result;
-	}
-
 	// (Re)Fill in the channel list
 	@PostConstruct
 	public void retrieveAllChannels() {
-		channels = filterByComparison(scannedChannelRepository.findAll(
-				filteredSourceId, filteredTranspId));
+		channels = scannedChannelRepository.findAll(filteredSourceId,
+				filteredTranspId, comparisonFilter);
 	}
 
 	public long getFilteredSourceId() {

@@ -38,34 +38,97 @@ public class ScannedChannelRepository {
 	 *            the ID of the transponder which scanned channels are added to
 	 *            the list, if transpId is negative then sourceId value is taken
 	 *            into account
+	 * @param comparisonFilter
+	 *            the variant of result list filtering based on comparison with
+	 *            main and ignored channel lists 0 - no filtering 1 - new
+	 *            channels (not found in main and ignore channel lists) 2 -
+	 *            changed channels (compared to the channels from main list)
 	 * @return the list of scanned channels found for the current application
 	 *         user and given source and transponder IDs
 	 */
-	public List<ScannedChannel> findAll(long sourceId, long transpId) {
+	public List<ScannedChannel> findAll(long sourceId, long transpId,
+			int comparisonFilter) {
 		TypedQuery<ScannedChannel> query;
 
-		if (transpId < 0) {
-			if (sourceId < 0) {
-				query = em
-						.createQuery(
-								"select sc from ScannedChannel sc where sc.userId = :userId order by sc.id",
-								ScannedChannel.class);
-				query.setParameter("userId", user.getId());
+		switch (comparisonFilter) {
+		case 0:
+			if (transpId < 0) {
+				if (sourceId < 0) {
+					query = em
+							.createQuery(
+									"select sc from ScannedChannel sc where sc.userId = :userId order by sc.id",
+									ScannedChannel.class);
+					query.setParameter("userId", user.getId());
+				} else {
+					query = em
+							.createQuery(
+									"select sc from ScannedChannel sc, Source s where sc.sourceName = s.name and s.id = :sourceId and sc.userId = :userId order by sc.id",
+									ScannedChannel.class);
+					query.setParameter("sourceId", sourceId);
+					query.setParameter("userId", user.getId());
+				}
 			} else {
 				query = em
 						.createQuery(
-								"select sc from ScannedChannel sc, Source s where sc.sourceName = s.name and s.id = :sourceId and sc.userId = :userId order by sc.id",
+								"select sc from ScannedChannel sc, Transponder t, Source s where sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarity = t.polarity and t.sourceId = s.id and t.id = :transpId and sc.userId = :userId order by sc.id",
 								ScannedChannel.class);
-				query.setParameter("sourceId", sourceId);
+				query.setParameter("transpId", transpId);
 				query.setParameter("userId", user.getId());
 			}
-		} else {
-			query = em
-					.createQuery(
-							"select sc from ScannedChannel sc, Transponder t, Source s where sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarity = t.polarity and t.sourceId = s.id and t.id = :transpId and sc.userId = :userId order by sc.id",
-							ScannedChannel.class);
-			query.setParameter("transpId", transpId);
-			query.setParameter("userId", user.getId());
+			break;
+		case 1:
+			if (transpId < 0) {
+				if (sourceId < 0) {
+					query = em
+							.createQuery(
+									"select sc from ScannedChannel sc where sc.userId = :userId and not exists (select c from Source s, Transponder t, Channel c where s.name = sc.sourceName and t.frequency = sc.frequency and t.polarity = sc.polarity and s.id = t.sourceId and c.sid = sc.sid and c.apid = sc.apid and t.id = c.transpId) and not exists (select ic from Source s, Transponder t, IgnoredChannel ic where s.name = sc.sourceName and t.frequency = sc.frequency and t.polarity = sc.polarity and s.id = t.sourceId and ic.sid = sc.sid and ic.apid = sc.apid and t.id = ic.transpId) order by sc.id",
+									ScannedChannel.class);
+					query.setParameter("userId", user.getId());
+				} else {
+					query = em
+							.createQuery(
+									"select sc from ScannedChannel sc, Source os where sc.sourceName = os.name and os.id = :sourceId and sc.userId = :userId and not exists (select c from Source s, Transponder t, Channel c where s.name = sc.sourceName and t.frequency = sc.frequency and t.polarity = sc.polarity and s.id = t.sourceId and c.sid = sc.sid and c.apid = sc.apid and t.id = c.transpId) and not exists (select ic from Source s, Transponder t, IgnoredChannel ic where s.name = sc.sourceName and t.frequency = sc.frequency and t.polarity = sc.polarity and s.id = t.sourceId and ic.sid = sc.sid and ic.apid = sc.apid and t.id = ic.transpId) order by sc.id",
+									ScannedChannel.class);
+					query.setParameter("sourceId", sourceId);
+					query.setParameter("userId", user.getId());
+				}
+			} else {
+				query = em
+						.createQuery(
+								"select sc from ScannedChannel sc, Transponder ot, Source os where sc.sourceName = os.name and sc.frequency = ot.frequency and sc.polarity = ot.polarity and ot.sourceId = os.id and ot.id = :transpId and sc.userId = :userId and not exists (select c from Source s, Transponder t, Channel c where s.name = sc.sourceName and t.frequency = sc.frequency and t.polarity = sc.polarity and s.id = t.sourceId and c.sid = sc.sid and c.apid = sc.apid and t.id = c.transpId) and not exists (select ic from Source s, Transponder t, IgnoredChannel ic where s.name = sc.sourceName and t.frequency = sc.frequency and t.polarity = sc.polarity and s.id = t.sourceId and ic.sid = sc.sid and ic.apid = sc.apid and t.id = ic.transpId) order by sc.id",
+								ScannedChannel.class);
+				query.setParameter("transpId", transpId);
+				query.setParameter("userId", user.getId());
+			}
+			break;
+		case 2:
+			if (transpId < 0) {
+				if (sourceId < 0) {
+					query = em
+							.createQuery(
+									"select sc from ScannedChannel sc where sc.userId = :userId and exists (select c from Source s, Transponder t, Channel c where s.name = sc.sourceName and t.frequency = sc.frequency and t.polarity = sc.polarity and s.id = t.sourceId and c.sid = sc.sid and c.apid = sc.apid and t.id = c.transpId and (t.dvbsGen <> sc.dvbsGen or t.symbolRate <> sc.symbolRate or coalesce(t.nid, 0) <> coalesce(sc.nid, 0) or coalesce(t.tid, 0) <> coalesce(sc.tid, 0) or c.vpid <> coalesce(sc.vpid, 0) or coalesce(c.venc, 0) <> sc.venc or coalesce(c.pcr, 0) <> coalesce(sc.pcr, 0) or coalesce(c.aenc, 0) <> sc.aenc or coalesce(c.tpid, 0) <> coalesce(sc.tpid, 0) or coalesce(c.caid, ' ') <> coalesce(sc.caid, ' ') or coalesce(c.rid, 0) <> coalesce(sc.rid, 0) or coalesce(c.scannedName, ' ') <> coalesce(sc.scannedName, ' ') or coalesce(c.providerName, ' ') <> coalesce(sc.providerName, ' '))) order by sc.id",
+									ScannedChannel.class);
+					query.setParameter("userId", user.getId());
+				} else {
+					query = em
+							.createQuery(
+									"select sc from ScannedChannel sc, Source os where sc.sourceName = os.name and os.id = :sourceId and sc.userId = :userId  and exists (select c from Source s, Transponder t, Channel c where s.name = sc.sourceName and t.frequency = sc.frequency and t.polarity = sc.polarity and s.id = t.sourceId and c.sid = sc.sid and c.apid = sc.apid and t.id = c.transpId and (t.dvbsGen <> sc.dvbsGen or t.symbolRate <> sc.symbolRate or coalesce(t.nid, 0) <> coalesce(sc.nid, 0) or coalesce(t.tid, 0) <> coalesce(sc.tid, 0) or c.vpid <> coalesce(sc.vpid, 0) or coalesce(c.venc, 0) <> sc.venc or coalesce(c.pcr, 0) <> coalesce(sc.pcr, 0) or coalesce(c.aenc, 0) <> sc.aenc or coalesce(c.tpid, 0) <> coalesce(sc.tpid, 0) or coalesce(c.caid, ' ') <> coalesce(sc.caid, ' ') or coalesce(c.rid, 0) <> coalesce(sc.rid, 0) or coalesce(c.scannedName, ' ') <> coalesce(sc.scannedName, ' ') or coalesce(c.providerName, ' ') <> coalesce(sc.providerName, ' '))) order by sc.id",
+									ScannedChannel.class);
+					query.setParameter("sourceId", sourceId);
+					query.setParameter("userId", user.getId());
+				}
+			} else {
+				query = em
+						.createQuery(
+								"select sc from ScannedChannel sc, Transponder ot, Source os where sc.sourceName = os.name and sc.frequency = ot.frequency and sc.polarity = ot.polarity and ot.sourceId = os.id and ot.id = :transpId and sc.userId = :userId  and exists (select c from Source s, Transponder t, Channel c where s.name = sc.sourceName and t.frequency = sc.frequency and t.polarity = sc.polarity and s.id = t.sourceId and c.sid = sc.sid and c.apid = sc.apid and t.id = c.transpId and (t.dvbsGen <> sc.dvbsGen or t.symbolRate <> sc.symbolRate or coalesce(t.nid, 0) <> coalesce(sc.nid, 0) or coalesce(t.tid, 0) <> coalesce(sc.tid, 0) or c.vpid <> coalesce(sc.vpid, 0) or coalesce(c.venc, 0) <> sc.venc or coalesce(c.pcr, 0) <> coalesce(sc.pcr, 0) or coalesce(c.aenc, 0) <> sc.aenc or coalesce(c.tpid, 0) <> coalesce(sc.tpid, 0) or coalesce(c.caid, ' ') <> coalesce(sc.caid, ' ') or coalesce(c.rid, 0) <> coalesce(sc.rid, 0) or coalesce(c.scannedName, ' ') <> coalesce(sc.scannedName, ' ') or coalesce(c.providerName, ' ') <> coalesce(sc.providerName, ' '))) order by sc.id",
+								ScannedChannel.class);
+				query.setParameter("transpId", transpId);
+				query.setParameter("userId", user.getId());
+			}
+			break;
+		default:
+			throw new IllegalArgumentException(
+					"Wrong 'comparisonFilter' value: " + comparisonFilter);
 		}
 
 		return query.getResultList();
@@ -96,7 +159,6 @@ public class ScannedChannelRepository {
 		CriteriaQuery<ScannedChannel> criteria;
 		Root<ScannedChannel> scannedChannelRoot;
 		Predicate p;
-
 		cb = em.getCriteriaBuilder();
 		criteria = cb.createQuery(ScannedChannel.class);
 		scannedChannelRoot = criteria.from(ScannedChannel.class);
@@ -109,13 +171,11 @@ public class ScannedChannelRepository {
 		p = cb.and(p, cb.equal(scannedChannelRoot.get("sid"), sid));
 		p = cb.and(p, cb.equal(scannedChannelRoot.get("apid"), apid));
 		criteria.where(p);
-
 		try {
 			result = em.createQuery(criteria).getSingleResult();
 		} catch (NoResultException ex) {
 			result = null;
 		}
-
 		return result;
 	}
 
