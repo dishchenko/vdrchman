@@ -78,6 +78,11 @@
 								rendered="#{not empty groupChannelsManager.takenChannel and groupChannelsManager.takenChannel.id eq channelVar.id}" />
 						</h:column>
 						<h:column>
+							<f:facet name="header">VDR Ch No</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{groupParam.startChannelNo + channelRepository.findSeqno(channelVar.id, groupChannelsManager.shownGroupId) - 1}" />
+						</h:column>
+						<h:column>
 							<f:facet name="header">Source</f:facet>
 							<ui:param name="sourceParam"
 								value="#{sourceRepository.findById(transponderRepository.findById(channelVar.transpId).sourceId)}">

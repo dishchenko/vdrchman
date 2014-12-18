@@ -36,7 +36,7 @@ public class TransponderSourceFrequencyPolarityUniquenessValidator implements
 		String newPolarity;
 		Transponder editedTransponder;
 		Transponder foundTransponder;
-		Long editedTransponderId;
+		Long editedTranspId;
 
 		editedTransponder = transpondersManager.getEditedTransponder();
 
@@ -77,10 +77,10 @@ public class TransponderSourceFrequencyPolarityUniquenessValidator implements
 					.findBySourceFrequencyPolarity(newSourceId, newFrequency,
 							newPolarity);
 			if (foundTransponder != null) {
-				editedTransponderId = editedTransponder.getId();
-				if ((editedTransponderId == null)
+				editedTranspId = editedTransponder.getId();
+				if ((editedTranspId == null)
 						|| !foundTransponder.getId()
-								.equals(editedTransponderId)) {
+								.equals(editedTranspId)) {
 					FacesMessage msg = new FacesMessage(
 							"Transponder parameters uniqueness validation failed",
 							"A transponder with such source, frequency and polarity already exists");

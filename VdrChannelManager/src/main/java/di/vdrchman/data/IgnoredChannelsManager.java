@@ -1,6 +1,6 @@
 package di.vdrchman.data;
 
-import static di.vdrchman.util.Tools.COMPARISON_NONE;
+import static di.vdrchman.util.Tools.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -99,7 +99,7 @@ public class IgnoredChannelsManager implements Serializable {
 		result = false;
 
 		channels = ignoredChannelRepository.findAll(filteredSourceId,
-				filteredTranspId);
+				filteredTranspId, comparisonFilter);
 		i = 0;
 		for (IgnoredChannel theChannel : channels) {
 			if (theChannel.getId().equals(channel.getId())) {
@@ -218,7 +218,7 @@ public class IgnoredChannelsManager implements Serializable {
 	@PostConstruct
 	public void retrieveAllChannels() {
 		channels = ignoredChannelRepository.findAll(filteredSourceId,
-				filteredTranspId);
+				filteredTranspId, comparisonFilter);
 	}
 
 	public long getFilteredSourceId() {

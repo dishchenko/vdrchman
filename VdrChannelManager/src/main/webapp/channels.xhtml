@@ -119,6 +119,11 @@
 							<h:outputText styleClass="preformattedtext" value="T"
 								rendered="#{not empty channelsManager.takenChannel and channelsManager.takenChannel.id eq channelVar.id}" />
 						</h:column>
+						<h:column>
+							<f:facet name="header">Seq No</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{channelRepository.findSeqno(channelVar)}" />
+						</h:column>
 						<h:column rendered="#{channelsManager.filteredSourceId lt 0}">
 							<f:facet name="header">Source</f:facet>
 							<ui:param name="sourceParam"

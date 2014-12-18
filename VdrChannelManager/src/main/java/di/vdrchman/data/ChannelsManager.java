@@ -129,9 +129,10 @@ public class ChannelsManager implements Serializable {
 
 		result = false;
 
-		if ((filteredSourceId >= 0) || (filteredTranspId >= 0)) {
+		if ((filteredSourceId >= 0) || (filteredTranspId >= 0)
+				|| (comparisonFilter != COMPARISON_NONE)) {
 			channels = channelRepository.findAll(filteredSourceId,
-					filteredTranspId);
+					filteredTranspId, comparisonFilter);
 			i = 0;
 			for (Channel theChannel : channels) {
 				if (theChannel.getId().equals(channel.getId())) {
@@ -160,7 +161,7 @@ public class ChannelsManager implements Serializable {
 		Transponder transponder;
 		Integer maxChannelSeqnoWithinTransponder;
 		Source source;
-		Integer maxTransponderSeqnoWithinSource;
+		Integer maxTranspSeqnoWithinSource;
 
 		if (channels.isEmpty()) {
 			result = 1;
@@ -181,13 +182,13 @@ public class ChannelsManager implements Serializable {
 				if (filteredSourceId >= 0) {
 					source = sourceRepository.findPrevious(filteredSourceId);
 					while (source != null) {
-						maxTransponderSeqnoWithinSource = transponderRepository
+						maxTranspSeqnoWithinSource = transponderRepository
 								.findMaxSeqno(source.getId());
-						if (maxTransponderSeqnoWithinSource != null) {
+						if (maxTranspSeqnoWithinSource != null) {
 							maxChannelSeqnoWithinTransponder = channelRepository
 									.findMaxSeqno(transponderRepository
 											.findBySeqno(
-													maxTransponderSeqnoWithinSource)
+													maxTranspSeqnoWithinSource)
 											.getId());
 							if (maxChannelSeqnoWithinTransponder != null) {
 								result = maxChannelSeqnoWithinTransponder + 1;
@@ -387,8 +388,8 @@ public class ChannelsManager implements Serializable {
 	// (Re)Fill in the channel list
 	@PostConstruct
 	public void retrieveAllChannels() {
-		channels = channelRepository
-				.findAll(filteredSourceId, filteredTranspId);
+		channels = channelRepository.findAll(filteredSourceId,
+				filteredTranspId, comparisonFilter);
 	}
 
 	public long getFilteredSourceId() {

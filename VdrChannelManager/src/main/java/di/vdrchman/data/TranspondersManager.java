@@ -53,7 +53,7 @@ public class TranspondersManager implements Serializable {
 	private Transponder editedTransponder = new Transponder();
 
 	// Sequence number of the edited transponder
-	private int editedTransponderSeqno;
+	private int editedTranspSeqno;
 
 	// The "clipboard": the place to store the transponder taken by user
 	private Transponder takenTransponder = null;
@@ -241,13 +241,13 @@ public class TranspondersManager implements Serializable {
 		this.editedTransponder = editedTransponder;
 	}
 
-	public int getEditedTransponderSeqno() {
+	public int getEditedTranspSeqno() {
 
-		return editedTransponderSeqno;
+		return editedTranspSeqno;
 	}
 
-	public void setEditedTransponderSeqno(int editedTransponderSeqno) {
-		this.editedTransponderSeqno = editedTransponderSeqno;
+	public void setEditedTranspSeqno(int editedTranspSeqno) {
+		this.editedTranspSeqno = editedTranspSeqno;
 	}
 
 	public Transponder getTakenTransponder() {

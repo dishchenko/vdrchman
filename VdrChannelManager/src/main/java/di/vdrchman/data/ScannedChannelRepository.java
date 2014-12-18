@@ -30,8 +30,9 @@ public class ScannedChannelRepository {
 
 	/**
 	 * Builds a full or partial list of scanned channels belonging to the
-	 * current application user depending on values of sourceId and transpId
-	 * parameters. Channels are added to the list in ascending ID order.
+	 * current application user depending on values of sourceId, transpId and
+	 * comparisonFilter parameters. Channels are added to the list in ascending
+	 * ID order.
 	 * 
 	 * @param sourceId
 	 *            the ID of the source which scanned channels are added to the

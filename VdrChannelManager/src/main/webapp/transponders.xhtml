@@ -97,6 +97,11 @@
 							<h:outputText styleClass="preformattedtext" value="T"
 								rendered="#{not empty transpondersManager.takenTransponder and transpondersManager.takenTransponder.id eq transponderVar.id}" />
 						</h:column>
+						<h:column>
+							<f:facet name="header">Seq No</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{transponderRepository.findSeqno(transponderVar)}" />
+						</h:column>
 						<h:column rendered="#{transpondersManager.filteredSourceId lt 0}">
 							<f:facet name="header">Source</f:facet>
 							<ui:param name="sourceParam"

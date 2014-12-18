@@ -32,7 +32,7 @@ public class TranspondersBacking {
 		transponder = new Transponder();
 		transponder.setSourceId(transpondersManager.getFilteredSourceId());
 		transpondersManager.setEditedTransponder(transponder);
-		transpondersManager.setEditedTransponderSeqno(transpondersManager
+		transpondersManager.setEditedTranspSeqno(transpondersManager
 				.calculateOnTopSeqno());
 	}
 
@@ -46,7 +46,7 @@ public class TranspondersBacking {
 		transpondersManager.collectCheckedTransponders();
 		transpondersManager.setEditedTransponder(transponder);
 		transpondersManager
-				.setEditedTransponderSeqno(transponderRepository
+				.setEditedTranspSeqno(transponderRepository
 						.findSeqno(transpondersManager.getCheckedTransponders()
 								.get(0)) + 1);
 	}
@@ -54,7 +54,7 @@ public class TranspondersBacking {
 	// Really adding a new transponder to the place specified
 	public void doAddTransponder() {
 		transponderRepository.add(transpondersManager.getEditedTransponder(),
-				transpondersManager.getEditedTransponderSeqno());
+				transpondersManager.getEditedTranspSeqno());
 		transponderActionEvent.fire(new TransponderAction(transpondersManager
 				.getEditedTransponder(), TransponderAction.Action.ADD));
 		transpondersManager.retrieveAllTransponders();
@@ -113,7 +113,7 @@ public class TranspondersBacking {
 		transpondersManager.setEditedTransponder(new Transponder(
 				transpondersManager.getTakenTransponder()));
 		transpondersManager.getEditedTransponder().setId(null);
-		transpondersManager.setEditedTransponderSeqno(transpondersManager
+		transpondersManager.setEditedTranspSeqno(transpondersManager
 				.calculateOnTopSeqno());
 	}
 
@@ -125,7 +125,7 @@ public class TranspondersBacking {
 				transpondersManager.getTakenTransponder()));
 		transpondersManager.getEditedTransponder().setId(null);
 		transpondersManager
-				.setEditedTransponderSeqno(transponderRepository
+				.setEditedTranspSeqno(transponderRepository
 						.findSeqno(transpondersManager.getCheckedTransponders()
 								.get(0)) + 1);
 	}
