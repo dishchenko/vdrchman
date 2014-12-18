@@ -46,6 +46,7 @@ create table tsource (
 -- 'frequency' units are MHz
 -- 'polarity' - 'H', 'V', 'L', 'R'
 -- 'symbol_rate' units are ksyms/s
+-- 'stream_id' - stream ID of a multistream transponder
 -- 'nid' - transponder's Network ID
 -- 'tid' - transponder's ID within Network
 -- 'ignored': if true then the Transponder won't be exported to VDR configuration
@@ -56,10 +57,11 @@ create table ttransponder (
 	frequency int(11) not null,
 	polarity varchar(1) not null,
 	symbol_rate int(11) not null,
+	stream_id int(11),
 	nid int(11),
 	tid int(11),
 	ignored boolean not null,
-	unique (source_id, frequency, polarity),
+	unique (source_id, frequency, polarity, stream_id),
 	foreign key (source_id) references tsource (id) on delete cascade
 	) engine=InnoDB;
 
@@ -172,6 +174,7 @@ create table tscanned_channel (
 	frequency int(11) not null,
 	polarity varchar(1) not null,
 	symbol_rate int(11) not null,
+	stream_id int(11),
 	nid int(11),
 	tid int(11),
 	sid int(11) not null,
@@ -186,6 +189,6 @@ create table tscanned_channel (
 	scanned_name varchar(50),
 	provider_name varchar(50),
 	refreshed boolean not null,
-	unique (source_name, frequency, polarity, sid, apid),
+	unique (source_name, frequency, polarity, stream_id, sid, apid),
 	foreign key (user_id) references tuser (id) on delete cascade
 ) engine=InnoDB;

@@ -51,6 +51,30 @@ public class ScannedChannelsBacking {
 				ScannedChannelAction.Action.SCAN_PROCESSED));
 	}
 
+	// The user is going to add to main channel list the new channel based on
+	// the scanned channel data
+	public void intendAddToChannels() {
+		scannedChannelsManager.collectCheckedChannels();
+	}
+
+	// The user is going to add to ignored channel list the new channel based on
+	// the scanned channel data
+	public void intendAddToIgnoredChannels() {
+		scannedChannelsManager.collectCheckedChannels();
+	}
+
+	// The user is going to update channel in main channel list based on
+	// the scanned channel data
+	public void intendUpdateChannels() {
+		scannedChannelsManager.collectCheckedChannels();
+	}
+
+	// The user is going to update channel in ignored channel list based on
+	// the scanned channel data
+	public void intendUpdateIgnoredChannels() {
+		scannedChannelsManager.collectCheckedChannels();
+	}
+
 	// On changing the source filter selection clear the transponder filter
 	// selection if a source is selected and it is not the one selected
 	// transponder relates to.
@@ -125,9 +149,11 @@ public class ScannedChannelsBacking {
 						.getSourceName());
 				if (source != null) {
 					transponder = transponderRepository
-							.findBySourceFrequencyPolarity(source.getId(),
+							.findBySourceFrequencyPolarityStream(
+									source.getId(),
 									lastPageTopChannel.getFrequency(),
-									lastPageTopChannel.getPolarity());
+									lastPageTopChannel.getPolarity(),
+									lastPageTopChannel.getStreamId());
 					if (transponder != null) {
 						if (filteredTranspId == transponder.getId()) {
 							scannedChannelsManager

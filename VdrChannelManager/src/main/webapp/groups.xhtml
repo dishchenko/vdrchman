@@ -151,12 +151,8 @@
 							<rich:message for="descriptionInput" />
 						</h:panelGrid>
 						<h:outputLabel value="Ignored:" styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:selectBooleanCheckbox
-								value="#{groupsManager.editedGroup.ignored}" />
-							<h:outputText styleClass="preformattedtext"
-								value="                                                                                                                                                                                    " />
-						</h:panelGrid>
+						<h:selectBooleanCheckbox
+							value="#{groupsManager.editedGroup.ignored}" />
 					</h:panelGrid>
 					<!-- Action buttons -->
 					<h:panelGrid columns="2">

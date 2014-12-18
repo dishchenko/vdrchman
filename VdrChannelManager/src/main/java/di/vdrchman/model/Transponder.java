@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @Table(name = "ttransponder", uniqueConstraints = {
 		@UniqueConstraint(columnNames = "id"),
-		@UniqueConstraint(columnNames = { "source_id", "frequency", "polarity" }) })
+		@UniqueConstraint(columnNames = { "source_id", "frequency", "polarity", "stream_id" }) })
 public class Transponder implements Serializable {
 
 	private static final long serialVersionUID = 8792144048918228648L;
@@ -49,6 +49,10 @@ public class Transponder implements Serializable {
 	private Integer symbolRate;
 
 	@Digits(fraction = 0, integer = 5)
+	@Column(name = "stream_id")
+	private Integer streamId;
+
+	@Digits(fraction = 0, integer = 5)
 	private Integer nid;
 
 	@Digits(fraction = 0, integer = 5)
@@ -74,6 +78,8 @@ public class Transponder implements Serializable {
 				transponder.polarity) : null;
 		this.symbolRate = transponder.symbolRate != null ? new Integer(
 				transponder.symbolRate) : null;
+		this.streamId = transponder.streamId != null ? new Integer(
+						transponder.streamId) : null;
 		this.nid = transponder.nid != null ? new Integer(transponder.nid) : null;
 		this.tid = transponder.tid != null ? new Integer(transponder.tid) : null;
 		this.ignored = transponder.ignored != null ? new Boolean(
@@ -132,6 +138,15 @@ public class Transponder implements Serializable {
 
 	public void setSymbolRate(Integer symbolRate) {
 		this.symbolRate = symbolRate;
+	}
+
+	public Integer getStreamId() {
+
+		return streamId;
+	}
+
+	public void setStreamId(Integer streamId) {
+		this.streamId = streamId;
 	}
 
 	public Integer getNid() {

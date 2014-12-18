@@ -2,6 +2,8 @@ package di.vdrchman;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.text.ParseException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -36,7 +38,9 @@ public class TransponderRepository {
 		TranspSeqno transpSeqno;
 
 		query = em
-				.createQuery("select max(ts.seqno) from TranspSeqno ts where ts.userId = :userId", Integer.class);
+				.createQuery(
+						"select max(ts.seqno) from TranspSeqno ts where ts.userId = :userId",
+						Integer.class);
 		query.setParameter("userId", userId);
 		queryResult = query.getSingleResult();
 
@@ -67,6 +71,9 @@ public class TransponderRepository {
 			transponder.setFrequency(Integer.parseInt(splitLine[1]) / 1000);
 			transponder.setPolarity(splitLine[2]);
 			transponder.setSymbolRate(Integer.parseInt(splitLine[3]) / 1000);
+			if (splitLine.length == 8) {
+				transponder.setStreamId(Integer.parseInt(splitLine[7]));
+			}
 			transponder.setIgnored(ignored);
 			em.persist(transponder);
 			em.flush();
@@ -98,6 +105,8 @@ public class TransponderRepository {
 		String[] splitLine;
 		int frequency;
 		String polarity;
+		Integer streamId;
+		int streamIdPos;
 		Transponder transponder;
 		int nid;
 		int tid;
@@ -141,8 +150,21 @@ public class TransponderRepository {
 				if (curSource != null) {
 					frequency = Integer.parseInt(splitLine[1]);
 					polarity = splitLine[2].substring(0, 1);
-					transponder = findBySourceFrequencyPolarity(
-							curSource.getId(), frequency, polarity);
+					streamId = null;
+					streamIdPos = splitLine[2].indexOf("X");
+					if (streamIdPos >= 0) {
+						try {
+							streamId = NumberFormat
+									.getInstance()
+									.parse(splitLine[2]
+											.substring(streamIdPos + 1))
+									.intValue();
+						} catch (ParseException ex) {
+							// do nothing
+						}
+					}
+					transponder = findBySourceFrequencyPolarityStream(
+							curSource.getId(), frequency, polarity, streamId);
 					if (transponder != null) {
 						nid = Integer.parseInt(splitLine[4]);
 						if (nid != 0) {
@@ -158,19 +180,20 @@ public class TransponderRepository {
 								Level.ERROR,
 								"Can't find Transponder for Source '"
 										+ curSourceName + "' with frequency '"
-										+ frequency + "' and polarity '"
-										+ polarity + "'");
+										+ frequency + "', polarity '"
+										+ polarity + "' and stream ID '"
+										+ streamId + "'");
 					}
 				}
 			}
 		}
 	}
 
-	// Find a Transponder with given frequency and polarity which relates to
-	// the Source with the ID given.
+	// Find a Transponder with given frequency, polarity and stream ID which
+	// relates to the Source with the ID given.
 	// Return null if no Transponder found
-	public Transponder findBySourceFrequencyPolarity(long sourceId,
-			int frequency, String polarity) {
+	public Transponder findBySourceFrequencyPolarityStream(long sourceId,
+			int frequency, String polarity, Integer streamId) {
 		Transponder result;
 		CriteriaBuilder cb;
 		CriteriaQuery<Transponder> criteria;
@@ -185,6 +208,11 @@ public class TransponderRepository {
 		p = cb.and(p, cb.equal(transponderRoot.get("sourceId"), sourceId));
 		p = cb.and(p, cb.equal(transponderRoot.get("frequency"), frequency));
 		p = cb.and(p, cb.equal(transponderRoot.get("polarity"), polarity));
+		if (streamId == null) {
+			p = cb.and(p, cb.isNull(transponderRoot.get("streamId")));
+		} else {
+			p = cb.and(p, cb.equal(transponderRoot.get("streamId"), streamId));
+		}
 		criteria.where(p);
 
 		try {

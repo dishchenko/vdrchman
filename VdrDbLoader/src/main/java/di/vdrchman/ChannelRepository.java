@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -45,6 +47,8 @@ public class ChannelRepository {
 		String[] splitLine;
 		int frequency;
 		String polarity;
+		Integer streamId;
+		int streamIdPos;
 		Transponder transponder;
 		String[] vInfo;
 		int venc;
@@ -122,15 +126,29 @@ public class ChannelRepository {
 				if (curSource != null) {
 					frequency = Integer.parseInt(splitLine[1]);
 					polarity = splitLine[2].substring(0, 1);
-					transponder = tr.findBySourceFrequencyPolarity(
-							curSource.getId(), frequency, polarity);
+					streamId = null;
+					streamIdPos = splitLine[2].indexOf("X");
+					if (streamIdPos >= 0) {
+						try {
+							streamId = NumberFormat
+									.getInstance()
+									.parse(splitLine[2]
+											.substring(streamIdPos + 1))
+									.intValue();
+						} catch (ParseException ex) {
+							// do nothing
+						}
+					}
+					transponder = tr.findBySourceFrequencyPolarityStream(
+							curSource.getId(), frequency, polarity, streamId);
 					if (transponder == null) {
 						Logger.getLogger(this.getClass()).log(
 								Level.ERROR,
 								"Can't find Transponder for Source '"
 										+ curSourceName + "' with frequency '"
-										+ frequency + "' and polarity '"
-										+ polarity + "'");
+										+ frequency + "', polarity '"
+										+ polarity + "' and stream ID '"
+										+ streamId + "'");
 					}
 				}
 			}
@@ -266,6 +284,8 @@ public class ChannelRepository {
 		String[] splitLine;
 		int frequency;
 		String polarity;
+		Integer streamId;
+		int streamIdPos;
 		Transponder transponder;
 		int sid;
 		String[] aInfo;
@@ -320,15 +340,29 @@ public class ChannelRepository {
 				if (curSource != null) {
 					frequency = Integer.parseInt(splitLine[1]);
 					polarity = splitLine[2].substring(0, 1);
-					transponder = tr.findBySourceFrequencyPolarity(
-							curSource.getId(), frequency, polarity);
+					streamId = null;
+					streamIdPos = splitLine[2].indexOf("X");
+					if (streamIdPos >= 0) {
+						try {
+							streamId = NumberFormat
+									.getInstance()
+									.parse(splitLine[2]
+											.substring(streamIdPos + 1))
+									.intValue();
+						} catch (ParseException ex) {
+							// do nothing
+						}
+					}
+					transponder = tr.findBySourceFrequencyPolarityStream(
+							curSource.getId(), frequency, polarity, streamId);
 					if (transponder == null) {
 						Logger.getLogger(this.getClass()).log(
 								Level.ERROR,
 								"Can't find Transponder for Source '"
 										+ curSourceName + "' with frequency '"
-										+ frequency + "' and polarity '"
-										+ polarity + "'");
+										+ frequency + "', polarity '"
+										+ polarity + "' and stream ID '"
+										+ streamId + "'");
 					}
 				}
 			}
@@ -378,8 +412,10 @@ public class ChannelRepository {
 										+ "' for Transponder on '"
 										+ curSourceName + "' with frequency '"
 										+ transponder.getFrequency()
-										+ "' and polarity '"
-										+ transponder.getPolarity() + "'");
+										+ "', polarity '"
+										+ transponder.getPolarity()
+										+ "' and stream ID '"
+										+ transponder.getStreamId() + "'");
 					}
 				}
 			}

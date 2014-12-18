@@ -320,41 +320,36 @@
 					<!-- Channel data inputs -->
 					<h:panelGrid columns="2">
 						<h:outputLabel value="Source:" styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<ui:fragment
-								rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredSourceId lt 0}">
-								<h:selectOneMenu id="sourcesMenu"
-									value="#{channelsManager.editedSourceId}">
-									<f:selectItems value="#{sourcesManager.sources}"
-										var="sourceVar" itemValue="#{sourceVar.id}"
-										itemLabel="#{sourceVar.name} (#{sourceVar.description})" />
-									<f:ajax
-										listener="#{channelsBacking.onEditedSourceMenuSelection}"
-										render="editPanelForm:transpondersMenu" />
-								</h:selectOneMenu>
-							</ui:fragment>
-							<ui:fragment
-								rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredSourceId ge 0}">
-								<ui:param name="sourceParam"
-									value="#{sourceRepository.findById(channelsManager.filteredSourceId)}">
-								</ui:param>
-								<h:outputLabel
-									value="#{sourceParam.name} (#{sourceParam.description})"
-									styleClass="preformattedtext" />
-							</ui:fragment>
-							<ui:fragment
-								rendered="#{not empty channelsManager.editedChannel.id}">
-								<ui:param name="sourceParam"
-									value="#{sourceRepository.findById(transponderRepository.findById(channelsManager.editedChannel.transpId).sourceId)}">
-								</ui:param>
-								<h:outputLabel
-									value="#{sourceParam.name} (#{sourceParam.description})"
-									styleClass="preformattedtext" />
-							</ui:fragment>
-							<h:outputText
-								value="                                                                                                              "
+						<ui:fragment
+							rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredSourceId lt 0}">
+							<h:selectOneMenu id="sourcesMenu"
+								value="#{channelsManager.editedSourceId}">
+								<f:selectItems value="#{sourcesManager.sources}" var="sourceVar"
+									itemValue="#{sourceVar.id}"
+									itemLabel="#{sourceVar.name} (#{sourceVar.description})" />
+								<f:ajax
+									listener="#{channelsBacking.onEditedSourceMenuSelection}"
+									render="editPanelForm:transpondersMenu" />
+							</h:selectOneMenu>
+						</ui:fragment>
+						<ui:fragment
+							rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredSourceId ge 0}">
+							<ui:param name="sourceParam"
+								value="#{sourceRepository.findById(channelsManager.filteredSourceId)}">
+							</ui:param>
+							<h:outputLabel
+								value="#{sourceParam.name} (#{sourceParam.description})"
 								styleClass="preformattedtext" />
-						</h:panelGrid>
+						</ui:fragment>
+						<ui:fragment
+							rendered="#{not empty channelsManager.editedChannel.id}">
+							<ui:param name="sourceParam"
+								value="#{sourceRepository.findById(transponderRepository.findById(channelsManager.editedChannel.transpId).sourceId)}">
+							</ui:param>
+							<h:outputLabel
+								value="#{sourceParam.name} (#{sourceParam.description})"
+								styleClass="preformattedtext" />
+						</ui:fragment>
 						<h:outputLabel value="Transponder:" styleClass="preformattedtext" />
 						<ui:fragment
 							rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredTranspId lt 0}">

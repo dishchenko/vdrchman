@@ -73,8 +73,8 @@ public class TransponderRepository {
 	}
 
 	/**
-	 * Finds a transponder by the combination of source ID, frequency and
-	 * polarity given among the transponders belonging to the current
+	 * Finds a transponder by the combination of source ID, frequency, polarity
+	 * and stream ID given among the transponders belonging to the current
 	 * application user.
 	 * 
 	 * @param sourceId
@@ -83,10 +83,13 @@ public class TransponderRepository {
 	 *            the frequency of transponder to find
 	 * @param polarity
 	 *            the polarity of transponder to find
+	 * @param streamId
+	 *            the stream ID within a multistream transponder to find or null
+	 *            if not multistream transponder
 	 * @return the transponder found or null if no transponder found
 	 */
-	public Transponder findBySourceFrequencyPolarity(long sourceId,
-			int frequency, String polarity) {
+	public Transponder findBySourceFrequencyPolarityStream(long sourceId,
+			int frequency, String polarity, Integer streamId) {
 		Transponder result;
 		CriteriaBuilder cb;
 		CriteriaQuery<Transponder> criteria;
@@ -101,6 +104,11 @@ public class TransponderRepository {
 		p = cb.and(p, cb.equal(transponderRoot.get("sourceId"), sourceId));
 		p = cb.and(p, cb.equal(transponderRoot.get("frequency"), frequency));
 		p = cb.and(p, cb.equal(transponderRoot.get("polarity"), polarity));
+		if (streamId == null) {
+			p = cb.and(p, cb.isNull(transponderRoot.get("streamId")));
+		} else {
+			p = cb.and(p, cb.equal(transponderRoot.get("streamId"), streamId));
+		}
 		criteria.where(p);
 
 		try {

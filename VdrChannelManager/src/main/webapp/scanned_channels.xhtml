@@ -19,14 +19,42 @@
 			<h1>Scanned Channels</h1>
 			<!-- Scanned channels form -->
 			<h:form id="scannedChannelsForm">
-				<!-- 'Load" etc. buttons panel -->
-				<h:panelGrid columns="1">
+				<!-- 'Process' etc. buttons panel -->
+				<h:panelGrid columns="3">
 					<a4j:commandButton id="processUploadedScansButton"
 						value="Process uploaded scans"
 						action="#{scannedChannelsBacking.processUploadedScans()}"
 						onclick="this.disabled=true;#{rich:component('uploadedScansProcessingPanel')}.show()"
 						oncomplete="#{rich:component('uploadedScansProcessingPanel')}.hide();document.getElementById('scannedChannelsForm:processUploadedScansButton').disabled=(#{filesManager.scans.size() le 0});#{rich:component('uploadedScansProcessedPanel')}.show()"
 						render="uploadedScansProcessedPanel" />
+					<a4j:commandButton id="addToChannelsButton"
+						value="Add to Main list..."
+						rendered="#{scannedChannelsManager.comparisonFilter == tools.comparisonConst['NEW']}"
+						action="#{scannedChannelsBacking.intendAddToChannels()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('addToChannelsPanel')}.show();document.getElementById('addToChannelsPanelForm:nameInput').focus();document.getElementById('scannedChannelsForm:addToChannelsButton').disabled=!isExactlyOneChannelCheckboxChecked()"
+						render="scannedChannelsContent, addToChannelsPanel" />
+					<a4j:commandButton id="addToIgnoredChannelsButton"
+						value="Add to Ignored..."
+						rendered="#{scannedChannelsManager.comparisonFilter == tools.comparisonConst['NEW']}"
+						action="#{scannedChannelsBacking.intendAddToIgnoredChannels()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('addToIgnoredChannelsPanel')}.show();document.getElementById('addToIgnoredChannelsPanelForm:nameInput').focus();document.getElementById('scannedChannelsForm:addToIgnoredChannelsButton').disabled=!isExactlyOneChannelCheckboxChecked()"
+						render="scannedChannelsContent, addToIgnoredChannelsPanel" />
+					<a4j:commandButton id="updateChannelsButton"
+						value="Update in Main list..."
+						rendered="#{scannedChannelsManager.comparisonFilter == tools.comparisonConst['CHANGED_MAIN']}"
+						action="#{scannedChannelsBacking.intendUpdateChannels()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('updateChannelsPanel')}.show();document.getElementById('updateChannelsPanelForm:nameInput').focus();document.getElementById('scannedChannelsForm:updateChannelsButton').disabled=!isExactlyOneChannelCheckboxChecked()"
+						render="scannedChannelsContent, updateChannelsPanel" />
+					<a4j:commandButton id="updateIgnoredChannelsButton"
+						value="Update in Ignored..."
+						rendered="#{scannedChannelsManager.comparisonFilter == tools.comparisonConst['CHANGED_IGNORED']}"
+						action="#{scannedChannelsBacking.intendUpdateIgnoredChannels()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('updateIgnoredChannelsPanel')}.show();document.getElementById('updateIgnoredChannelsPanelForm:nameInput').focus();document.getElementById('scannedChannelsForm:updateIgnoredChannelsButton').disabled=!isExactlyOneChannelCheckboxChecked()"
+						render="scannedChannelsContent, updateIgnoredChannelsPanel" />
 				</h:panelGrid>
 				<!-- Filter(s) panel -->
 				<h:panelGrid columns="7">
@@ -63,7 +91,8 @@
 							itemLabel="New" />
 						<f:selectItem itemValue="#{tools.comparisonConst['CHANGED_MAIN']}"
 							itemLabel="Changed Main" />
-						<f:selectItem itemValue="#{tools.comparisonConst['CHANGED_IGNORED']}"
+						<f:selectItem
+							itemValue="#{tools.comparisonConst['CHANGED_IGNORED']}"
 							itemLabel="Changed Ignored" />
 					</h:selectOneMenu>
 				</h:panelGrid>
@@ -80,7 +109,8 @@
 							<f:facet name="header" />
 							<h:selectBooleanCheckbox id="channelCheckbox"
 								value="#{scannedChannelsManager.channelCheckboxes[channelVar.id]}"
-								styleClass="preformattedtext" onclick="" />
+								styleClass="preformattedtext"
+								onclick="element=document.getElementById('scannedChannelsForm:addToChannelsButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('scannedChannelsForm:addToIgnoredChannelsButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('scannedChannelsForm:updateChannelsButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('scannedChannelsForm:updateIgnoredChannelsButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();" />
 						</h:column>
 						<h:column
 							rendered="#{scannedChannelsManager.filteredSourceId lt 0}">
@@ -138,7 +168,11 @@
 			</h:form>
 			<!-- Set buttons enable/disable state on panel rendering -->
 			<h:outputScript library="js">
-			document.getElementById('scannedChannelsForm:processUploadedScansButton').disabled=(#{filesManager.scans.size() le 0});
+			document.getElementById('scannedChannelsForm:processUploadedScansButton').disabled = (#{filesManager.scans.size() le 0});
+			element = document.getElementById('scannedChannelsForm:addToChannelsButton'); if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();
+			element = document.getElementById('scannedChannelsForm:addToIgnoredChannelsButton'); if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();
+			element = document.getElementById('scannedChannelsForm:updateChannelsButton'); if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();
+			element = document.getElementById('scannedChannelsForm:updateIgnoredChannelsButton'); if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();
 			</h:outputScript>
 		</h:panelGroup>
 		<!-- Pop-up forms panel -->

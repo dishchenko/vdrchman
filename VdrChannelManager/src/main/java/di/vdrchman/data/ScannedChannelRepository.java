@@ -168,8 +168,8 @@ public class ScannedChannelRepository {
 
 	/**
 	 * Finds a channel by the combination of source name, transponder frequency,
-	 * polarity, channel SID and APID given among the channels belonging to the
-	 * current application user.
+	 * polarity, stream ID, channel SID and APID given among the channels
+	 * belonging to the current application user.
 	 * 
 	 * @param sourceName
 	 *            the source name to find a channel within
@@ -177,15 +177,18 @@ public class ScannedChannelRepository {
 	 *            the transponder frequency to find a channel on
 	 * @param polarity
 	 *            the transponder polarity to find a channel on
+	 * @param streamId
+	 *            the stream ID within a multistream transponder to find or null
+	 *            if not multistream transponder
 	 * @param sid
 	 *            the SID of channel to find
 	 * @param apid
 	 *            the APID of channel to find
 	 * @return the channel found or null if no channel found
 	 */
-	public ScannedChannel findBySourceFrequencyPolaritySidApid(
-			String sourceName, Integer frequency, String polarity, Integer sid,
-			Integer apid) {
+	public ScannedChannel findBySourceFrequencyPolarityStreamSidApid(
+			String sourceName, Integer frequency, String polarity,
+			Integer streamId, Integer sid, Integer apid) {
 		ScannedChannel result;
 		CriteriaBuilder cb;
 		CriteriaQuery<ScannedChannel> criteria;
@@ -200,6 +203,12 @@ public class ScannedChannelRepository {
 				cb.equal(scannedChannelRoot.get("sourceName"), sourceName));
 		p = cb.and(p, cb.equal(scannedChannelRoot.get("frequency"), frequency));
 		p = cb.and(p, cb.equal(scannedChannelRoot.get("polarity"), polarity));
+		if (streamId == null) {
+			p = cb.and(p, cb.isNull(scannedChannelRoot.get("streamId")));
+		} else {
+			p = cb.and(p,
+					cb.equal(scannedChannelRoot.get("streamId"), streamId));
+		}
 		p = cb.and(p, cb.equal(scannedChannelRoot.get("sid"), sid));
 		p = cb.and(p, cb.equal(scannedChannelRoot.get("apid"), apid));
 		criteria.where(p);

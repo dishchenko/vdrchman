@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.text.NumberFormat;
+import java.text.ParseException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -38,6 +40,8 @@ public class IgnoredChannelRepository {
 		Transponder transponder;
 		int frequency;
 		String polarity;
+		Integer streamId;
+		int streamIdPos;
 		int sid;
 		String[] snInfo;
 		String scannedName;
@@ -79,15 +83,28 @@ public class IgnoredChannelRepository {
 			if (curSource != null) {
 				frequency = Integer.parseInt(splitLine[1]);
 				polarity = splitLine[2].substring(0, 1);
-				transponder = tr.findBySourceFrequencyPolarity(
-						curSource.getId(), frequency, polarity);
+				streamId = null;
+				streamIdPos = splitLine[2].indexOf("X");
+				if (streamIdPos >= 0) {
+					try {
+						streamId = NumberFormat
+								.getInstance()
+								.parse(splitLine[2]
+										.substring(streamIdPos + 1))
+								.intValue();
+					} catch (ParseException ex) {
+						// do nothing
+					}
+				}
+				transponder = tr.findBySourceFrequencyPolarityStream(
+						curSource.getId(), frequency, polarity, streamId);
 				if (transponder == null) {
 					Logger.getLogger(this.getClass()).log(
 							Level.ERROR,
 							"Can't find Transponder for Source '"
 									+ curSourceName + "' with frequency '"
-									+ frequency + "' and polarity '" + polarity
-									+ "'");
+									+ frequency + "', polarity '" + polarity
+									+ "' and stream ID '" + streamId + "'");
 				}
 			}
 

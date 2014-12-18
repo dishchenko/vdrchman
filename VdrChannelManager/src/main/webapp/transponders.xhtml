@@ -184,52 +184,48 @@
 					</f:facet>
 					<!-- Content -->
 					<h:panelGrid columns="2">
-						<rich:message for="sourceFrequencyPolarityValidator" />
+						<rich:message for="sourceFrequencyPolarityStreamValidator" />
 						<br />
 					</h:panelGrid>
 					<!-- Special hidden input for multiple fields validator -->
-					<h:inputHidden id="sourceFrequencyPolarityValidator" value="true">
+					<h:inputHidden id="sourceFrequencyPolarityStreamValidator" value="true">
 						<f:validator
-							binding="#{transponderSourceFrequencyPolarityUniquenessValidator}" />
-						<f:attribute name="source" value="editPanelForm:sourcesMenu" />
+							binding="#{transponderSourceFrequencyPolarityStreamUniquenessValidator}" />
+						<f:attribute name="sourceId" value="editPanelForm:sourcesMenu" />
 						<f:attribute name="frequency" value="editPanelForm:frequencyInput" />
 						<f:attribute name="polarity" value="editPanelForm:polarityMenu" />
+						<f:attribute name="streamId" value="editPanelForm:streamIdInput" />
 					</h:inputHidden>
 					<!-- Transponder data inputs -->
 					<h:panelGrid columns="2">
 						<h:outputLabel value="Source:" styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<ui:fragment
-								rendered="#{empty transpondersManager.editedTransponder.id and transpondersManager.filteredSourceId lt 0}">
-								<h:selectOneMenu id="sourcesMenu"
-									value="#{transpondersManager.editedTransponder.sourceId}">
-									<f:selectItems value="#{sourcesManager.sources}"
-										var="sourceVar" itemValue="#{sourceVar.id}"
-										itemLabel="#{sourceVar.name} (#{sourceVar.description})" />
-								</h:selectOneMenu>
-							</ui:fragment>
-							<ui:fragment
-								rendered="#{empty transpondersManager.editedTransponder.id and transpondersManager.filteredSourceId ge 0}">
-								<ui:param name="sourceParam"
-									value="#{sourceRepository.findById(transpondersManager.filteredSourceId)}">
-								</ui:param>
-								<h:outputLabel
-									value="#{sourceParam.name} (#{sourceParam.description})"
-									styleClass="preformattedtext" />
-							</ui:fragment>
-							<ui:fragment
-								rendered="#{not empty transpondersManager.editedTransponder.id}">
-								<ui:param name="sourceParam"
-									value="#{sourceRepository.findById(transpondersManager.editedTransponder.sourceId)}">
-								</ui:param>
-								<h:outputLabel
-									value="#{sourceParam.name} (#{sourceParam.description})"
-									styleClass="preformattedtext" />
-							</ui:fragment>
-							<h:outputText
-								value="                                             "
+						<ui:fragment
+							rendered="#{empty transpondersManager.editedTransponder.id and transpondersManager.filteredSourceId lt 0}">
+							<h:selectOneMenu id="sourcesMenu"
+								value="#{transpondersManager.editedTransponder.sourceId}">
+								<f:selectItems value="#{sourcesManager.sources}" var="sourceVar"
+									itemValue="#{sourceVar.id}"
+									itemLabel="#{sourceVar.name} (#{sourceVar.description})" />
+							</h:selectOneMenu>
+						</ui:fragment>
+						<ui:fragment
+							rendered="#{empty transpondersManager.editedTransponder.id and transpondersManager.filteredSourceId ge 0}">
+							<ui:param name="sourceParam"
+								value="#{sourceRepository.findById(transpondersManager.filteredSourceId)}">
+							</ui:param>
+							<h:outputLabel
+								value="#{sourceParam.name} (#{sourceParam.description})"
 								styleClass="preformattedtext" />
-						</h:panelGrid>
+						</ui:fragment>
+						<ui:fragment
+							rendered="#{not empty transpondersManager.editedTransponder.id}">
+							<ui:param name="sourceParam"
+								value="#{sourceRepository.findById(transpondersManager.editedTransponder.sourceId)}">
+							</ui:param>
+							<h:outputLabel
+								value="#{sourceParam.name} (#{sourceParam.description})"
+								styleClass="preformattedtext" />
+						</ui:fragment>
 						<h:outputLabel value="Frequency, MHz:"
 							styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
@@ -267,12 +263,36 @@
 							</h:inputText>
 							<rich:message for="symbolRateInput" />
 						</h:panelGrid>
+						<h:outputLabel value="Stream ID:" styleClass="preformattedtext" />
+						<h:panelGrid columns="2">
+							<h:inputText id="streamIdInput"
+								value="#{transpondersManager.editedTransponder.streamId}"
+								maxlength="5" size="5"
+								converterMessage="Stream ID must be a number">
+								<rich:validator />
+							</h:inputText>
+							<rich:message for="streamIdInput" />
+						</h:panelGrid>
 						<h:outputLabel value="NID:" styleClass="preformattedtext" />
-						<h:inputText value="#{transpondersManager.editedTransponder.nid}"
-							maxlength="5" size="5" />
+						<h:panelGrid columns="2">
+							<h:inputText id="nidInput"
+								value="#{transpondersManager.editedTransponder.nid}"
+								maxlength="5" size="5"
+								converterMessage="Network ID must be a number">
+								<rich:validator />
+							</h:inputText>
+							<rich:message for="nidInput" />
+						</h:panelGrid>
 						<h:outputLabel value="TID:" styleClass="preformattedtext" />
-						<h:inputText value="#{transpondersManager.editedTransponder.tid}"
-							maxlength="5" size="5" />
+						<h:panelGrid columns="2">
+							<h:inputText id="tidInput"
+								value="#{transpondersManager.editedTransponder.tid}"
+								maxlength="5" size="5"
+								converterMessage="Transponder ID must be a number">
+								<rich:validator />
+							</h:inputText>
+							<rich:message for="tidInput" />
+						</h:panelGrid>
 						<h:outputLabel value="Ignored:" styleClass="preformattedtext" />
 						<h:selectBooleanCheckbox
 							value="#{transpondersManager.editedTransponder.ignored}" />

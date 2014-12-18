@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -328,6 +329,8 @@ public class ScannedChannelsManager implements Serializable {
 		String providerName;
 		Integer frequency;
 		String polarity;
+		Integer streamId;
+		int streamIdPos;
 		Integer dvbsGen;
 		String sourceName;
 		Integer symbolRate;
@@ -400,6 +403,14 @@ public class ScannedChannelsManager implements Serializable {
 				}
 				if (splitLine[2].contains("R")) {
 					polarity = "R";
+				}
+
+				streamId = null;
+				streamIdPos = splitLine[2].indexOf("X");
+				if (streamIdPos >= 0) {
+					streamId = NumberFormat.getInstance()
+							.parse(splitLine[2].substring(streamIdPos + 1))
+							.intValue();
 				}
 
 				dvbsGen = null;
@@ -500,8 +511,9 @@ public class ScannedChannelsManager implements Serializable {
 					}
 
 					scannedChannel = scannedChannelRepository
-							.findBySourceFrequencyPolaritySidApid(sourceName,
-									frequency, polarity, sid, apid);
+							.findBySourceFrequencyPolarityStreamSidApid(
+									sourceName, frequency, polarity, streamId,
+									sid, apid);
 
 					if (scannedChannel == null) {
 						scannedChannel = new ScannedChannel();
@@ -509,6 +521,7 @@ public class ScannedChannelsManager implements Serializable {
 						scannedChannel.setSourceName(sourceName);
 						scannedChannel.setFrequency(frequency);
 						scannedChannel.setPolarity(polarity);
+						scannedChannel.setStreamId(streamId);
 						scannedChannel.setSid(sid);
 						scannedChannel.setApid(apid);
 					}
