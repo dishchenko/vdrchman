@@ -49,7 +49,7 @@
 						<f:selectItems
 							value="#{ignoredChannelsManager.filteredSourceTransponders}"
 							var="transponderVar" itemValue="#{transponderVar.id}"
-							itemLabel="#{transponderVar.frequency} #{transponderVar.polarity}" />
+							itemLabel="#{transponderVar.frequency} #{transponderVar.polarization}#{not empty transponderVar.streamId ? ' stream '.concat(transponderVar.streamId) : ''}" />
 					</h:selectOneMenu>
 					<h:outputLabel styleClass="preformattedtext"
 						value="Comparison result" />
@@ -96,7 +96,7 @@
 								value="#{transponderRepository.findById(channelVar.transpId)}">
 							</ui:param>
 							<h:outputText styleClass="preformattedtext"
-								value="#{transponderParam.frequency} #{transponderParam.polarity}" />
+								value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamId ? ' stream '.concat(transponderParam.streamId) : ''}" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">SID</f:facet>
@@ -174,7 +174,7 @@
 						<ui:param name="transponderParam"
 							value="#{transponderRepository.findById(channelVar.transpId)}">
 						</ui:param>
-							(on #{transponderParam.frequency} #{transponderParam.polarity}
+							(on #{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamId ? ' stream '.concat(transponderParam.streamId) : ''}
 						<ui:param name="sourceParam"
 							value="#{sourceRepository.findById(transponderParam.sourceId)}">
 						</ui:param>

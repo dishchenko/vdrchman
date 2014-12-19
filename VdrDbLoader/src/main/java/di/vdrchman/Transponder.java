@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @Table(name = "ttransponder", uniqueConstraints = {
 		@UniqueConstraint(columnNames = "id"),
-		@UniqueConstraint(columnNames = { "source_id", "frequency", "polarity", "stream_id" }) })
+		@UniqueConstraint(columnNames = { "source_id", "frequency", "polarization", "stream_id" }) })
 public class Transponder implements Serializable {
 
 	private static final long serialVersionUID = 8792144048918228648L;
@@ -41,7 +41,7 @@ public class Transponder implements Serializable {
 
 	@NotNull
 	@Size(max = 1)
-	private String polarity;
+	private String polarization;
 
 	@NotNull(message = "Transponder symbol rate must be defined")
 	@Digits(fraction = 0, integer = 5)
@@ -98,13 +98,13 @@ public class Transponder implements Serializable {
 		this.frequency = frequency;
 	}
 
-	public String getPolarity() {
+	public String getPolarization() {
 
-		return polarity;
+		return polarization;
 	}
 
-	public void setPolarity(String polarity) {
-		this.polarity = polarity;
+	public void setPolarization(String polarization) {
+		this.polarization = polarization;
 	}
 
 	public Integer getSymbolRate() {

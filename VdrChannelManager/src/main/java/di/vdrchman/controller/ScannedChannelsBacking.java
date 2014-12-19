@@ -149,10 +149,10 @@ public class ScannedChannelsBacking {
 						.getSourceName());
 				if (source != null) {
 					transponder = transponderRepository
-							.findBySourceFrequencyPolarityStream(
+							.findBySourceFrequencyPolarizationStream(
 									source.getId(),
 									lastPageTopChannel.getFrequency(),
-									lastPageTopChannel.getPolarity(),
+									lastPageTopChannel.getPolarization(),
 									lastPageTopChannel.getStreamId());
 					if (transponder != null) {
 						if (filteredTranspId == transponder.getId()) {

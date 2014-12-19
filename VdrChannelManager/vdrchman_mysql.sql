@@ -44,7 +44,7 @@ create table tsource (
 -- Source Transponders
 -- 'dvbs_gen' values: 1 - DVB-S, 2 - DVB-S2
 -- 'frequency' units are MHz
--- 'polarity' - 'H', 'V', 'L', 'R'
+-- 'polarization' - 'H', 'V', 'L', 'R'
 -- 'symbol_rate' units are ksyms/s
 -- 'stream_id' - stream ID of a multistream transponder
 -- 'nid' - transponder's Network ID
@@ -55,13 +55,13 @@ create table ttransponder (
 	source_id bigint(20) not null,
 	dvbs_gen int(11) not null,
 	frequency int(11) not null,
-	polarity varchar(1) not null,
+	polarization varchar(1) not null,
 	symbol_rate int(11) not null,
 	stream_id int(11),
 	nid int(11),
 	tid int(11),
 	ignored boolean not null,
-	unique (source_id, frequency, polarity, stream_id),
+	unique (source_id, frequency, polarization, stream_id),
 	foreign key (source_id) references tsource (id) on delete cascade
 	) engine=InnoDB;
 
@@ -172,7 +172,7 @@ create table tscanned_channel (
 	source_name varchar(20) not null,
 	dvbs_gen int(11) not null,
 	frequency int(11) not null,
-	polarity varchar(1) not null,
+	polarization varchar(1) not null,
 	symbol_rate int(11) not null,
 	stream_id int(11),
 	nid int(11),
@@ -189,6 +189,6 @@ create table tscanned_channel (
 	scanned_name varchar(50),
 	provider_name varchar(50),
 	refreshed boolean not null,
-	unique (source_name, frequency, polarity, stream_id, sid, apid),
+	unique (source_name, frequency, polarization, stream_id, sid, apid),
 	foreign key (user_id) references tuser (id) on delete cascade
 ) engine=InnoDB;

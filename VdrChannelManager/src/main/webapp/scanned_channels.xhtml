@@ -78,7 +78,7 @@
 						<f:selectItems
 							value="#{scannedChannelsManager.filteredSourceTransponders}"
 							var="transponderVar" itemValue="#{transponderVar.id}"
-							itemLabel="#{transponderVar.frequency} #{transponderVar.polarity}" />
+							itemLabel="#{transponderVar.frequency} #{transponderVar.polarization}#{not empty transponderVar.streamId ? ' stream '.concat(transponderVar.streamId) : ''}" />
 					</h:selectOneMenu>
 					<h:outputLabel styleClass="preformattedtext"
 						value="Comparison result" />
@@ -122,7 +122,7 @@
 							rendered="#{scannedChannelsManager.filteredTranspId lt 0}">
 							<f:facet name="header">Frequency</f:facet>
 							<h:outputText styleClass="preformattedtext"
-								value="#{channelVar.frequency} #{channelVar.polarity}" />
+								value="#{channelVar.frequency} #{channelVar.polarization}#{not empty channelVar.streamId ? ' stream '.concat(channelVar.streamId) : ''}" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">SID</f:facet>

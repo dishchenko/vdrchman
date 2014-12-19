@@ -328,7 +328,7 @@ public class ScannedChannelsManager implements Serializable {
 		String scannedName;
 		String providerName;
 		Integer frequency;
-		String polarity;
+		String polarization;
 		Integer streamId;
 		int streamIdPos;
 		Integer dvbsGen;
@@ -391,18 +391,18 @@ public class ScannedChannelsManager implements Serializable {
 
 				frequency = Integer.parseInt(splitLine[1]);
 
-				polarity = null;
+				polarization = null;
 				if (splitLine[2].contains("H")) {
-					polarity = "H";
+					polarization = "H";
 				}
 				if (splitLine[2].contains("V")) {
-					polarity = "V";
+					polarization = "V";
 				}
 				if (splitLine[2].contains("L")) {
-					polarity = "L";
+					polarization = "L";
 				}
 				if (splitLine[2].contains("R")) {
-					polarity = "R";
+					polarization = "R";
 				}
 
 				streamId = null;
@@ -511,8 +511,8 @@ public class ScannedChannelsManager implements Serializable {
 					}
 
 					scannedChannel = scannedChannelRepository
-							.findBySourceFrequencyPolarityStreamSidApid(
-									sourceName, frequency, polarity, streamId,
+							.findBySourceFrequencyPolarizationStreamSidApid(
+									sourceName, frequency, polarization, streamId,
 									sid, apid);
 
 					if (scannedChannel == null) {
@@ -520,7 +520,7 @@ public class ScannedChannelsManager implements Serializable {
 
 						scannedChannel.setSourceName(sourceName);
 						scannedChannel.setFrequency(frequency);
-						scannedChannel.setPolarity(polarity);
+						scannedChannel.setPolarization(polarization);
 						scannedChannel.setStreamId(streamId);
 						scannedChannel.setSid(sid);
 						scannedChannel.setApid(apid);

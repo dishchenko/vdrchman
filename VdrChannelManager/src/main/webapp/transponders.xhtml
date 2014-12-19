@@ -111,13 +111,23 @@
 								value="#{sourceParam.name} (#{sourceParam.description})" />
 						</h:column>
 						<h:column>
-							<f:facet name="header">Frequency and Polarity</f:facet>
+							<f:facet name="header">Frequency</f:facet>
 							<a4j:commandLink styleClass="preformattedtext"
-								value="#{transponderVar.frequency} #{transponderVar.polarity}"
+								value="#{transponderVar.frequency}"
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:frequencyInput').focus()"
 								action="#{transpondersBacking.intendUpdateTransponder(transponderVar)}"
 								render="transpondersContent, editPanel" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Polarization</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{transponderVar.polarization eq 'H' ? 'Horizontal' : (transponderVar.polarization eq 'V' ? 'Vertical' : (transponderVar.polarization eq 'L' ? 'Left circular' : (transponderVar.polarization eq 'R' ? 'Right circular' : '')))}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header">Stream ID</f:facet>
+							<h:outputText styleClass="preformattedtext"
+								value="#{transponderVar.streamId}" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">DVB-S Generation</f:facet>
@@ -184,16 +194,17 @@
 					</f:facet>
 					<!-- Content -->
 					<h:panelGrid columns="2">
-						<rich:message for="sourceFrequencyPolarityStreamValidator" />
+						<rich:message for="sourceFrequencyPolarizationStreamValidator" />
 						<br />
 					</h:panelGrid>
 					<!-- Special hidden input for multiple fields validator -->
-					<h:inputHidden id="sourceFrequencyPolarityStreamValidator" value="true">
+					<h:inputHidden id="sourceFrequencyPolarizationStreamValidator"
+						value="true">
 						<f:validator
-							binding="#{transponderSourceFrequencyPolarityStreamUniquenessValidator}" />
+							binding="#{transponderSourceFrequencyPolarizationStreamUniquenessValidator}" />
 						<f:attribute name="sourceId" value="editPanelForm:sourcesMenu" />
 						<f:attribute name="frequency" value="editPanelForm:frequencyInput" />
-						<f:attribute name="polarity" value="editPanelForm:polarityMenu" />
+						<f:attribute name="polarization" value="editPanelForm:polarizationMenu" />
 						<f:attribute name="streamId" value="editPanelForm:streamIdInput" />
 					</h:inputHidden>
 					<!-- Transponder data inputs -->
@@ -237,13 +248,13 @@
 							</h:inputText>
 							<rich:message for="frequencyInput" />
 						</h:panelGrid>
-						<h:outputLabel value="Polarity:" styleClass="preformattedtext" />
-						<h:selectOneMenu id="polarityMenu"
-							value="#{transpondersManager.editedTransponder.polarity}">
-							<f:selectItem itemValue="H" />
-							<f:selectItem itemValue="V" />
-							<f:selectItem itemValue="L" />
-							<f:selectItem itemValue="R" />
+						<h:outputLabel value="Polarization:" styleClass="preformattedtext" />
+						<h:selectOneMenu id="polarizationMenu"
+							value="#{transpondersManager.editedTransponder.polarization}">
+							<f:selectItem itemValue="H" itemLabel="Horizontal" />
+							<f:selectItem itemValue="V" itemLabel="Vertical" />
+							<f:selectItem itemValue="L" itemLabel="Left circular" />
+							<f:selectItem itemValue="R" itemLabel="Right circular" />
 						</h:selectOneMenu>
 						<h:outputLabel value="DVB-S Generation:"
 							styleClass="preformattedtext" />
@@ -346,7 +357,7 @@
 					<br />
 					<ui:repeat value="#{transpondersManager.checkedTransponders}"
 						var="transponderVar" varStatus="loopVar">
-				            #{transponderVar.frequency} #{transponderVar.polarity}
+				            #{transponderVar.frequency} #{transponderVar.polarization}#{not empty transponderVar.streamId ? ' stream '.concat(transponderVar.streamId) : ''}
 						<ui:param name="sourceParam"
 							value="#{sourceRepository.findById(transponderVar.sourceId)}">
 						</ui:param>

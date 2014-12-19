@@ -39,7 +39,7 @@ public class IgnoredChannelRepository {
 		String curSourceName;
 		Transponder transponder;
 		int frequency;
-		String polarity;
+		String polarization;
 		Integer streamId;
 		int streamIdPos;
 		int sid;
@@ -82,7 +82,7 @@ public class IgnoredChannelRepository {
 
 			if (curSource != null) {
 				frequency = Integer.parseInt(splitLine[1]);
-				polarity = splitLine[2].substring(0, 1);
+				polarization = splitLine[2].substring(0, 1);
 				streamId = null;
 				streamIdPos = splitLine[2].indexOf("X");
 				if (streamIdPos >= 0) {
@@ -96,14 +96,14 @@ public class IgnoredChannelRepository {
 						// do nothing
 					}
 				}
-				transponder = tr.findBySourceFrequencyPolarityStream(
-						curSource.getId(), frequency, polarity, streamId);
+				transponder = tr.findBySourceFrequencyPolarizationStream(
+						curSource.getId(), frequency, polarization, streamId);
 				if (transponder == null) {
 					Logger.getLogger(this.getClass()).log(
 							Level.ERROR,
 							"Can't find Transponder for Source '"
 									+ curSourceName + "' with frequency '"
-									+ frequency + "', polarity '" + polarity
+									+ frequency + "', polarization '" + polarization
 									+ "' and stream ID '" + streamId + "'");
 				}
 			}

@@ -69,7 +69,7 @@ public class TransponderRepository {
 			transponder.setSourceId(sourceId);
 			transponder.setDvbsGen(Integer.parseInt(splitLine[0].substring(1)));
 			transponder.setFrequency(Integer.parseInt(splitLine[1]) / 1000);
-			transponder.setPolarity(splitLine[2]);
+			transponder.setPolarization(splitLine[2]);
 			transponder.setSymbolRate(Integer.parseInt(splitLine[3]) / 1000);
 			if (splitLine.length == 8) {
 				transponder.setStreamId(Integer.parseInt(splitLine[7]));
@@ -104,7 +104,7 @@ public class TransponderRepository {
 		String line;
 		String[] splitLine;
 		int frequency;
-		String polarity;
+		String polarization;
 		Integer streamId;
 		int streamIdPos;
 		Transponder transponder;
@@ -149,7 +149,7 @@ public class TransponderRepository {
 			if ("T".equals(splitLine[0])) {
 				if (curSource != null) {
 					frequency = Integer.parseInt(splitLine[1]);
-					polarity = splitLine[2].substring(0, 1);
+					polarization = splitLine[2].substring(0, 1);
 					streamId = null;
 					streamIdPos = splitLine[2].indexOf("X");
 					if (streamIdPos >= 0) {
@@ -163,8 +163,8 @@ public class TransponderRepository {
 							// do nothing
 						}
 					}
-					transponder = findBySourceFrequencyPolarityStream(
-							curSource.getId(), frequency, polarity, streamId);
+					transponder = findBySourceFrequencyPolarizationStream(
+							curSource.getId(), frequency, polarization, streamId);
 					if (transponder != null) {
 						nid = Integer.parseInt(splitLine[4]);
 						if (nid != 0) {
@@ -180,8 +180,8 @@ public class TransponderRepository {
 								Level.ERROR,
 								"Can't find Transponder for Source '"
 										+ curSourceName + "' with frequency '"
-										+ frequency + "', polarity '"
-										+ polarity + "' and stream ID '"
+										+ frequency + "', polarization '"
+										+ polarization + "' and stream ID '"
 										+ streamId + "'");
 					}
 				}
@@ -189,11 +189,11 @@ public class TransponderRepository {
 		}
 	}
 
-	// Find a Transponder with given frequency, polarity and stream ID which
+	// Find a Transponder with given frequency, polarization and stream ID which
 	// relates to the Source with the ID given.
 	// Return null if no Transponder found
-	public Transponder findBySourceFrequencyPolarityStream(long sourceId,
-			int frequency, String polarity, Integer streamId) {
+	public Transponder findBySourceFrequencyPolarizationStream(long sourceId,
+			int frequency, String polarization, Integer streamId) {
 		Transponder result;
 		CriteriaBuilder cb;
 		CriteriaQuery<Transponder> criteria;
@@ -207,7 +207,7 @@ public class TransponderRepository {
 		p = cb.conjunction();
 		p = cb.and(p, cb.equal(transponderRoot.get("sourceId"), sourceId));
 		p = cb.and(p, cb.equal(transponderRoot.get("frequency"), frequency));
-		p = cb.and(p, cb.equal(transponderRoot.get("polarity"), polarity));
+		p = cb.and(p, cb.equal(transponderRoot.get("polarization"), polarization));
 		if (streamId == null) {
 			p = cb.and(p, cb.isNull(transponderRoot.get("streamId")));
 		} else {

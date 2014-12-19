@@ -14,7 +14,7 @@ import di.vdrchman.model.Transponder;
 
 @ManagedBean
 @ViewScoped
-public class TransponderSourceFrequencyPolarityStreamUniquenessValidator implements
+public class TransponderSourceFrequencyPolarizationStreamUniquenessValidator implements
 		Validator {
 
 	@Inject
@@ -24,7 +24,7 @@ public class TransponderSourceFrequencyPolarityStreamUniquenessValidator impleme
 	private TranspondersManager transpondersManager;
 
 	// Validates that there would not be two transponders with the same
-	// frequency and polarity within the source given
+	// frequency and polarization within the source given
 	@Override
 	public void validate(FacesContext context, UIComponent component,
 			Object value) throws ValidatorException {
@@ -32,8 +32,8 @@ public class TransponderSourceFrequencyPolarityStreamUniquenessValidator impleme
 		Long newSourceId;
 		Object frequencyAttrValue;
 		Integer newFrequency;
-		Object polarityAttrValue;
-		String newPolarity;
+		Object polarizationAttrValue;
+		String newPolarization;
 		Object streamIdAttrValue;
 		Integer newStreamId;
 		Transponder editedTransponder;
@@ -68,10 +68,10 @@ public class TransponderSourceFrequencyPolarityStreamUniquenessValidator impleme
 			newFrequency = -1;
 		}
 
-		polarityAttrValue = ((UIInput) context.getViewRoot().findComponent(
-				(String) component.getAttributes().get("polarity")))
+		polarizationAttrValue = ((UIInput) context.getViewRoot().findComponent(
+				(String) component.getAttributes().get("polarization")))
 				.getSubmittedValue();
-		newPolarity = (String) polarityAttrValue;
+		newPolarization = (String) polarizationAttrValue;
 
 		streamIdAttrValue = ((UIInput) context.getViewRoot().findComponent(
 				(String) component.getAttributes().get("streamId")))
@@ -87,17 +87,17 @@ public class TransponderSourceFrequencyPolarityStreamUniquenessValidator impleme
 		}
 
 		if ((newSourceId != null) && (newFrequency != null)
-				&& (newPolarity != null)) {
+				&& (newPolarization != null)) {
 			foundTransponder = transponderRepository
-					.findBySourceFrequencyPolarityStream(newSourceId,
-							newFrequency, newPolarity, newStreamId);
+					.findBySourceFrequencyPolarizationStream(newSourceId,
+							newFrequency, newPolarization, newStreamId);
 			if (foundTransponder != null) {
 				editedTranspId = editedTransponder.getId();
 				if ((editedTranspId == null)
 						|| !foundTransponder.getId().equals(editedTranspId)) {
 					FacesMessage msg = new FacesMessage(
 							"Transponder parameters uniqueness validation failed",
-							"A transponder with such source, frequency, polarity and stream ID already exists");
+							"A transponder with such source, frequency, polarization and stream ID already exists");
 					msg.setSeverity(FacesMessage.SEVERITY_ERROR);
 					throw new ValidatorException(msg);
 				}

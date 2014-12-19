@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "tscanned_channel", uniqueConstraints = {
 		@UniqueConstraint(columnNames = "id"),
 		@UniqueConstraint(columnNames = { "source_name", "frequency",
-				"polarity", "stream_id", "sid", "apid" }) })
+				"polarization", "stream_id", "sid", "apid" }) })
 public class ScannedChannel implements Serializable {
 
 	private static final long serialVersionUID = -5089338070282762299L;
@@ -47,7 +47,7 @@ public class ScannedChannel implements Serializable {
 
 	@NotNull
 	@Size(max = 1)
-	private String polarity;
+	private String polarization;
 
 	@NotNull(message = "Transponder symbol rate must be defined")
 	@Digits(fraction = 0, integer = 5)
@@ -118,8 +118,8 @@ public class ScannedChannel implements Serializable {
 				scannedChannel.dvbsGen) : null;
 		this.frequency = scannedChannel.frequency != null ? new Integer(
 				scannedChannel.frequency) : null;
-		this.polarity = scannedChannel.polarity != null ? new String(
-				scannedChannel.polarity) : null;
+		this.polarization = scannedChannel.polarization != null ? new String(
+				scannedChannel.polarization) : null;
 		this.symbolRate = scannedChannel.symbolRate != null ? new Integer(
 				scannedChannel.symbolRate) : null;
 		this.streamId = scannedChannel.streamId != null ? new Integer(
@@ -193,13 +193,13 @@ public class ScannedChannel implements Serializable {
 		this.frequency = frequency;
 	}
 
-	public String getPolarity() {
+	public String getPolarization() {
 
-		return polarity;
+		return polarization;
 	}
 
-	public void setPolarity(String polarity) {
-		this.polarity = polarity;
+	public void setPolarization(String polarization) {
+		this.polarization = polarization;
 	}
 
 	public Integer getSymbolRate() {
