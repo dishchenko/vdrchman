@@ -108,44 +108,25 @@ public class ScannedChannel implements Serializable {
 	}
 
 	public ScannedChannel(ScannedChannel scannedChannel) {
-		this.id = scannedChannel.id != null ? new Long(scannedChannel.id)
-				: null;
-		this.userId = scannedChannel.userId != null ? new Long(
-				scannedChannel.userId) : null;
-		this.sourceName = scannedChannel.sourceName != null ? new String(
-				scannedChannel.sourceName) : null;
-		this.dvbsGen = scannedChannel.dvbsGen != null ? new Integer(
-				scannedChannel.dvbsGen) : null;
-		this.frequency = scannedChannel.frequency != null ? new Integer(
-				scannedChannel.frequency) : null;
-		this.polarization = scannedChannel.polarization != null ? new String(
-				scannedChannel.polarization) : null;
-		this.symbolRate = scannedChannel.symbolRate != null ? new Integer(
-				scannedChannel.symbolRate) : null;
-		this.streamId = scannedChannel.streamId != null ? new Integer(
-				scannedChannel.streamId) : null;
-		this.nid = scannedChannel.nid != null ? new Integer(scannedChannel.nid)
-				: null;
-		this.tid = scannedChannel.tid != null ? new Integer(scannedChannel.tid)
-				: null;
-		this.sid = scannedChannel.sid != null ? new Integer(scannedChannel.sid)
-				: null;
-		this.vpid = scannedChannel.vpid != null ? new Integer(
-				scannedChannel.vpid) : null;
-		this.pcr = scannedChannel.pcr != null ? new Integer(scannedChannel.pcr)
-				: null;
-		this.apid = scannedChannel.apid != null ? new Integer(
-				scannedChannel.apid) : null;
-		this.tpid = scannedChannel.tpid != null ? new Integer(
-				scannedChannel.tpid) : null;
-		this.caid = scannedChannel.caid != null ? new String(
-				scannedChannel.caid) : null;
-		this.rid = scannedChannel.rid != null ? new Integer(scannedChannel.rid)
-				: null;
-		this.scannedName = scannedChannel.scannedName != null ? new String(
-				scannedChannel.scannedName) : null;
-		this.providerName = scannedChannel.providerName != null ? new String(
-				scannedChannel.providerName) : null;
+		this.id = scannedChannel.id;
+		this.userId = scannedChannel.userId;
+		this.sourceName = scannedChannel.sourceName;
+		this.dvbsGen = scannedChannel.dvbsGen;
+		this.frequency = scannedChannel.frequency;
+		this.polarization = scannedChannel.polarization;
+		this.symbolRate = scannedChannel.symbolRate;
+		this.streamId = scannedChannel.streamId;
+		this.nid = scannedChannel.nid;
+		this.tid = scannedChannel.tid;
+		this.sid = scannedChannel.sid;
+		this.vpid = scannedChannel.vpid;
+		this.pcr = scannedChannel.pcr;
+		this.apid = scannedChannel.apid;
+		this.tpid = scannedChannel.tpid;
+		this.caid = scannedChannel.caid;
+		this.rid = scannedChannel.rid;
+		this.scannedName = scannedChannel.scannedName;
+		this.providerName = scannedChannel.providerName;
 	}
 
 	public Long getId() {

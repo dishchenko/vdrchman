@@ -7,12 +7,16 @@ import javax.inject.Inject;
 
 import org.richfaces.event.DataScrollEvent;
 
+import di.vdrchman.data.ChannelRepository;
 import di.vdrchman.data.FilesManager;
+import di.vdrchman.data.IgnoredChannelRepository;
 import di.vdrchman.data.Scan;
 import di.vdrchman.data.ScannedChannelsManager;
 import di.vdrchman.data.SourceRepository;
 import di.vdrchman.data.TransponderRepository;
 import di.vdrchman.event.ScannedChannelAction;
+import di.vdrchman.model.Channel;
+import di.vdrchman.model.IgnoredChannel;
 import di.vdrchman.model.ScannedChannel;
 import di.vdrchman.model.Source;
 import di.vdrchman.model.Transponder;
@@ -31,6 +35,12 @@ public class ScannedChannelsBacking {
 
 	@Inject
 	private TransponderRepository transponderRepository;
+
+	@Inject
+	private ChannelRepository channelRepository;
+
+	@Inject
+	private IgnoredChannelRepository ignoredChannelRepository;
 
 	@Inject
 	private Event<ScannedChannelAction> scannedChannelActionEvent;
@@ -54,25 +64,148 @@ public class ScannedChannelsBacking {
 	// The user is going to add to main channel list the new channel based on
 	// the scanned channel data
 	public void intendAddToChannels() {
+		ScannedChannel workingChannel;
+		Source workingChannelSource;
+		Transponder workingChannelTransponder;
+		Channel editedChannel;
+
 		scannedChannelsManager.collectCheckedChannels();
+		workingChannel = scannedChannelsManager.getCheckedChannels().get(0);
+		scannedChannelsManager.setWorkingChannel(workingChannel);
+		workingChannelSource = sourceRepository.findByName(workingChannel
+				.getSourceName());
+		scannedChannelsManager.setWorkingChannelSource(workingChannelSource);
+		if (workingChannelSource != null) {
+			workingChannelTransponder = transponderRepository
+					.findBySourceFrequencyPolarizationStream(
+							workingChannelSource.getId(),
+							workingChannel.getFrequency(),
+							workingChannel.getPolarization(),
+							workingChannel.getStreamId());
+		} else {
+			workingChannelTransponder = null;
+		}
+		scannedChannelsManager
+				.setWorkingChannelTransponder(workingChannelTransponder);
+		editedChannel = new Channel();
+		editedChannel.setVpid(workingChannel.getVpid());
+		editedChannel.setVenc(workingChannel.getVenc());
+		editedChannel.setAenc(workingChannel.getAenc());
+		scannedChannelsManager.setEditedChannel(editedChannel);
+	}
+
+	// Really adding the new channel based on the scanned channel data to main
+	// channel list
+	public void doAddToChannels() {
+		Channel editedChannel;
+		ScannedChannel workingChannel;
+		int maxPageNo;
+
+		editedChannel = scannedChannelsManager.getEditedChannel();
+		editedChannel.setTranspId(scannedChannelsManager
+				.getWorkingChannelTransponder().getId());
+		workingChannel = scannedChannelsManager.getWorkingChannel();
+		editedChannel.setSid(workingChannel.getSid());
+		editedChannel.setPcr(workingChannel.getPcr());
+		editedChannel.setApid(workingChannel.getApid());
+		editedChannel.setTpid(workingChannel.getTpid());
+		editedChannel.setCaid(workingChannel.getCaid());
+		editedChannel.setRid(workingChannel.getRid());
+		editedChannel.setScannedName(workingChannel.getScannedName());
+		editedChannel.setProviderName(workingChannel.getProviderName());
+		channelRepository.add(editedChannel,
+				channelRepository.findMaxSeqno(-1) + 1);
+		scannedChannelActionEvent.fire(new ScannedChannelAction(
+				ScannedChannelAction.Action.CHANNEL_ADDED));
+		scannedChannelsManager.retrieveAllChannels();
+		scannedChannelsManager.clearCheckedChannels();
+		scannedChannelsManager.clearChannelCheckboxes();
+		maxPageNo = scannedChannelsManager.getChannels().size()
+				/ scannedChannelsManager.getRowsPerPage() + 1;
+		if (scannedChannelsManager.getScrollerPage() > maxPageNo) {
+			scannedChannelsManager.setScrollerPage(maxPageNo);
+		}
 	}
 
 	// The user is going to add to ignored channel list the new channel based on
 	// the scanned channel data
 	public void intendAddToIgnoredChannels() {
+		ScannedChannel workingChannel;
+		Source workingChannelSource;
+		Transponder workingChannelTransponder;
+
 		scannedChannelsManager.collectCheckedChannels();
+		workingChannel = scannedChannelsManager.getCheckedChannels().get(0);
+		scannedChannelsManager.setWorkingChannel(workingChannel);
+		workingChannelSource = sourceRepository.findByName(workingChannel
+				.getSourceName());
+		scannedChannelsManager.setWorkingChannelSource(workingChannelSource);
+		if (workingChannelSource != null) {
+			workingChannelTransponder = transponderRepository
+					.findBySourceFrequencyPolarizationStream(
+							workingChannelSource.getId(),
+							workingChannel.getFrequency(),
+							workingChannel.getPolarization(),
+							workingChannel.getStreamId());
+		} else {
+			workingChannelTransponder = null;
+		}
+		scannedChannelsManager
+				.setWorkingChannelTransponder(workingChannelTransponder);
+		scannedChannelsManager.setEditedIgnoredChannel(new IgnoredChannel());
 	}
 
 	// The user is going to update channel in main channel list based on
 	// the scanned channel data
 	public void intendUpdateChannels() {
+		ScannedChannel workingChannel;
+		Source workingChannelSource;
+		Transponder workingChannelTransponder;
+
 		scannedChannelsManager.collectCheckedChannels();
+		workingChannel = scannedChannelsManager.getCheckedChannels().get(0);
+		scannedChannelsManager.setWorkingChannel(workingChannel);
+		workingChannelSource = sourceRepository.findByName(workingChannel
+				.getSourceName());
+		scannedChannelsManager.setWorkingChannelSource(workingChannelSource);
+		workingChannelTransponder = transponderRepository
+				.findBySourceFrequencyPolarizationStream(
+						workingChannelSource.getId(),
+						workingChannel.getFrequency(),
+						workingChannel.getPolarization(),
+						workingChannel.getStreamId());
+		scannedChannelsManager
+				.setWorkingChannelTransponder(workingChannelTransponder);
+		scannedChannelsManager.setEditedChannel(new Channel(channelRepository
+				.findByTransponderSidApid(workingChannelTransponder.getId(),
+						workingChannel.getSid(), workingChannel.getApid())));
 	}
 
 	// The user is going to update channel in ignored channel list based on
 	// the scanned channel data
 	public void intendUpdateIgnoredChannels() {
+		ScannedChannel workingChannel;
+		Source workingChannelSource;
+		Transponder workingChannelTransponder;
+
 		scannedChannelsManager.collectCheckedChannels();
+		workingChannel = scannedChannelsManager.getCheckedChannels().get(0);
+		scannedChannelsManager.setWorkingChannel(workingChannel);
+		workingChannelSource = sourceRepository.findByName(workingChannel
+				.getSourceName());
+		scannedChannelsManager.setWorkingChannelSource(workingChannelSource);
+		workingChannelTransponder = transponderRepository
+				.findBySourceFrequencyPolarizationStream(
+						workingChannelSource.getId(),
+						workingChannel.getFrequency(),
+						workingChannel.getPolarization(),
+						workingChannel.getStreamId());
+		scannedChannelsManager
+				.setWorkingChannelTransponder(workingChannelTransponder);
+		scannedChannelsManager.setEditedIgnoredChannel(new IgnoredChannel(
+				ignoredChannelRepository.findByTransponderSidApid(
+						workingChannelTransponder.getId(),
+						workingChannel.getSid(), workingChannel.getApid())));
 	}
 
 	// On changing the source filter selection clear the transponder filter

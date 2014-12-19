@@ -54,13 +54,11 @@ public class Group implements Serializable {
 	}
 
 	public Group(Group group) {
-		this.id = group.id != null ? new Long(group.id) : null;
-		this.userId = group.userId != null ? new Long(group.userId) : null;
-		this.name = group.name != null ? new String(group.name) : null;
-		this.startChannelNo = group.startChannelNo != null ? new Integer(
-				group.startChannelNo) : null;
-		this.description = group.description != null ? new String(
-				group.description) : null;
+		this.id = group.id;
+		this.userId = group.userId;
+		this.name = group.name;
+		this.startChannelNo = group.startChannelNo;
+		this.description = group.description;
 	}
 
 	public Long getId() {

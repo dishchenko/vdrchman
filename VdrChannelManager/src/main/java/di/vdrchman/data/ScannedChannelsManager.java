@@ -27,7 +27,10 @@ import di.vdrchman.event.ChannelAction;
 import di.vdrchman.event.IgnoredChannelAction;
 import di.vdrchman.event.SourceAction;
 import di.vdrchman.event.TransponderAction;
+import di.vdrchman.model.Channel;
+import di.vdrchman.model.IgnoredChannel;
 import di.vdrchman.model.ScannedChannel;
+import di.vdrchman.model.Source;
 import di.vdrchman.model.Transponder;
 
 @SessionScoped
@@ -81,6 +84,22 @@ public class ScannedChannelsManager implements Serializable {
 
 	// Comparison result filter value. See Tools.COMPARISON_*
 	private int comparisonFilter = 0;
+
+	// Scanned channel selected for adding to other channel lists or
+	// updating their content
+	private ScannedChannel workingChannel;
+
+	// Source corresponding to the selected scanned channel
+	private Source workingChannelSource;
+
+	// Transponder corresponding to the selected scanned channel
+	private Transponder workingChannelTransponder;
+
+	// Channel which is to be added or updated in the main channel list
+	private Channel editedChannel;
+
+	// Channel which is to be added or updated in the ignored channel list
+	private IgnoredChannel editedIgnoredChannel;
 
 	// Fill in checkedChannels list with channels corresponding
 	// to checkboxes checked in the data table on the page
@@ -512,8 +531,8 @@ public class ScannedChannelsManager implements Serializable {
 
 					scannedChannel = scannedChannelRepository
 							.findBySourceFrequencyPolarizationStreamSidApid(
-									sourceName, frequency, polarization, streamId,
-									sid, apid);
+									sourceName, frequency, polarization,
+									streamId, sid, apid);
 
 					if (scannedChannel == null) {
 						scannedChannel = new ScannedChannel();
@@ -643,6 +662,52 @@ public class ScannedChannelsManager implements Serializable {
 
 	public void setComparisonFilter(int comparisonFilter) {
 		this.comparisonFilter = comparisonFilter;
+	}
+
+	public ScannedChannel getWorkingChannel() {
+
+		return workingChannel;
+	}
+
+	public void setWorkingChannel(ScannedChannel workingChannel) {
+		this.workingChannel = workingChannel;
+	}
+
+	public Source getWorkingChannelSource() {
+
+		return workingChannelSource;
+	}
+
+	public void setWorkingChannelSource(Source workingChannelSource) {
+		this.workingChannelSource = workingChannelSource;
+	}
+
+	public Transponder getWorkingChannelTransponder() {
+
+		return workingChannelTransponder;
+	}
+
+	public void setWorkingChannelTransponder(
+			Transponder workingChannelTransponder) {
+		this.workingChannelTransponder = workingChannelTransponder;
+	}
+
+	public Channel getEditedChannel() {
+
+		return editedChannel;
+	}
+
+	public void setEditedChannel(Channel editedChannel) {
+		this.editedChannel = editedChannel;
+	}
+
+	public IgnoredChannel getEditedIgnoredChannel() {
+
+		return editedIgnoredChannel;
+	}
+
+	public void setEditedIgnoredChannel(IgnoredChannel editedIgnoredChannel) {
+		this.editedIgnoredChannel = editedIgnoredChannel;
 	}
 
 }

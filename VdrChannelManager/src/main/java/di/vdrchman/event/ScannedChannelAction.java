@@ -3,7 +3,7 @@ package di.vdrchman.event;
 public class ScannedChannelAction {
 
 	public enum Action {
-		SCAN_PROCESSED
+		SCAN_PROCESSED, CHANNEL_ADDED
 	};
 
 	private Action action;

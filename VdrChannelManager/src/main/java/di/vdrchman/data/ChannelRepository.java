@@ -205,10 +205,14 @@ public class ChannelRepository {
 
 	/**
 	 * Finds maximum sequence number of channel related to the transponder with
-	 * ID given.
+	 * ID given or maximum sequence number of channel belonging to the current
+	 * application user.
 	 * 
 	 * @param transpId
-	 *            the transponder ID to find a channel's maximum sequence number
+	 *            the transponder ID to find a channel's maximum sequence
+	 *            number, negative value means that maximum channel's sequence
+	 *            number has to be found for channels belonging to the current
+	 *            user
 	 * @return the maximum channel sequence number or null if no channels found
 	 */
 	public Integer findMaxSeqno(long transpId) {

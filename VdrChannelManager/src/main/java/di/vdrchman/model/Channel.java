@@ -82,26 +82,22 @@ public class Channel implements Serializable {
 	}
 
 	public Channel(Channel channel) {
-		this.id = channel.id != null ? new Long(channel.id) : null;
-		this.transpId = channel.transpId != null ? new Long(channel.transpId)
-				: null;
-		this.sid = channel.sid != null ? new Integer(channel.sid) : null;
-		this.vpid = channel.vpid != null ? new Integer(channel.vpid) : null;
-		this.venc = channel.venc != null ? new Integer(channel.venc) : null;
-		this.pcr = channel.pcr != null ? new Integer(channel.pcr) : null;
-		this.apid = channel.apid != null ? new Integer(channel.apid) : null;
-		this.aenc = channel.aenc != null ? new Integer(channel.aenc) : null;
-		this.tpid = channel.tpid != null ? new Integer(channel.tpid) : null;
-		this.caid = channel.caid != null ? new String(channel.caid) : null;
-		this.rid = channel.rid != null ? new Integer(channel.rid) : null;
-		this.scannedName = channel.scannedName != null ? new String(
-				channel.scannedName) : null;
-		this.providerName = channel.providerName != null ? new String(
-				channel.providerName) : null;
-		this.name = channel.name != null ? new String(channel.name) : null;
-		this.lang = channel.lang != null ? new String(channel.lang) : null;
-		this.locked = channel.locked != null ? new Boolean(channel.locked)
-				: null;
+		this.id = channel.id;
+		this.transpId = channel.transpId;
+		this.sid = channel.sid;
+		this.vpid = channel.vpid;
+		this.venc = channel.venc;
+		this.pcr = channel.pcr;
+		this.apid = channel.apid;
+		this.aenc = channel.aenc;
+		this.tpid = channel.tpid;
+		this.caid = channel.caid;
+		this.rid = channel.rid;
+		this.scannedName = channel.scannedName;
+		this.providerName = channel.providerName;
+		this.name = channel.name;
+		this.lang = channel.lang;
+		this.locked = channel.locked;
 	}
 
 	public Long getId() {

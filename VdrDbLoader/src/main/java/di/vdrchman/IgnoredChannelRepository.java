@@ -73,7 +73,7 @@ public class IgnoredChannelRepository {
 			} else {
 				curSource = sr.findByName(userId, curSourceName);
 				if (curSource == null) {
-					Logger.getLogger(this.getClass()).log(Level.ERROR,
+					Logger.getLogger(this.getClass()).log(Level.WARN,
 							"Can't find Source named '" + curSourceName + "'");
 				}
 			}
@@ -100,7 +100,7 @@ public class IgnoredChannelRepository {
 						curSource.getId(), frequency, polarization, streamId);
 				if (transponder == null) {
 					Logger.getLogger(this.getClass()).log(
-							Level.ERROR,
+							Level.WARN,
 							"Can't find Transponder for Source '"
 									+ curSourceName + "' with frequency '"
 									+ frequency + "', polarization '" + polarization

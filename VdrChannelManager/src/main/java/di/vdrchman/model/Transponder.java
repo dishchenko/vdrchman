@@ -18,7 +18,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @Table(name = "ttransponder", uniqueConstraints = {
 		@UniqueConstraint(columnNames = "id"),
-		@UniqueConstraint(columnNames = { "source_id", "frequency", "polarization", "stream_id" }) })
+		@UniqueConstraint(columnNames = { "source_id", "frequency",
+				"polarization", "stream_id" }) })
 public class Transponder implements Serializable {
 
 	private static final long serialVersionUID = 8792144048918228648L;
@@ -67,23 +68,16 @@ public class Transponder implements Serializable {
 	}
 
 	public Transponder(Transponder transponder) {
-		this.id = transponder.id != null ? new Long(transponder.id) : null;
-		this.sourceId = transponder.sourceId != null ? new Long(
-				transponder.sourceId) : null;
-		this.dvbsGen = transponder.dvbsGen != null ? new Integer(
-				transponder.dvbsGen) : null;
-		this.frequency = transponder.frequency != null ? new Integer(
-				transponder.frequency) : null;
-		this.polarization = transponder.polarization != null ? new String(
-				transponder.polarization) : null;
-		this.symbolRate = transponder.symbolRate != null ? new Integer(
-				transponder.symbolRate) : null;
-		this.streamId = transponder.streamId != null ? new Integer(
-						transponder.streamId) : null;
-		this.nid = transponder.nid != null ? new Integer(transponder.nid) : null;
-		this.tid = transponder.tid != null ? new Integer(transponder.tid) : null;
-		this.ignored = transponder.ignored != null ? new Boolean(
-				transponder.ignored) : null;
+		this.id = transponder.id;
+		this.sourceId = transponder.sourceId;
+		this.dvbsGen = transponder.dvbsGen;
+		this.frequency = transponder.frequency;
+		this.polarization = transponder.polarization;
+		this.symbolRate = transponder.symbolRate;
+		this.streamId = transponder.streamId;
+		this.nid = transponder.nid;
+		this.tid = transponder.tid;
+		this.ignored = transponder.ignored;
 	}
 
 	public Long getId() {

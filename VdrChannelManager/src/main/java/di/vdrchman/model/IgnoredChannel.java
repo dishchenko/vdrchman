@@ -58,18 +58,12 @@ public class IgnoredChannel implements Serializable {
 	}
 
 	public IgnoredChannel(IgnoredChannel ignoredChannel) {
-		this.id = ignoredChannel.id != null ? new Long(ignoredChannel.id)
-				: null;
-		this.transpId = ignoredChannel.transpId != null ? new Long(
-				ignoredChannel.transpId) : null;
-		this.sid = ignoredChannel.sid != null ? new Integer(ignoredChannel.sid)
-				: null;
-		this.apid = ignoredChannel.apid != null ? new Integer(
-				ignoredChannel.apid) : null;
-		this.scannedName = ignoredChannel.scannedName != null ? new String(
-				ignoredChannel.scannedName) : null;
-		this.providerName = ignoredChannel.providerName != null ? new String(
-				ignoredChannel.providerName) : null;
+		this.id = ignoredChannel.id;
+		this.transpId = ignoredChannel.transpId;
+		this.sid = ignoredChannel.sid;
+		this.apid = ignoredChannel.apid;
+		this.scannedName = ignoredChannel.scannedName;
+		this.providerName = ignoredChannel.providerName;
 	}
 
 	public Long getId() {

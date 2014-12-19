@@ -272,6 +272,10 @@ public class ChannelsManager implements Serializable {
 				channelsRefreshNeeded = true;
 			}
 		}
+
+		if (scannedChannelAction.getAction() == ScannedChannelAction.Action.CHANNEL_ADDED) {
+			channelsRefreshNeeded = true;
+		}
 	}
 
 	// Re(Fill) in the filtered source transponder list only if it is suggested

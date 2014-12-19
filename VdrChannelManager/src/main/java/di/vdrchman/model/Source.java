@@ -63,16 +63,15 @@ public class Source implements Serializable {
 	}
 
 	public Source(Source source) {
-		this.id = source.id != null ? new Long(source.id) : null;
-		this.userId = source.userId != null ? new Long(source.userId) : null;
-		this.name = source.name != null ? new String(source.name) : null;
-		this.description = source.description != null ? new String(
-				source.description) : null;
-		this.loV = source.loV != null ? new String(source.loV) : null;
-		this.hiV = source.hiV != null ? new String(source.hiV) : null;
-		this.loH = source.loH != null ? new String(source.loH) : null;
-		this.hiH = source.hiH != null ? new String(source.hiH) : null;
-		this.rotor = source.rotor != null ? new Integer(source.rotor) : null;
+		this.id = source.id;
+		this.userId = source.userId;
+		this.name = source.name;
+		this.description = source.description;
+		this.loV = source.loV;
+		this.hiV = source.hiV;
+		this.loH = source.loH;
+		this.hiH = source.hiH;
+		this.rotor = source.rotor;
 	}
 
 	public Long getId() {

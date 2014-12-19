@@ -139,7 +139,7 @@ public class TransponderRepository {
 					curSource = sr.findByName(userId, curSourceName);
 					if (curSource == null) {
 						Logger.getLogger(this.getClass()).log(
-								Level.ERROR,
+								Level.WARN,
 								"Can't find Source named '" + curSourceName
 										+ "'");
 					}
@@ -177,7 +177,7 @@ public class TransponderRepository {
 						em.flush();
 					} else {
 						Logger.getLogger(this.getClass()).log(
-								Level.ERROR,
+								Level.WARN,
 								"Can't find Transponder for Source '"
 										+ curSourceName + "' with frequency '"
 										+ frequency + "', polarization '"

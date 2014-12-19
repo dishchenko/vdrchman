@@ -115,7 +115,7 @@ public class ChannelRepository {
 					curSource = sr.findByName(userId, curSourceName);
 					if (curSource == null) {
 						Logger.getLogger(this.getClass()).log(
-								Level.ERROR,
+								Level.WARN,
 								"Can't find Source named '" + curSourceName
 										+ "'");
 					}
@@ -143,7 +143,7 @@ public class ChannelRepository {
 							curSource.getId(), frequency, polarization, streamId);
 					if (transponder == null) {
 						Logger.getLogger(this.getClass()).log(
-								Level.ERROR,
+								Level.WARN,
 								"Can't find Transponder for Source '"
 										+ curSourceName + "' with frequency '"
 										+ frequency + "', polarization '"
@@ -329,7 +329,7 @@ public class ChannelRepository {
 					curSource = sr.findByName(userId, curSourceName);
 					if (curSource == null) {
 						Logger.getLogger(this.getClass()).log(
-								Level.ERROR,
+								Level.WARN,
 								"Can't find Source named '" + curSourceName
 										+ "'");
 					}
@@ -357,7 +357,7 @@ public class ChannelRepository {
 							curSource.getId(), frequency, polarization, streamId);
 					if (transponder == null) {
 						Logger.getLogger(this.getClass()).log(
-								Level.ERROR,
+								Level.WARN,
 								"Can't find Transponder for Source '"
 										+ curSourceName + "' with frequency '"
 										+ frequency + "', polarization '"
@@ -399,14 +399,14 @@ public class ChannelRepository {
 								em.persist(channelGroup);
 							} else {
 								Logger.getLogger(this.getClass()).log(
-										Level.ERROR,
+										Level.WARN,
 										"Can't find Group named '"
 												+ groupInfo[i] + "'");
 							}
 						}
 					} else {
 						Logger.getLogger(this.getClass()).log(
-								Level.ERROR,
+								Level.WARN,
 								"Can't find Channel with SID '" + sid
 										+ "' and APID '" + apid
 										+ "' for Transponder on '"
