@@ -161,6 +161,12 @@ public class IgnoredChannelsManager implements Serializable {
 				channelsRefreshNeeded = true;
 			}
 		}
+
+		if (scannedChannelAction.getAction() == ScannedChannelAction.Action.IGNORED_CHANNEL_ADDED) {
+			if (comparisonFilter == COMPARISON_NONE) {
+				channelsRefreshNeeded = true;
+			}
+		}
 	}
 
 	// Re(Fill) in the filtered source transponder list only if it is suggested

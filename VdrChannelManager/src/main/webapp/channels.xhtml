@@ -154,8 +154,12 @@
 						</h:column>
 						<h:column>
 							<f:facet name="header">SID</f:facet>
-							<h:outputText styleClass="preformattedtext"
-								value="#{channelVar.sid}" />
+							<a4j:commandLink styleClass="preformattedtext"
+								value="#{channelVar.sid}"
+								onclick="this.setAttribute('onclick', 'return false')"
+								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:sidInput').focus()"
+								action="#{channelsBacking.intendUpdateChannel(channelVar)}"
+								render="channelsContent, editPanel" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">VPID</f:facet>
@@ -168,8 +172,12 @@
 						</h:column>
 						<h:column>
 							<f:facet name="header">APID</f:facet>
-							<h:outputText styleClass="preformattedtext"
-								value="#{channelVar.apid}" />
+							<a4j:commandLink styleClass="preformattedtext"
+								value="#{channelVar.apid}"
+								onclick="this.setAttribute('onclick', 'return false')"
+								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:apidInput').focus()"
+								action="#{channelsBacking.intendUpdateChannel(channelVar)}"
+								render="channelsContent, editPanel" />
 							<ui:fragment rendered="#{not empty channelVar.aenc}">
 								<h:outputText styleClass="preformattedtext"
 									value=" (#{tools.decodeAenc(channelVar.aenc)})" />

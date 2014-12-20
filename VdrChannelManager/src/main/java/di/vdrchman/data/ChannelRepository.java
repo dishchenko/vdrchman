@@ -51,7 +51,10 @@ public class ChannelRepository {
 	 *            scanned channel list (COMPARISON_NONE - no filtering,
 	 *            COMPARISON_CHANGED_MAIN - changed channels (compared to the
 	 *            channels from scanned channel list), COMPARISON_NOT_SCANNED -
-	 *            channels not found in the scanned channel list)
+	 *            channels not found in the scanned channel list,
+	 *            COMPARISON_CHANGED_MAIN_FORCED - changed channels (compared to
+	 *            the channels from scanned channel list) eligible for forced
+	 *            updating with scanned channels data)
 	 * @return the list of channels found for the current application user and
 	 *         given source and transponder IDs
 	 */
@@ -132,6 +135,31 @@ public class ChannelRepository {
 				query = em
 						.createQuery(
 								"select c, cs.seqno from Channel c, ChannelSeqno cs where c.id = cs.channelId and cs.userId = :userId and c.transpId = :transpId and not exists (select sc from Source s, Transponder t, ScannedChannel sc where c.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and coalesce(sc.streamId, 0) = coalesce(t.streamId, 0) and sc.sid = c.sid and sc.apid = c.apid and sc.userId = :userId) order by cs.seqno",
+								Object[].class);
+				query.setParameter("userId", user.getId());
+				query.setParameter("transpId", transpId);
+			}
+			break;
+		case COMPARISON_CHANGED_MAIN_FORCED:
+			if (transpId < 0) {
+				if (sourceId < 0) {
+					query = em
+							.createQuery(
+									"select c, cs.seqno from Channel c, ChannelSeqno cs where c.id = cs.channelId and cs.userId = :userId and exists (select sc from Source s, Transponder t, ScannedChannel sc where c.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and coalesce(sc.streamId, 0) = coalesce(t.streamId, 0) and sc.sid = c.sid and sc.apid = c.apid and (t.dvbsGen <> sc.dvbsGen or t.symbolRate <> sc.symbolRate or coalesce(t.nid, 0) <> coalesce(sc.nid, 0) or coalesce(t.tid, 0) <> coalesce(sc.tid, 0) or coalesce(c.pcr, 0) <> coalesce(sc.pcr, 0) or coalesce(c.tpid, 0) <> coalesce(sc.tpid, 0) or coalesce(c.rid, 0) <> coalesce(sc.rid, 0) or coalesce(c.providerName, ' ') <> coalesce(sc.providerName, ' ')) and sc.userId = :userId) order by cs.seqno",
+									Object[].class);
+					query.setParameter("userId", user.getId());
+				} else {
+					query = em
+							.createQuery(
+									"select c, cs.seqno from Channel c, ChannelSeqno cs, Transponder o_t where c.id = cs.channelId and c.transpId = o_t.id and cs.userId = :userId and o_t.sourceId = :sourceId and exists (select sc from Source s, Transponder t, ScannedChannel sc where c.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and coalesce(sc.streamId, 0) = coalesce(t.streamId, 0) and sc.sid = c.sid and sc.apid = c.apid and (t.dvbsGen <> sc.dvbsGen or t.symbolRate <> sc.symbolRate or coalesce(t.nid, 0) <> coalesce(sc.nid, 0) or coalesce(t.tid, 0) <> coalesce(sc.tid, 0) or coalesce(c.pcr, 0) <> coalesce(sc.pcr, 0) or coalesce(c.tpid, 0) <> coalesce(sc.tpid, 0) or coalesce(c.rid, 0) <> coalesce(sc.rid, 0) or coalesce(c.providerName, ' ') <> coalesce(sc.providerName, ' ')) and sc.userId = :userId) order by cs.seqno",
+									Object[].class);
+					query.setParameter("userId", user.getId());
+					query.setParameter("sourceId", sourceId);
+				}
+			} else {
+				query = em
+						.createQuery(
+								"select c, cs.seqno from Channel c, ChannelSeqno cs where c.id = cs.channelId and cs.userId = :userId and c.transpId = :transpId and exists (select sc from Source s, Transponder t, ScannedChannel sc where c.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and coalesce(sc.streamId, 0) = coalesce(t.streamId, 0) and sc.sid = c.sid and sc.apid = c.apid and (t.dvbsGen <> sc.dvbsGen or t.symbolRate <> sc.symbolRate or coalesce(t.nid, 0) <> coalesce(sc.nid, 0) or coalesce(t.tid, 0) <> coalesce(sc.tid, 0) or coalesce(c.pcr, 0) <> coalesce(sc.pcr, 0) or coalesce(c.tpid, 0) <> coalesce(sc.tpid, 0) or coalesce(c.rid, 0) <> coalesce(sc.rid, 0) or coalesce(c.providerName, ' ') <> coalesce(sc.providerName, ' ')) and sc.userId = :userId) order by cs.seqno",
 								Object[].class);
 				query.setParameter("userId", user.getId());
 				query.setParameter("transpId", transpId);

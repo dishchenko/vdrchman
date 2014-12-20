@@ -155,6 +155,36 @@ public class ScannedChannelsBacking {
 		scannedChannelsManager.setEditedIgnoredChannel(new IgnoredChannel());
 	}
 
+	// Really adding the new channel based on the scanned channel data to
+	// ignored channel list
+	public void doAddToIgnoredChannels() {
+		IgnoredChannel editedIgnoredChannel;
+		ScannedChannel workingChannel;
+		int maxPageNo;
+
+		editedIgnoredChannel = scannedChannelsManager.getEditedIgnoredChannel();
+		editedIgnoredChannel.setTranspId(scannedChannelsManager
+				.getWorkingChannelTransponder().getId());
+		workingChannel = scannedChannelsManager.getWorkingChannel();
+		editedIgnoredChannel.setSid(workingChannel.getSid());
+		editedIgnoredChannel.setVpid(workingChannel.getVpid());
+		editedIgnoredChannel.setApid(workingChannel.getApid());
+		editedIgnoredChannel.setCaid(workingChannel.getCaid());
+		editedIgnoredChannel.setScannedName(workingChannel.getScannedName());
+		editedIgnoredChannel.setProviderName(workingChannel.getProviderName());
+		ignoredChannelRepository.add(editedIgnoredChannel);
+		scannedChannelActionEvent.fire(new ScannedChannelAction(
+				ScannedChannelAction.Action.IGNORED_CHANNEL_ADDED));
+		scannedChannelsManager.retrieveAllChannels();
+		scannedChannelsManager.clearCheckedChannels();
+		scannedChannelsManager.clearChannelCheckboxes();
+		maxPageNo = scannedChannelsManager.getChannels().size()
+				/ scannedChannelsManager.getRowsPerPage() + 1;
+		if (scannedChannelsManager.getScrollerPage() > maxPageNo) {
+			scannedChannelsManager.setScrollerPage(maxPageNo);
+		}
+	}
+
 	// The user is going to update channel in main channel list based on
 	// the scanned channel data
 	public void intendUpdateChannels() {

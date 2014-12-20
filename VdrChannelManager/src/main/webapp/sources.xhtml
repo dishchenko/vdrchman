@@ -88,8 +88,12 @@
 						</h:column>
 						<h:column>
 							<f:facet name="header">Rotor</f:facet>
-							<h:outputText styleClass="preformattedtext"
-								value="#{sourceVar.rotor}" />
+							<a4j:commandLink styleClass="preformattedtext"
+								value="#{sourceVar.rotor}"
+								onclick="this.setAttribute('onclick', 'return false')"
+								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:rotorInput').focus()"
+								action="#{sourcesBacking.intendUpdateSource(sourceVar)}"
+								render="sourcesContent, editPanel" />
 						</h:column>
 					</h:dataTable>
 					<rich:dataScroller for="sourcesTable" maxPages="5" fastStep="5"

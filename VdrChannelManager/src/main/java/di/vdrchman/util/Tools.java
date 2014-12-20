@@ -25,6 +25,8 @@ public class Tools {
 	public static final int COMPARISON_CHANGED_IGNORED = 3;
 	// 4 - not scanned channels
 	public static final int COMPARISON_NOT_SCANNED = 4;
+	// 5 - changed main list channels eligible for forced update
+	public static final int COMPARISON_CHANGED_MAIN_FORCED = 5;
 
 	// JSF EL accessible map of comparison constants
 	public static final Map<String, Integer> comparisonConst = new HashMap<String, Integer>();

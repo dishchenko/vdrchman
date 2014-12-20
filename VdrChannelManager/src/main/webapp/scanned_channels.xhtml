@@ -176,7 +176,7 @@
 			</h:outputScript>
 		</h:panelGroup>
 		<!-- Pop-up forms panel -->
-		<h:panelGrid columns="3">
+		<h:panelGrid columns="4">
 			<!-- Outer form for the Uploaded Scans Processing panel -->
 			<h:form id="uploadedScansProcessingPanelForm" styleClass="zerosize">
 				<!-- The Uploaded Scans Processing panel -->
@@ -369,6 +369,99 @@
 								immediate="true"
 								action="#{formResetter.resetForm(rich:findComponent('addToChannelsPanelForm'))}"
 								onclick="#{rich:component('addToChannelsPanel')}.hide()" />
+						</h:panelGrid>
+					</ui:fragment>
+				</rich:popupPanel>
+			</h:form>
+			<!-- Outer form for the Add To Ignored panel -->
+			<h:form id="addToIgnoredChannelsPanelForm" styleClass="zerosize"
+				onkeypress="return addToIgnoredChannelsPanelFormKeyPressHandler(event)">
+				<!-- The Add To Ignored panel -->
+				<rich:popupPanel id="addToIgnoredChannelsPanel" modal="true"
+					autosized="true" domElementAttachment="form">
+					<!-- Header -->
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Add channel to Ignored" />
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<h:commandLink value="Close" immediate="true"
+								onclick="#{rich:component('addToIgnoredChannelsPanel')}.hide()"
+								action="#{formResetter.resetForm(rich:findComponent('addToIgnoredChannelsPanelForm'))}" />
+						</h:panelGroup>
+					</f:facet>
+					<!-- Content -->
+					<!-- Defined Source for scanned channel not found -->
+					<ui:fragment
+						rendered="#{empty scannedChannelsManager.workingChannelSource}">
+						<h:outputText
+							value="Please add Source with name '#{scannedChannelsManager.workingChannel.sourceName}' first!" />
+						<h:panelGrid columns="1">
+							<a4j:commandButton id="okNoSourceButton" value="OK"
+								onclick="this.disabled=true"
+								oncomplete="#{rich:component('addToIgnoredChannelsPanel')}.hide();document.getElementById('addToIgnoredChannelsPanelForm:okNoSourceButton').disabled=false"
+								render="scannedChannelsContent" />
+						</h:panelGrid>
+					</ui:fragment>
+					<!-- Defined Transponder for scanned channel not found -->
+					<ui:fragment
+						rendered="#{not empty scannedChannelsManager.workingChannelSource and empty scannedChannelsManager.workingChannelTransponder}">
+						<h:outputText
+							value="Please add Transponder with frequency '#{scannedChannelsManager.workingChannel.frequency}', polarization '#{scannedChannelsManager.workingChannel.frequency}'#{not empty scannedChannelsManager.workingChannel.streamId ? ', stream \''.concat(scannedChannelsManager.workingChannel.streamId).concat('\'') : ''} first!" />
+						<h:panelGrid columns="1">
+							<a4j:commandButton id="okNoTransponderButton" value="OK"
+								onclick="this.disabled=true"
+								oncomplete="#{rich:component('addToIgnoredChannelsPanel')}.hide();document.getElementById('addToIgnoredChannelsPanelForm:okNoTransponderButton').disabled=false"
+								render="scannedChannelsContent" />
+						</h:panelGrid>
+					</ui:fragment>
+					<!-- Channel addition is possible -->
+					<ui:fragment
+						rendered="#{not empty scannedChannelsManager.workingChannelTransponder}">
+						<h:panelGrid columns="2">
+							<h:outputLabel value="Source:" styleClass="preformattedtext" />
+							<h:outputLabel
+								value="#{scannedChannelsManager.workingChannelSource.name} (#{scannedChannelsManager.workingChannelSource.description})"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="Transponder:" styleClass="preformattedtext" />
+							<h:outputLabel
+								value="#{scannedChannelsManager.workingChannelTransponder.frequency} #{scannedChannelsManager.workingChannelTransponder.polarization}#{not empty scannedChannelsManager.workingChannelTransponder.streamId ? ' stream '.concat(scannedChannelsManager.workingChannelTransponder.streamId) : ''}"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="Service ID:" styleClass="preformattedtext" />
+							<h:outputLabel
+								value="#{scannedChannelsManager.workingChannel.sid}"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="Video PID:" styleClass="preformattedtext" />
+							<h:outputLabel
+								value="#{scannedChannelsManager.workingChannel.vpid}"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="Audio PID:" styleClass="preformattedtext" />
+							<h:outputLabel
+								value="#{scannedChannelsManager.workingChannel.apid}"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="Conditional Access ID:"
+								styleClass="preformattedtext" />
+							<h:outputLabel
+								value="#{scannedChannelsManager.workingChannel.caid}"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="Scanned as:" styleClass="preformattedtext" />
+							<h:outputLabel
+								value="#{scannedChannelsManager.workingChannel.scannedName}"
+								styleClass="preformattedtext" />
+						</h:panelGrid>
+						<!-- Action buttons -->
+						<h:panelGrid columns="2">
+							<a4j:commandButton id="okAddButton" value="OK"
+								onclick="this.disabled=true"
+								oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('addToIgnoredChannelsPanel')}.hide();document.getElementById('addToIgnoredChannelsPanelForm:okAddButton').disabled=false"
+								action="#{scannedChannelsBacking.doAddToIgnoredChannels()}"
+								render="scannedChannelsContent" />
+							<a4j:commandButton id="cancelButton" value="Cancel"
+								immediate="true"
+								action="#{formResetter.resetForm(rich:findComponent('addToIgnoredChannelsPanelForm'))}"
+								onclick="#{rich:component('addToIgnoredChannelsPanel')}.hide()" />
 						</h:panelGrid>
 					</ui:fragment>
 				</rich:popupPanel>

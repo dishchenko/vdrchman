@@ -40,10 +40,16 @@ public class ScannedChannelsManager implements Serializable {
 	private static final long serialVersionUID = 6811121080345239295L;
 
 	@Inject
+	private SourceRepository sourceRepository;
+
+	@Inject
 	private TransponderRepository transponderRepository;
 
 	@Inject
 	private ScannedChannelRepository scannedChannelRepository;
+
+	@Inject
+	private ChannelRepository channelRepository;
 
 	@Inject
 	Logger logger;
@@ -336,7 +342,9 @@ public class ScannedChannelsManager implements Serializable {
 		}
 	}
 
-	// Process scan data and store results in the scanned channels table
+	// Process scan data and store results in the scanned channels table.
+	// Update channels in main channel list if updates are "technical" i.e.
+	// programs not changed
 	public String processScanData(String scanSourceName, byte[] data) {
 		String result;
 		int lineNo;
@@ -372,6 +380,9 @@ public class ScannedChannelsManager implements Serializable {
 		Integer apid;
 		Integer aenc;
 		ScannedChannel scannedChannel;
+		Source source;
+		List<Channel> forcedUpdateChannels;
+		Transponder transponder;
 
 		result = "OK";
 		lineNo = 0;
@@ -569,6 +580,37 @@ public class ScannedChannelsManager implements Serializable {
 			}
 
 			scannedChannelRepository.deleteNotRefreshed(scanSourceName);
+
+			source = sourceRepository.findByName(scanSourceName);
+			if (source != null) {
+				forcedUpdateChannels = channelRepository.findAll(
+						source.getId(), -1, COMPARISON_CHANGED_MAIN_FORCED);
+
+				for (Channel updatedChannel : forcedUpdateChannels) {
+					transponder = transponderRepository.findById(updatedChannel
+							.getTranspId());
+					scannedChannel = scannedChannelRepository
+							.findBySourceFrequencyPolarizationStreamSidApid(
+									scanSourceName, transponder.getFrequency(),
+									transponder.getPolarization(),
+									transponder.getStreamId(),
+									updatedChannel.getSid(),
+									updatedChannel.getApid());
+
+					transponder.setDvbsGen(scannedChannel.getDvbsGen());
+					transponder.setSymbolRate(scannedChannel.getSymbolRate());
+					transponder.setNid(scannedChannel.getNid());
+					transponder.setTid(scannedChannel.getTid());
+					transponderRepository.update(transponder);
+
+					updatedChannel.setPcr(scannedChannel.getPcr());
+					updatedChannel.setTpid(scannedChannel.getTpid());
+					updatedChannel.setRid(scannedChannel.getRid());
+					updatedChannel.setProviderName(scannedChannel
+							.getProviderName());
+					channelRepository.update(updatedChannel);
+				}
+			}
 		}
 
 		catch (Exception ex) {

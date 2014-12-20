@@ -121,13 +121,21 @@
 						</h:column>
 						<h:column>
 							<f:facet name="header">Polarization</f:facet>
-							<h:outputText styleClass="preformattedtext"
-								value="#{transponderVar.polarization eq 'H' ? 'Horizontal' : (transponderVar.polarization eq 'V' ? 'Vertical' : (transponderVar.polarization eq 'L' ? 'Left circular' : (transponderVar.polarization eq 'R' ? 'Right circular' : '')))}" />
+							<a4j:commandLink styleClass="preformattedtext"
+								value="#{transponderVar.polarization eq 'H' ? 'Horizontal' : (transponderVar.polarization eq 'V' ? 'Vertical' : (transponderVar.polarization eq 'L' ? 'Left circular' : (transponderVar.polarization eq 'R' ? 'Right circular' : '')))}"
+								onclick="this.setAttribute('onclick', 'return false')"
+								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:polarizationMenu').focus()"
+								action="#{transpondersBacking.intendUpdateTransponder(transponderVar)}"
+								render="transpondersContent, editPanel" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">Stream ID</f:facet>
-							<h:outputText styleClass="preformattedtext"
-								value="#{transponderVar.streamId}" />
+							<a4j:commandLink styleClass="preformattedtext"
+								value="#{transponderVar.streamId}"
+								onclick="this.setAttribute('onclick', 'return false')"
+								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:streamIdInput').focus()"
+								action="#{transpondersBacking.intendUpdateTransponder(transponderVar)}"
+								render="transpondersContent, editPanel" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">DVB-S Generation</f:facet>

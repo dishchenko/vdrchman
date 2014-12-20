@@ -274,7 +274,9 @@ public class ChannelsManager implements Serializable {
 		}
 
 		if (scannedChannelAction.getAction() == ScannedChannelAction.Action.CHANNEL_ADDED) {
-			channelsRefreshNeeded = true;
+			if (comparisonFilter == COMPARISON_NONE) {
+				channelsRefreshNeeded = true;
+			}
 		}
 	}
 

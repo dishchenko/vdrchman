@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import di.vdrchman.event.ScannedChannelAction;
 import di.vdrchman.event.SourceAction;
 import di.vdrchman.model.Source;
 import di.vdrchman.model.Transponder;
@@ -154,6 +155,14 @@ public class TranspondersManager implements Serializable {
 					takenTransponder = null;
 				}
 			}
+		}
+	}
+
+	// Cleanup the TransponderManager's data on ScannedChannelAction if needed
+	public void onScannedChannelAction(
+			@Observes(notifyObserver = Reception.IF_EXISTS) final ScannedChannelAction scannedChannelAction) {
+		if (scannedChannelAction.getAction() == ScannedChannelAction.Action.SCAN_PROCESSED) {
+			transpondersRefreshNeeded = true;
 		}
 	}
 
