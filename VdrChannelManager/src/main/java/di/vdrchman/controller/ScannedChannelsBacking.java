@@ -48,17 +48,25 @@ public class ScannedChannelsBacking {
 	// Process all uploaded scanned channel files (scans) one by one. Store
 	// results of processing in the scanned channels table
 	public void processUploadedScans() {
+		String scanSourceName;
+		Source scanSource;
+
 		scannedChannelsManager.clearScanProcessingReports();
 		for (Scan scan : filesManager.getScans()) {
+			scanSourceName = scan.buildSourceName();
 			scannedChannelsManager.addScanProcessingReport(
 					scan.getFileName(),
-					scannedChannelsManager.processScanData(
-							scan.buildSourceName(), scan.getData()));
+					scannedChannelsManager.processScanData(scanSourceName,
+							scan.getData()));
+			scanSource = sourceRepository.findByName(scanSourceName);
+			if (scanSource != null) {
+				scannedChannelActionEvent.fire(new ScannedChannelAction(
+						ScannedChannelAction.Action.SCAN_PROCESSED, scanSource
+								.getId(), -1));
+			}
 		}
 		scannedChannelsManager.retrieveAllChannels();
 		filesManager.clearScans();
-		scannedChannelActionEvent.fire(new ScannedChannelAction(
-				ScannedChannelAction.Action.SCAN_PROCESSED));
 	}
 
 	// The user is going to add to main channel list the new channel based on
@@ -98,12 +106,14 @@ public class ScannedChannelsBacking {
 	// channel list
 	public void doAddToChannels() {
 		Channel editedChannel;
+		Transponder workingChannelTransponder;
 		ScannedChannel workingChannel;
 		int maxPageNo;
 
 		editedChannel = scannedChannelsManager.getEditedChannel();
-		editedChannel.setTranspId(scannedChannelsManager
-				.getWorkingChannelTransponder().getId());
+		workingChannelTransponder = scannedChannelsManager
+				.getWorkingChannelTransponder();
+		editedChannel.setTranspId(workingChannelTransponder.getId());
 		workingChannel = scannedChannelsManager.getWorkingChannel();
 		editedChannel.setSid(workingChannel.getSid());
 		editedChannel.setPcr(workingChannel.getPcr());
@@ -116,7 +126,9 @@ public class ScannedChannelsBacking {
 		channelRepository.add(editedChannel,
 				channelRepository.findMaxSeqno(-1) + 1);
 		scannedChannelActionEvent.fire(new ScannedChannelAction(
-				ScannedChannelAction.Action.CHANNEL_ADDED));
+				ScannedChannelAction.Action.CHANNEL_ADDED,
+				workingChannelTransponder.getSourceId(),
+				workingChannelTransponder.getId()));
 		scannedChannelsManager.retrieveAllChannels();
 		scannedChannelsManager.clearCheckedChannels();
 		scannedChannelsManager.clearChannelCheckboxes();
@@ -159,12 +171,14 @@ public class ScannedChannelsBacking {
 	// ignored channel list
 	public void doAddToIgnoredChannels() {
 		IgnoredChannel editedIgnoredChannel;
+		Transponder workingChannelTransponder;
 		ScannedChannel workingChannel;
 		int maxPageNo;
 
 		editedIgnoredChannel = scannedChannelsManager.getEditedIgnoredChannel();
-		editedIgnoredChannel.setTranspId(scannedChannelsManager
-				.getWorkingChannelTransponder().getId());
+		workingChannelTransponder = scannedChannelsManager
+				.getWorkingChannelTransponder();
+		editedIgnoredChannel.setTranspId(workingChannelTransponder.getId());
 		workingChannel = scannedChannelsManager.getWorkingChannel();
 		editedIgnoredChannel.setSid(workingChannel.getSid());
 		editedIgnoredChannel.setVpid(workingChannel.getVpid());
@@ -174,7 +188,9 @@ public class ScannedChannelsBacking {
 		editedIgnoredChannel.setProviderName(workingChannel.getProviderName());
 		ignoredChannelRepository.add(editedIgnoredChannel);
 		scannedChannelActionEvent.fire(new ScannedChannelAction(
-				ScannedChannelAction.Action.IGNORED_CHANNEL_ADDED));
+				ScannedChannelAction.Action.IGNORED_CHANNEL_ADDED,
+				workingChannelTransponder.getSourceId(),
+				workingChannelTransponder.getId()));
 		scannedChannelsManager.retrieveAllChannels();
 		scannedChannelsManager.clearCheckedChannels();
 		scannedChannelsManager.clearChannelCheckboxes();
@@ -187,7 +203,7 @@ public class ScannedChannelsBacking {
 
 	// The user is going to update channel in main channel list based on
 	// the scanned channel data
-	public void intendUpdateChannels() {
+	public void intendUpdateInChannels() {
 		ScannedChannel workingChannel;
 		Source workingChannelSource;
 		Transponder workingChannelTransponder;
@@ -211,9 +227,19 @@ public class ScannedChannelsBacking {
 						workingChannel.getSid(), workingChannel.getApid())));
 	}
 
+	// Really updating the channel in main list based on the scanned channel data
+	public void doUpdateInChannels () {
+		
+	}
+
+	// Remove the channel from main list
+	public void doRemoveFromChannels () {
+		
+	}
+
 	// The user is going to update channel in ignored channel list based on
 	// the scanned channel data
-	public void intendUpdateIgnoredChannels() {
+	public void intendUpdateInIgnoredChannels() {
 		ScannedChannel workingChannel;
 		Source workingChannelSource;
 		Transponder workingChannelTransponder;

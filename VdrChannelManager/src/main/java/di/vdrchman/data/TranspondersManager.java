@@ -162,7 +162,10 @@ public class TranspondersManager implements Serializable {
 	public void onScannedChannelAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final ScannedChannelAction scannedChannelAction) {
 		if (scannedChannelAction.getAction() == ScannedChannelAction.Action.SCAN_PROCESSED) {
-			transpondersRefreshNeeded = true;
+			if ((filteredSourceId == scannedChannelAction.getSourceId())
+					|| (filteredSourceId < 0)) {
+				transpondersRefreshNeeded = true;
+			}
 		}
 	}
 

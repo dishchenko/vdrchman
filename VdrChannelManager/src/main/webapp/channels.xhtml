@@ -25,17 +25,17 @@
 						action="#{channelsBacking.intendAddChannelOnTop()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('channelsForm:addOnTopButton').disabled=false"
-						render="channelsContent, editPanel" />
+						render="editPanel" />
 					<a4j:commandButton id="addAfterButton" value="Add after..."
 						action="#{channelsBacking.intendAddChannelAfter()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('channelsForm:addAfterButton').disabled=!isExactlyOneChannelCheckboxChecked()"
-						render="channelsContent, editPanel" />
+						render="editPanel" />
 					<a4j:commandButton id="removeButton" value="Remove..."
 						action="#{channelsBacking.intendRemoveChannels()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('removePanel')}.show();document.getElementById('removePanelForm:okButton').focus();document.getElementById('channelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked()"
-						render="channelsContent, removePanel" />
+						render="removePanel" />
 					<a4j:commandButton id="takeButton" value="Take"
 						action="#{channelsBacking.takeChannel()}"
 						onclick="this.disabled=true"
@@ -46,13 +46,13 @@
 						action="#{channelsBacking.intendCopyChannelOnTop()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('channelsForm:copyOnTopButton').disabled=false"
-						render="channelsContent, editPanel" />
+						render="editPanel" />
 					<a4j:commandButton id="copyAfterButton" value="Copy after..."
 						rendered="#{not empty channelsManager.takenChannel}"
 						action="#{channelsBacking.intendCopyChannelAfter()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('channelsForm:copyAfterButton').disabled=!isExactlyOneChannelCheckboxChecked()"
-						render="channelsContent, editPanel" />
+						render="editPanel" />
 					<a4j:commandButton id="moveOnTopButton" value="Move on top"
 						rendered="#{not empty channelsManager.takenChannel}"
 						action="#{channelsBacking.moveChannelOnTop()}"
@@ -150,7 +150,7 @@
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus()"
 								action="#{channelsBacking.intendUpdateChannel(channelVar)}"
-								render="channelsContent, editPanel" />
+								render="editPanel" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">SID</f:facet>
@@ -159,7 +159,7 @@
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:sidInput').focus()"
 								action="#{channelsBacking.intendUpdateChannel(channelVar)}"
-								render="channelsContent, editPanel" />
+								render="editPanel" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">VPID</f:facet>
@@ -177,7 +177,7 @@
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:apidInput').focus()"
 								action="#{channelsBacking.intendUpdateChannel(channelVar)}"
-								render="channelsContent, editPanel" />
+								render="editPanel" />
 							<ui:fragment rendered="#{not empty channelVar.aenc}">
 								<h:outputText styleClass="preformattedtext"
 									value=" (#{tools.decodeAenc(channelVar.aenc)})" />
@@ -222,7 +222,7 @@
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('updateGroupsPanel')}.show();document.getElementById('updateGroupsPanelForm:okButton').focus()"
 								action="#{channelsBacking.intendUpdateGroups(channelVar)}"
-								render="channelsContent, updateGroupsPanel" />
+								render="updateGroupsPanel" />
 						</h:column>
 					</h:dataTable>
 					<rich:dataScroller for="channelsTable" maxPages="5" fastStep="5"
@@ -345,7 +345,7 @@
 							<ui:param name="sourceParam"
 								value="#{sourceRepository.findById(channelsManager.filteredSourceId)}">
 							</ui:param>
-							<h:outputLabel
+							<h:outputText
 								value="#{sourceParam.name} (#{sourceParam.description})"
 								styleClass="preformattedtext" />
 						</ui:fragment>
@@ -354,7 +354,7 @@
 							<ui:param name="sourceParam"
 								value="#{sourceRepository.findById(transponderRepository.findById(channelsManager.editedChannel.transpId).sourceId)}">
 							</ui:param>
-							<h:outputLabel
+							<h:outputText
 								value="#{sourceParam.name} (#{sourceParam.description})"
 								styleClass="preformattedtext" />
 						</ui:fragment>
@@ -378,7 +378,7 @@
 							<ui:param name="transponderParam"
 								value="#{transponderRepository.findById(channelsManager.filteredTranspId)}">
 							</ui:param>
-							<h:outputLabel
+							<h:outputText
 								value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamId ? ' stream '.concat(transponderParam.streamId) : ''}"
 								styleClass="preformattedtext" />
 						</ui:fragment>
@@ -387,7 +387,7 @@
 							<ui:param name="transponderParam"
 								value="#{transponderRepository.findById(channelsManager.editedChannel.transpId)}">
 							</ui:param>
-							<h:outputLabel
+							<h:outputText
 								value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamId ? ' stream '.concat(transponderParam.streamId) : ''}"
 								styleClass="preformattedtext" />
 						</ui:fragment>

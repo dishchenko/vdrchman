@@ -30,7 +30,7 @@
 						action="#{groupChannelsBacking.intendRemoveChannels()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('removePanel')}.show();document.getElementById('removePanelForm:okButton').focus();document.getElementById('groupChannelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked()"
-						render="groupChannelsContent, removePanel" />
+						render="removePanel" />
 					<a4j:commandButton id="takeButton" value="Take"
 						action="#{groupChannelsBacking.takeChannel()}"
 						onclick="this.disabled=true"

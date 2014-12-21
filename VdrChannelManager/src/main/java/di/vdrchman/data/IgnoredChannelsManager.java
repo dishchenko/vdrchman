@@ -157,14 +157,24 @@ public class IgnoredChannelsManager implements Serializable {
 	public void onScannedChannelAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final ScannedChannelAction scannedChannelAction) {
 		if (scannedChannelAction.getAction() == ScannedChannelAction.Action.SCAN_PROCESSED) {
-			if (comparisonFilter != COMPARISON_NONE) {
+			if ((filteredSourceId == scannedChannelAction.getSourceId())
+					|| (filteredSourceId < 0)) {
 				channelsRefreshNeeded = true;
 			}
 		}
 
 		if (scannedChannelAction.getAction() == ScannedChannelAction.Action.IGNORED_CHANNEL_ADDED) {
 			if (comparisonFilter == COMPARISON_NONE) {
-				channelsRefreshNeeded = true;
+				if (filteredSourceId < 0) {
+					channelsRefreshNeeded = true;
+				} else {
+					if (filteredSourceId == scannedChannelAction.getSourceId()) {
+						if ((filteredTranspId == scannedChannelAction
+								.getTranspId()) || (filteredTranspId < 0)) {
+							channelsRefreshNeeded = true;
+						}
+					}
+				}
 			}
 		}
 	}

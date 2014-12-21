@@ -23,12 +23,12 @@
 						action="#{groupsBacking.intendAddGroup()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('groupsForm:addButton').disabled=false"
-						render="groupsContent, editPanel" />
+						render="editPanel" />
 					<a4j:commandButton id="removeButton" value="Remove..."
 						action="#{groupsBacking.intendRemoveGroups()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('removePanel')}.show();document.getElementById('removePanelForm:okButton').focus();document.getElementById('groupsForm:removeButton').disabled=!isAtLeastOneGroupCheckboxChecked()"
-						render="groupsContent, removePanel" />
+						render="removePanel" />
 					<a4j:commandButton id="takeButton" value="Take"
 						action="#{groupsBacking.takeGroup()}" onclick="this.disabled=true"
 						oncomplete="document.getElementById('groupsForm:takeButton').disabled=!isExactlyOneGroupCheckboxChecked()"
@@ -38,7 +38,7 @@
 						action="#{groupsBacking.intendCopyGroup()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('groupsForm:copyButton').disabled=false"
-						render="groupsContent, editPanel" />
+						render="editPanel" />
 				</h:panelGrid>
 				<h:panelGroup rendered="#{empty groupsManager.groups}">
 					<em>No groups defined.</em>
@@ -64,7 +64,7 @@
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus()"
 								action="#{groupsBacking.intendUpdateGroup(groupVar)}"
-								render="groupsContent, editPanel" />
+								render="editPanel" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">Starting Channel Number</f:facet>

@@ -25,7 +25,7 @@
 						action="#{ignoredChannelsBacking.intendRemoveChannels()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('removePanel')}.show();document.getElementById('removePanelForm:okButton').focus();document.getElementById('ignoredChannelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked()"
-						render="ignoredChannelsContent, removePanel" />
+						render="removePanel" />
 				</h:panelGrid>
 				<!-- Filter(s) panel -->
 				<h:panelGrid columns="7">

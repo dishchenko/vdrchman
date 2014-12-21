@@ -24,17 +24,17 @@
 						action="#{transpondersBacking.intendAddTransponderOnTop()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:frequencyInput').focus();document.getElementById('transpondersForm:addOnTopButton').disabled=false"
-						render="transpondersContent, editPanel" />
+						render="editPanel" />
 					<a4j:commandButton id="addAfterButton" value="Add after..."
 						action="#{transpondersBacking.intendAddTransponderAfter()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:frequencyInput').focus();document.getElementById('transpondersForm:addAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked()"
-						render="transpondersContent, editPanel" />
+						render="editPanel" />
 					<a4j:commandButton id="removeButton" value="Remove..."
 						action="#{transpondersBacking.intendRemoveTransponders()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('removePanel')}.show();document.getElementById('removePanelForm:okButton').focus();document.getElementById('transpondersForm:removeButton').disabled=!isAtLeastOneTransponderCheckboxChecked()"
-						render="transpondersContent, removePanel" />
+						render="removePanel" />
 					<a4j:commandButton id="takeButton" value="Take"
 						action="#{transpondersBacking.takeTransponder()}"
 						onclick="this.disabled=true"
@@ -45,13 +45,13 @@
 						action="#{transpondersBacking.intendCopyTransponderOnTop()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:frequencyInput').focus();document.getElementById('transpondersForm:copyOnTopButton').disabled=false"
-						render="transpondersContent, editPanel" />
+						render="editPanel" />
 					<a4j:commandButton id="copyAfterButton" value="Copy after..."
 						rendered="#{not empty transpondersManager.takenTransponder}"
 						action="#{transpondersBacking.intendCopyTransponderAfter()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:frequencyInput').focus();document.getElementById('transpondersForm:copyAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked()"
-						render="transpondersContent, editPanel" />
+						render="editPanel" />
 					<a4j:commandButton id="moveOnTopButton" value="Move on top"
 						rendered="#{not empty transpondersManager.takenTransponder}"
 						action="#{transpondersBacking.moveTransponderOnTop()}"
@@ -117,7 +117,7 @@
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:frequencyInput').focus()"
 								action="#{transpondersBacking.intendUpdateTransponder(transponderVar)}"
-								render="transpondersContent, editPanel" />
+								render="editPanel" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">Polarization</f:facet>
@@ -126,7 +126,7 @@
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:polarizationMenu').focus()"
 								action="#{transpondersBacking.intendUpdateTransponder(transponderVar)}"
-								render="transpondersContent, editPanel" />
+								render="editPanel" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">Stream ID</f:facet>
@@ -135,7 +135,7 @@
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:streamIdInput').focus()"
 								action="#{transpondersBacking.intendUpdateTransponder(transponderVar)}"
-								render="transpondersContent, editPanel" />
+								render="editPanel" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">DVB-S Generation</f:facet>
@@ -232,7 +232,7 @@
 							<ui:param name="sourceParam"
 								value="#{sourceRepository.findById(transpondersManager.filteredSourceId)}">
 							</ui:param>
-							<h:outputLabel
+							<h:outputText
 								value="#{sourceParam.name} (#{sourceParam.description})"
 								styleClass="preformattedtext" />
 						</ui:fragment>
@@ -241,7 +241,7 @@
 							<ui:param name="sourceParam"
 								value="#{sourceRepository.findById(transpondersManager.editedTransponder.sourceId)}">
 							</ui:param>
-							<h:outputLabel
+							<h:outputText
 								value="#{sourceParam.name} (#{sourceParam.description})"
 								styleClass="preformattedtext" />
 						</ui:fragment>
