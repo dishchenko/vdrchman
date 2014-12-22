@@ -59,6 +59,7 @@ public class Group implements Serializable {
 		this.name = group.name;
 		this.startChannelNo = group.startChannelNo;
 		this.description = group.description;
+		this.ignored = group.ignored;
 	}
 
 	public Long getId() {

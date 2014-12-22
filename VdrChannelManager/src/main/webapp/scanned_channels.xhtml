@@ -26,35 +26,35 @@
 						action="#{scannedChannelsBacking.processUploadedScans()}"
 						onclick="this.disabled=true;#{rich:component('uploadedScansProcessingPanel')}.show()"
 						oncomplete="#{rich:component('uploadedScansProcessingPanel')}.hide();document.getElementById('scannedChannelsForm:processUploadedScansButton').disabled=(#{filesManager.scans.size() le 0});#{rich:component('uploadedScansProcessedPanel')}.show()"
-						render="uploadedScansProcessedPanel" />
+						render="uploadedScansProcessedPanel, scannedChannelsContent" />
 					<a4j:commandButton id="addToChannelsButton"
 						value="Add to Main list..."
 						rendered="#{scannedChannelsManager.comparisonFilter == tools.comparisonConst['NEW']}"
 						action="#{scannedChannelsBacking.intendAddToChannels()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('addToChannelsPanel')}.show();element=document.getElementById('addToChannelsPanelForm:nameInput');if (element != null) element.focus();document.getElementById('scannedChannelsForm:addToChannelsButton').disabled=!isExactlyOneChannelCheckboxChecked()"
-						render="addToChannelsPanel" />
+						render="addToChannelsPanel, scannedChannelsContent" />
 					<a4j:commandButton id="addToIgnoredChannelsButton"
 						value="Add to Ignored..."
 						rendered="#{scannedChannelsManager.comparisonFilter == tools.comparisonConst['NEW']}"
 						action="#{scannedChannelsBacking.intendAddToIgnoredChannels()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('addToIgnoredChannelsPanel')}.show();element=document.getElementById('addToIgnoredChannelsPanelForm:okAddButton');if (element != null) element.focus();document.getElementById('scannedChannelsForm:addToIgnoredChannelsButton').disabled=!isExactlyOneChannelCheckboxChecked()"
-						render="addToIgnoredChannelsPanel" />
+						render="addToIgnoredChannelsPanel, scannedChannelsContent" />
 					<a4j:commandButton id="updateInChannelsButton"
 						value="Update in Main list..."
 						rendered="#{scannedChannelsManager.comparisonFilter == tools.comparisonConst['CHANGED_MAIN']}"
 						action="#{scannedChannelsBacking.intendUpdateInChannels()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('updateInChannelsPanel')}.show();document.getElementById('updateInChannelsPanelForm:nameInput').focus();document.getElementById('scannedChannelsForm:updateInChannelsButton').disabled=!isExactlyOneChannelCheckboxChecked()"
-						render="updateInChannelsPanel" />
+						render="updateInChannelsPanel, scannedChannelsContent" />
 					<a4j:commandButton id="updateInIgnoredChannelsButton"
 						value="Update in Ignored..."
 						rendered="#{scannedChannelsManager.comparisonFilter == tools.comparisonConst['CHANGED_IGNORED']}"
 						action="#{scannedChannelsBacking.intendUpdateInIgnoredChannels()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('updateInIgnoredChannelsPanel')}.show();document.getElementById('updateInIgnoredChannelsPanelForm:okUpdateButton').focus();document.getElementById('scannedChannelsForm:updateInIgnoredChannelsButton').disabled=!isExactlyOneChannelCheckboxChecked()"
-						render="updateInIgnoredChannelsPanel" />
+						render="updateInIgnoredChannelsPanel, scannedChannelsContent" />
 				</h:panelGrid>
 				<!-- Filter(s) panel -->
 				<h:panelGrid columns="7">

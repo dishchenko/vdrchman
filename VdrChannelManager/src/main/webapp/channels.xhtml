@@ -25,17 +25,17 @@
 						action="#{channelsBacking.intendAddChannelOnTop()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('channelsForm:addOnTopButton').disabled=false"
-						render="editPanel" />
+						render="editPanel, channelsContent" />
 					<a4j:commandButton id="addAfterButton" value="Add after..."
 						action="#{channelsBacking.intendAddChannelAfter()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('channelsForm:addAfterButton').disabled=!isExactlyOneChannelCheckboxChecked()"
-						render="editPanel" />
+						render="editPanel, channelsContent" />
 					<a4j:commandButton id="removeButton" value="Remove..."
 						action="#{channelsBacking.intendRemoveChannels()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('removePanel')}.show();document.getElementById('removePanelForm:okButton').focus();document.getElementById('channelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked()"
-						render="removePanel" />
+						render="removePanel, channelsContent" />
 					<a4j:commandButton id="takeButton" value="Take"
 						action="#{channelsBacking.takeChannel()}"
 						onclick="this.disabled=true"
@@ -46,13 +46,13 @@
 						action="#{channelsBacking.intendCopyChannelOnTop()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('channelsForm:copyOnTopButton').disabled=false"
-						render="editPanel" />
+						render="editPanel, channelsContent" />
 					<a4j:commandButton id="copyAfterButton" value="Copy after..."
 						rendered="#{not empty channelsManager.takenChannel}"
 						action="#{channelsBacking.intendCopyChannelAfter()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('channelsForm:copyAfterButton').disabled=!isExactlyOneChannelCheckboxChecked()"
-						render="editPanel" />
+						render="editPanel, channelsContent" />
 					<a4j:commandButton id="moveOnTopButton" value="Move on top"
 						rendered="#{not empty channelsManager.takenChannel}"
 						action="#{channelsBacking.moveChannelOnTop()}"
@@ -150,7 +150,7 @@
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus()"
 								action="#{channelsBacking.intendUpdateChannel(channelVar)}"
-								render="editPanel" />
+								render="editPanel, channelsContent" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">SID</f:facet>
@@ -159,7 +159,7 @@
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:sidInput').focus()"
 								action="#{channelsBacking.intendUpdateChannel(channelVar)}"
-								render="editPanel" />
+								render="editPanel, channelsContent" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">VPID</f:facet>
@@ -177,7 +177,7 @@
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:apidInput').focus()"
 								action="#{channelsBacking.intendUpdateChannel(channelVar)}"
-								render="editPanel" />
+								render="editPanel, channelsContent" />
 							<ui:fragment rendered="#{not empty channelVar.aenc}">
 								<h:outputText styleClass="preformattedtext"
 									value=" (#{tools.decodeAenc(channelVar.aenc)})" />
@@ -222,7 +222,7 @@
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('updateGroupsPanel')}.show();document.getElementById('updateGroupsPanelForm:okButton').focus()"
 								action="#{channelsBacking.intendUpdateGroups(channelVar)}"
-								render="updateGroupsPanel" />
+								render="updateGroupsPanel, channelsContent" />
 						</h:column>
 					</h:dataTable>
 					<rich:dataScroller for="channelsTable" maxPages="5" fastStep="5"
@@ -326,7 +326,7 @@
 						<f:attribute name="apid" value="editPanelForm:apidInput" />
 					</h:inputHidden>
 					<!-- Channel data inputs -->
-					<h:panelGrid columns="2">
+					<h:panelGrid columns="3">
 						<h:outputLabel value="Source:" styleClass="preformattedtext" />
 						<ui:fragment
 							rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredSourceId lt 0}">
@@ -358,6 +358,7 @@
 								value="#{sourceParam.name} (#{sourceParam.description})"
 								styleClass="preformattedtext" />
 						</ui:fragment>
+						<h:outputText value="" />
 						<h:outputLabel value="Transponder:" styleClass="preformattedtext" />
 						<ui:fragment
 							rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredTranspId lt 0}">
@@ -391,6 +392,7 @@
 								value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamId ? ' stream '.concat(transponderParam.streamId) : ''}"
 								styleClass="preformattedtext" />
 						</ui:fragment>
+						<h:outputText value="" />
 						<h:outputLabel value="Name:" styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
 							<h:inputText id="nameInput"
@@ -400,11 +402,13 @@
 							</h:inputText>
 							<rich:message for="nameInput" />
 						</h:panelGrid>
+						<h:outputText value="" />
 						<h:outputLabel value="Language:" styleClass="preformattedtext" />
 						<h:inputText id="langInput"
 							value="#{channelsManager.editedChannel.lang}" maxlength="5"
 							size="5">
 						</h:inputText>
+						<h:outputText value="" />
 						<h:outputLabel value="Service ID:" styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
 							<h:inputText id="sidInput"
@@ -414,6 +418,7 @@
 							</h:inputText>
 							<rich:message for="sidInput" />
 						</h:panelGrid>
+						<h:outputText value="" />
 						<h:outputLabel value="Video PID:" styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
 							<h:inputText id="vpidInput"
@@ -423,6 +428,9 @@
 							</h:inputText>
 							<rich:message for="vpidInput" />
 						</h:panelGrid>
+						<h:outputText
+							value="#{not empty channelsManager.comparedScannedChannel and not empty channelsManager.editedChannel.vpid and channelsManager.editedChannel.vpid ne channelsManager.comparedScannedChannel.vpid ? '--&gt; '.concat(channelsManager.comparedScannedChannel.vpid) : ''}"
+							styleClass="preformattedtext" />
 						<h:outputLabel value="Video Encoding:"
 							styleClass="preformattedtext" />
 						<h:selectOneMenu value="#{channelsManager.editedChannel.venc}">
@@ -431,6 +439,9 @@
 							<f:selectItem itemValue="2" itemLabel="2 - MPEG-2" />
 							<f:selectItem itemValue="27" itemLabel="27 - MPEG-4" />
 						</h:selectOneMenu>
+						<h:outputText
+							value="#{not empty channelsManager.comparedScannedChannel and not empty channelsManager.comparedScannedChannel.venc and channelsManager.comparedScannedChannel.venc ne channelsManager.editedChannel.venc ? '--&gt; '.concat(channelsManager.comparedScannedChannel.venc) : ''}"
+							styleClass="preformattedtext" />
 						<h:outputLabel value="Audio PID:" styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
 							<h:inputText id="apidInput"
@@ -440,6 +451,7 @@
 							</h:inputText>
 							<rich:message for="apidInput" />
 						</h:panelGrid>
+						<h:outputText value="" />
 						<h:outputLabel value="Audio Encoding:"
 							styleClass="preformattedtext" />
 						<h:selectOneMenu value="#{channelsManager.editedChannel.aenc}">
@@ -451,6 +463,9 @@
 							<f:selectItem itemValue="17" itemLabel="17 - LATM" />
 							<f:selectItem itemValue="129" itemLabel="129 - AC3" />
 						</h:selectOneMenu>
+						<h:outputText
+							value="#{not empty channelsManager.comparedScannedChannel and not empty channelsManager.comparedScannedChannel.aenc and channelsManager.comparedScannedChannel.aenc ne channelsManager.editedChannel.aenc ? '--&gt; '.concat(channelsManager.comparedScannedChannel.aenc) : ''}"
+							styleClass="preformattedtext" />
 						<h:outputLabel value="Text PID:" styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
 							<h:inputText id="tpidInput"
@@ -460,6 +475,7 @@
 							</h:inputText>
 							<rich:message for="tpidInput" />
 						</h:panelGrid>
+						<h:outputText value="" />
 						<h:outputLabel value="Conditional Access ID:"
 							styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
@@ -471,10 +487,21 @@
 								<h:outputText value="&lt;-- BISS" styleClass="preformattedtext" />
 							</h:outputLink>
 						</h:panelGrid>
+						<h:outputText
+							value="#{not empty channelsManager.comparedScannedChannel and channelsManager.comparedScannedChannel.caid ne channelsManager.editedChannel.caid ? '--&gt; '.concat(channelsManager.comparedScannedChannel.caid) : ''}"
+							styleClass="preformattedtext" />
+						<h:outputLabel value="Scanned as:" styleClass="preformattedtext" />
+						<h:outputText
+							value="#{channelsManager.editedChannel.scannedName}"
+							styleClass="preformattedtext" />
+						<h:outputText
+							value="#{not empty channelsManager.comparedScannedChannel and channelsManager.comparedScannedChannel.scannedName ne channelsManager.editedChannel.scannedName ? '--&gt; '.concat(channelsManager.comparedScannedChannel.scannedName) : ''}"
+							styleClass="preformattedtext" />
 						<h:outputLabel value="Locked:" styleClass="preformattedtext" />
 						<h:selectBooleanCheckbox id="lockedCheckbox"
 							value="#{channelsManager.editedChannel.locked}"
 							styleClass="preformattedtext" />
+						<h:outputText value="" />
 					</h:panelGrid>
 					<!-- Action buttons -->
 					<h:panelGrid columns="2">

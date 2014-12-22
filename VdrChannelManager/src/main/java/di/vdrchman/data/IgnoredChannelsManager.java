@@ -19,6 +19,7 @@ import di.vdrchman.event.ScannedChannelAction;
 import di.vdrchman.event.SourceAction;
 import di.vdrchman.event.TransponderAction;
 import di.vdrchman.model.IgnoredChannel;
+import di.vdrchman.model.ScannedChannel;
 import di.vdrchman.model.Transponder;
 
 @SessionScoped
@@ -64,6 +65,12 @@ public class IgnoredChannelsManager implements Serializable {
 
 	// Comparison result filter value. See Tools.COMPARISON_*
 	private int comparisonFilter = 0;
+
+	// The channel which the user is going to add/update
+	private IgnoredChannel editedChannel = new IgnoredChannel();
+
+	// The scanned channel corresponding to the edited channel
+	private ScannedChannel comparedScannedChannel;
 
 	// Fill in checkedChannels list with channels corresponding
 	// to checkboxes checked in the data table on the page
@@ -113,7 +120,7 @@ public class IgnoredChannelsManager implements Serializable {
 		return result;
 	}
 
-	// Cleanup the IgnoredChannelManager's data on SourceAction if needed
+	// Cleanup the IgnoredChannelsManager's data on SourceAction if needed
 	public void onSourceAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final SourceAction sourceAction) {
 		long sourceId;
@@ -131,7 +138,7 @@ public class IgnoredChannelsManager implements Serializable {
 		}
 	}
 
-	// Cleanup the IgnoredChannelManager's data on TransponderAction if needed
+	// Cleanup the IgnoredChannelsManager's data on TransponderAction if needed
 	public void onTransponderAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final TransponderAction transponderAction) {
 		long transpId;
@@ -152,7 +159,7 @@ public class IgnoredChannelsManager implements Serializable {
 		}
 	}
 
-	// Cleanup the IgnoredChannelManager's data on ScannedChannelAction if
+	// Cleanup the IgnoredChannelsManager's data on ScannedChannelAction if
 	// needed
 	public void onScannedChannelAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final ScannedChannelAction scannedChannelAction) {
@@ -313,6 +320,24 @@ public class IgnoredChannelsManager implements Serializable {
 
 	public void setComparisonFilter(int comparisonFilter) {
 		this.comparisonFilter = comparisonFilter;
+	}
+
+	public IgnoredChannel getEditedChannel() {
+
+		return editedChannel;
+	}
+
+	public void setEditedChannel(IgnoredChannel editedChannel) {
+		this.editedChannel = editedChannel;
+	}
+
+	public ScannedChannel getComparedScannedChannel() {
+
+		return comparedScannedChannel;
+	}
+
+	public void setComparedScannedChannel(ScannedChannel comparedScannedChannel) {
+		this.comparedScannedChannel = comparedScannedChannel;
 	}
 
 }

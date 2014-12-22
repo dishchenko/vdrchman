@@ -12,11 +12,14 @@ import org.richfaces.event.DataScrollEvent;
 
 import di.vdrchman.data.ChannelRepository;
 import di.vdrchman.data.ChannelsManager;
+import di.vdrchman.data.ScannedChannelRepository;
 import di.vdrchman.data.SourceRepository;
 import di.vdrchman.data.TransponderRepository;
 import di.vdrchman.event.ChannelAction;
 import di.vdrchman.model.Channel;
 import di.vdrchman.model.Source;
+import di.vdrchman.model.Transponder;
+import di.vdrchman.util.Tools;
 
 @Model
 public class ChannelsBacking {
@@ -32,6 +35,9 @@ public class ChannelsBacking {
 
 	@Inject
 	private ChannelRepository channelRepository;
+
+	@Inject
+	private ScannedChannelRepository scannedChannelRepository;
 
 	@Inject
 	private Event<ChannelAction> channelActionEvent;
@@ -96,7 +102,22 @@ public class ChannelsBacking {
 
 	// The user is going to update a channel
 	public void intendUpdateChannel(Channel channel) {
+		Transponder transponder;
+
 		channelsManager.setEditedChannel(new Channel(channel));
+		if (channelsManager.getComparisonFilter() == Tools.COMPARISON_CHANGED_MAIN) {
+			transponder = transponderRepository.findById(channel.getTranspId());
+			channelsManager.setComparedScannedChannel(scannedChannelRepository
+					.findBySourceFrequencyPolarizationStreamSidApid(
+							sourceRepository
+									.findById(transponder.getSourceId())
+									.getName(), transponder.getFrequency(),
+							transponder.getPolarization(), transponder
+									.getStreamId(), channel.getSid(), channel
+									.getApid()));
+		} else {
+			channelsManager.setComparedScannedChannel(null);
+		}
 	}
 
 	// Really updating the channel

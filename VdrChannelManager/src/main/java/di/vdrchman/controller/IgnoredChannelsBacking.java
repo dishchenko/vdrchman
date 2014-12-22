@@ -9,9 +9,13 @@ import org.richfaces.event.DataScrollEvent;
 
 import di.vdrchman.data.IgnoredChannelRepository;
 import di.vdrchman.data.IgnoredChannelsManager;
+import di.vdrchman.data.ScannedChannelRepository;
+import di.vdrchman.data.SourceRepository;
 import di.vdrchman.data.TransponderRepository;
 import di.vdrchman.event.IgnoredChannelAction;
 import di.vdrchman.model.IgnoredChannel;
+import di.vdrchman.model.ScannedChannel;
+import di.vdrchman.model.Transponder;
 
 @Model
 public class IgnoredChannelsBacking {
@@ -20,10 +24,16 @@ public class IgnoredChannelsBacking {
 	private IgnoredChannelsManager ignoredChannelsManager;
 
 	@Inject
+	private SourceRepository sourceRepository;
+
+	@Inject
 	private TransponderRepository transponderRepository;
 
 	@Inject
 	private IgnoredChannelRepository ignoredChannelRepository;
+
+	@Inject
+	private ScannedChannelRepository scannedChannelRepository;
 
 	@Inject
 	private Event<IgnoredChannelAction> ignoredChannelActionEvent;
@@ -41,6 +51,45 @@ public class IgnoredChannelsBacking {
 			ignoredChannelActionEvent.fire(new IgnoredChannelAction(channel,
 					IgnoredChannelAction.Action.DELETE));
 		}
+		ignoredChannelsManager.retrieveAllChannels();
+		ignoredChannelsManager.clearCheckedChannels();
+		ignoredChannelsManager.clearChannelCheckboxes();
+	}
+
+	// The user is going to update a channel
+	public void intendUpdateChannel() {
+		IgnoredChannel channel;
+		Transponder transponder;
+
+		ignoredChannelsManager.collectCheckedChannels();
+		channel = ignoredChannelsManager.getCheckedChannels().get(0);
+		ignoredChannelsManager.setEditedChannel(new IgnoredChannel(channel));
+		transponder = transponderRepository.findById(channel.getTranspId());
+		ignoredChannelsManager
+				.setComparedScannedChannel(scannedChannelRepository
+						.findBySourceFrequencyPolarizationStreamSidApid(
+								sourceRepository.findById(
+										transponder.getSourceId()).getName(),
+								transponder.getFrequency(),
+								transponder.getPolarization(),
+								transponder.getStreamId(), channel.getSid(),
+								channel.getApid()));
+	}
+
+	// Really updating the channel
+	public void doUpdateChannel() {
+		IgnoredChannel channel;
+		ScannedChannel scannedChannel;
+
+		channel = ignoredChannelsManager.getEditedChannel();
+		scannedChannel = ignoredChannelsManager.getComparedScannedChannel();
+		channel.setVpid(scannedChannel.getVpid());
+		channel.setCaid(scannedChannel.getCaid());
+		channel.setScannedName(scannedChannel.getScannedName());
+		ignoredChannelRepository.update(channel);
+		ignoredChannelActionEvent.fire(new IgnoredChannelAction(
+				ignoredChannelsManager.getEditedChannel(),
+				IgnoredChannelAction.Action.UPDATE));
 		ignoredChannelsManager.retrieveAllChannels();
 		ignoredChannelsManager.clearCheckedChannels();
 		ignoredChannelsManager.clearChannelCheckboxes();

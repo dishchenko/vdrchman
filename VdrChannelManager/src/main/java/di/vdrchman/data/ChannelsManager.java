@@ -20,6 +20,7 @@ import di.vdrchman.event.SourceAction;
 import di.vdrchman.event.TransponderAction;
 import di.vdrchman.model.Channel;
 import di.vdrchman.model.Group;
+import di.vdrchman.model.ScannedChannel;
 import di.vdrchman.model.Source;
 import di.vdrchman.model.Transponder;
 
@@ -95,6 +96,9 @@ public class ChannelsManager implements Serializable {
 
 	// Comparison result filter value. See Tools.COMPARISON_*
 	private int comparisonFilter = 0;
+
+	// The scanned channel corresponding to the edited channel
+	private ScannedChannel comparedScannedChannel;
 
 	// Fill in checkedChannels list with channels corresponding
 	// to checkboxes checked in the data table on the page
@@ -206,7 +210,7 @@ public class ChannelsManager implements Serializable {
 		return result;
 	}
 
-	// Cleanup the ChannelManager's data on SourceAction if needed
+	// Cleanup the ChannelsManager's data on SourceAction if needed
 	public void onSourceAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final SourceAction sourceAction) {
 		long sourceId;
@@ -237,7 +241,7 @@ public class ChannelsManager implements Serializable {
 		}
 	}
 
-	// Cleanup the ChannelManager's data on TransponderAction if needed
+	// Cleanup the ChannelsManager's data on TransponderAction if needed
 	public void onTransponderAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final TransponderAction transponderAction) {
 		long transpId;
@@ -264,7 +268,7 @@ public class ChannelsManager implements Serializable {
 		}
 	}
 
-	// Cleanup the ChannelManager's data on ScannedChannelAction if needed
+	// Cleanup the ChannelsManager's data on ScannedChannelAction if needed
 	public void onScannedChannelAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final ScannedChannelAction scannedChannelAction) {
 		if (scannedChannelAction.getAction() == ScannedChannelAction.Action.SCAN_PROCESSED) {
@@ -304,6 +308,10 @@ public class ChannelsManager implements Serializable {
 					}
 				}
 			}
+		}
+
+		if (channelsRefreshNeeded) {
+			takenChannel = null;
 		}
 	}
 
@@ -544,6 +552,15 @@ public class ChannelsManager implements Serializable {
 
 	public void setComparisonFilter(int comparisonFilter) {
 		this.comparisonFilter = comparisonFilter;
+	}
+
+	public ScannedChannel getComparedScannedChannel() {
+
+		return comparedScannedChannel;
+	}
+
+	public void setComparedScannedChannel(ScannedChannel comparedScannedChannel) {
+		this.comparedScannedChannel = comparedScannedChannel;
 	}
 
 }

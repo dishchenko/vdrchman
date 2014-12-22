@@ -165,6 +165,7 @@ public class TranspondersManager implements Serializable {
 			if ((filteredSourceId == scannedChannelAction.getSourceId())
 					|| (filteredSourceId < 0)) {
 				transpondersRefreshNeeded = true;
+				takenTransponder = null;
 			}
 		}
 	}

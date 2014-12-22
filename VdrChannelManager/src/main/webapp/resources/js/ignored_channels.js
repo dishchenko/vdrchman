@@ -79,3 +79,38 @@ function removePanelFormKeyPressHandler(event) {
 
 	return result;
 }
+
+//The Update panel form key press listener
+//Emulates 'Cancel' button click on hitting the 'Esc' key
+//Loops input focus through 'OK' and 'Cancel' buttons on pressing 'Tab' /
+//'Shift+Tab'
+function updatePanelFormKeyPressHandler(event) {
+	var result;
+
+	result = true;
+
+	event = event || window.event;
+
+	if (event.keyCode == 27) {
+		document.getElementById('updatePanelForm:cancelButton').click();
+		result = false;
+	}
+
+	if (event.keyCode == 9) {
+		if (event.shiftKey) {
+			if (document.activeElement == document
+					.getElementById('updatePanelForm:okButton')) {
+				document.getElementById('updatePanelForm:cancelButton').focus();
+				result = false;
+			}
+		} else {
+			if (document.activeElement == document
+					.getElementById('updatePanelForm:cancelButton')) {
+				document.getElementById('updatePanelForm:okButton').focus();
+				result = false;
+			}
+		}
+	}
+
+	return result;
+}

@@ -61,7 +61,9 @@ public class IgnoredChannel implements Serializable {
 		this.id = ignoredChannel.id;
 		this.transpId = ignoredChannel.transpId;
 		this.sid = ignoredChannel.sid;
+		this.vpid = ignoredChannel.vpid;
 		this.apid = ignoredChannel.apid;
+		this.caid = ignoredChannel.caid;
 		this.scannedName = ignoredChannel.scannedName;
 		this.providerName = ignoredChannel.providerName;
 	}

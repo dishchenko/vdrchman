@@ -155,7 +155,7 @@ public class ScannedChannelsManager implements Serializable {
 		return result;
 	}
 
-	// Cleanup the ScannedChannelManager's data on SourceAction if needed
+	// Cleanup the ScannedChannelsManager's data on SourceAction if needed
 	public void onSourceAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final SourceAction sourceAction) {
 		long sourceId;
@@ -173,7 +173,7 @@ public class ScannedChannelsManager implements Serializable {
 		}
 	}
 
-	// Cleanup the ScannedChannelManager's data on TransponderAction if needed
+	// Cleanup the ScannedChannelsManager's data on TransponderAction if needed
 	public void onTransponderAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final TransponderAction transponderAction) {
 		long transpId;
@@ -194,7 +194,7 @@ public class ScannedChannelsManager implements Serializable {
 		}
 	}
 
-	// Cleanup the ScannedChannelManager's data on ChannelAction if needed
+	// Cleanup the ScannedChannelsManager's data on ChannelAction if needed
 	public void onChannelAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final ChannelAction channelAction) {
 		long transpId;
@@ -242,7 +242,7 @@ public class ScannedChannelsManager implements Serializable {
 		}
 	}
 
-	// Cleanup the ScannedChannelManager's data on IgnoredChannelAction if
+	// Cleanup the ScannedChannelsManager's data on IgnoredChannelAction if
 	// needed
 	public void onIgnoredChannelAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final IgnoredChannelAction ignoredChannelAction) {

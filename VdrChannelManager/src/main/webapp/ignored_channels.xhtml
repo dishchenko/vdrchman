@@ -20,12 +20,18 @@
 			<!-- Ignored channels form -->
 			<h:form id="ignoredChannelsForm">
 				<!-- 'Remove' button panel -->
-				<h:panelGrid columns="1">
+				<h:panelGrid columns="2">
 					<a4j:commandButton id="removeButton" value="Remove..."
 						action="#{ignoredChannelsBacking.intendRemoveChannels()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('removePanel')}.show();document.getElementById('removePanelForm:okButton').focus();document.getElementById('ignoredChannelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked()"
-						render="removePanel" />
+						render="removePanel, ignoredChannelsContent" />
+					<a4j:commandButton id="updateButton" value="Update..."
+						rendered="#{ignoredChannelsManager.comparisonFilter == tools.comparisonConst['CHANGED_IGNORED']}"
+						action="#{ignoredChannelsBacking.intendUpdateChannel()}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('updatePanel')}.show();document.getElementById('updatePanelForm:okButton').focus();document.getElementById('ignoredChannelsForm:updateButton').disabled=!isExactlyOneChannelCheckboxChecked()"
+						render="updatePanel, ignoredChannelsContent" />
 				</h:panelGrid>
 				<!-- Filter(s) panel -->
 				<h:panelGrid columns="7">
@@ -58,7 +64,8 @@
 						onchange="document.getElementById('ignoredChannelsForm').submit()">
 						<f:selectItem itemValue="#{tools.comparisonConst['NONE']}"
 							itemLabel="--" />
-						<f:selectItem itemValue="#{tools.comparisonConst['CHANGED_IGNORED']}"
+						<f:selectItem
+							itemValue="#{tools.comparisonConst['CHANGED_IGNORED']}"
 							itemLabel="Changed" />
 						<f:selectItem itemValue="#{tools.comparisonConst['NOT_SCANNED']}"
 							itemLabel="Not scanned" />
@@ -78,7 +85,7 @@
 							<h:selectBooleanCheckbox id="channelCheckbox"
 								value="#{ignoredChannelsManager.channelCheckboxes[channelVar.id]}"
 								styleClass="preformattedtext"
-								onclick="document.getElementById('ignoredChannelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked()" />
+								onclick="document.getElementById('ignoredChannelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();element=document.getElementById('ignoredChannelsForm:updateButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked()" />
 						</h:column>
 						<h:column
 							rendered="#{ignoredChannelsManager.filteredSourceId lt 0}">
@@ -137,11 +144,12 @@
 			</h:form>
 			<!-- Set buttons enable/disable state on panel rendering -->
 			<h:outputScript library="js">
-					document.getElementById('ignoredChannelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();
+			document.getElementById('ignoredChannelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();
+			element = document.getElementById('ignoredChannelsForm:updateButton'); if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();
 			</h:outputScript>
 		</h:panelGroup>
 		<!-- Pop-up forms panel -->
-		<h:panelGrid columns="1">
+		<h:panelGrid columns="2">
 			<!-- Outer form for the Remove panel -->
 			<h:form id="removePanelForm" styleClass="zerosize"
 				onkeypress="return removePanelFormKeyPressHandler(event)">
@@ -198,6 +206,89 @@
 							immediate="true"
 							action="#{formResetter.resetForm(rich:findComponent('removePanelForm'))}"
 							onclick="#{rich:component('removePanel')}.hide()" />
+					</h:panelGrid>
+				</rich:popupPanel>
+			</h:form>
+			<!-- Outer form for the Update panel -->
+			<h:form id="updatePanelForm" styleClass="zerosize"
+				onkeypress="return updatePanelFormKeyPressHandler(event)">
+				<!-- The Update panel -->
+				<rich:popupPanel id="updatePanel" modal="true" autosized="true"
+					domElementAttachment="form">
+					<!-- Header -->
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Update channel" />
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<h:commandLink value="Close" immediate="true"
+								onclick="#{rich:component('updatePanel')}.hide()"
+								action="#{formResetter.resetForm(rich:findComponent('updatePanelForm'))}" />
+						</h:panelGroup>
+					</f:facet>
+					<!-- Content -->
+					<h:panelGrid columns="3">
+						<h:outputLabel value="Source:" styleClass="preformattedtext" />
+						<ui:param name="sourceParam"
+							value="#{sourceRepository.findById(transponderRepository.findById(ignoredChannelsManager.editedChannel.transpId).sourceId)}">
+						</ui:param>
+						<h:outputText
+							value="#{sourceParam.name} (#{sourceParam.description})"
+							styleClass="preformattedtext" />
+						<h:outputText value="" />
+						<h:outputLabel value="Transponder:" styleClass="preformattedtext" />
+						<ui:param name="transponderParam"
+							value="#{transponderRepository.findById(ignoredChannelsManager.editedChannel.transpId)}">
+						</ui:param>
+						<h:outputText
+							value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamId ? ' stream '.concat(transponderParam.streamId) : ''}"
+							styleClass="preformattedtext" />
+						<h:outputText value="" />
+						<h:outputLabel value="Service ID:" styleClass="preformattedtext" />
+						<h:outputText value="#{ignoredChannelsManager.editedChannel.sid}"
+							styleClass="preformattedtext" />
+						<h:outputText value="" />
+						<h:outputLabel value="Video PID:" styleClass="preformattedtext" />
+						<h:outputText
+							value="#{ignoredChannelsManager.editedChannel.vpid}"
+							styleClass="preformattedtext" />
+						<h:outputText
+							value="#{not empty ignoredChannelsManager.editedChannel.vpid and ignoredChannelsManager.editedChannel.vpid ne ignoredChannelsManager.comparedScannedChannel.vpid ? '--&gt; '.concat(ignoredChannelsManager.comparedScannedChannel.vpid) : ''}"
+							styleClass="preformattedtext" />
+						<h:outputLabel value="Audio PID:" styleClass="preformattedtext" />
+						<h:outputText
+							value="#{ignoredChannelsManager.editedChannel.apid}"
+							styleClass="preformattedtext" />
+						<h:outputText value="" />
+						<h:outputLabel value="Conditional Access ID:"
+							styleClass="preformattedtext" />
+						<h:outputText
+							value="#{ignoredChannelsManager.editedChannel.caid}"
+							styleClass="preformattedtext" />
+						<h:outputText
+							value="#{ignoredChannelsManager.comparedScannedChannel.caid ne ignoredChannelsManager.editedChannel.caid ? '--&gt; '.concat(ignoredChannelsManager.comparedScannedChannel.caid) : ''}"
+							styleClass="preformattedtext" />
+						<h:outputLabel value="Scanned as:" styleClass="preformattedtext" />
+						<h:outputText
+							value="#{ignoredChannelsManager.editedChannel.scannedName}"
+							styleClass="preformattedtext" />
+						<h:outputText
+							value="#{ignoredChannelsManager.comparedScannedChannel.scannedName ne ignoredChannelsManager.editedChannel.scannedName ? '--&gt; '.concat(ignoredChannelsManager.comparedScannedChannel.scannedName) : ''}"
+							styleClass="preformattedtext" />
+					</h:panelGrid>
+					<!-- Action buttons -->
+					<h:panelGrid columns="2">
+						<a4j:commandButton id="okButton" value="OK"
+							onclick="this.disabled=true"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('updatePanel')}.hide();document.getElementById('updatePanelForm:okButton').disabled=false"
+							action="#{ignoredChannelsBacking.doUpdateChannel()}"
+							render="ignoredChannelsContent" />
+						<a4j:commandButton id="cancelButton" value="Cancel"
+							immediate="true"
+							action="#{formResetter.resetForm(rich:findComponent('updatePanelForm'))}"
+							onclick="#{rich:component('updatePanel')}.hide()" />
 					</h:panelGrid>
 				</rich:popupPanel>
 			</h:form>

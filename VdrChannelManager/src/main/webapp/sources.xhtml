@@ -23,12 +23,12 @@
 						action="#{sourcesBacking.intendAddSource()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('sourcesForm:addButton').disabled=false"
-						render="editPanel" />
+						render="editPanel, sourcesContent" />
 					<a4j:commandButton id="removeButton" value="Remove..."
 						action="#{sourcesBacking.intendRemoveSources()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('removePanel')}.show();document.getElementById('removePanelForm:okButton').focus();document.getElementById('sourcesForm:removeButton').disabled=!isAtLeastOneSourceCheckboxChecked()"
-						render="removePanel" />
+						render="removePanel, sourcesContent" />
 					<a4j:commandButton id="takeButton" value="Take"
 						action="#{sourcesBacking.takeSource()}"
 						onclick="this.disabled=true"
@@ -39,7 +39,7 @@
 						action="#{sourcesBacking.intendCopySource()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('sourcesForm:copyButton').disabled=false"
-						render="editPanel" />
+						render="editPanel, sourcesContent" />
 				</h:panelGrid>
 				<h:panelGroup rendered="#{empty sourcesManager.sources}">
 					<em>No sources defined.</em>
@@ -65,7 +65,7 @@
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus()"
 								action="#{sourcesBacking.intendUpdateSource(sourceVar)}"
-								render="editPanel" />
+								render="editPanel, sourcesContent" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">Description</f:facet>
@@ -93,7 +93,7 @@
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:rotorInput').focus()"
 								action="#{sourcesBacking.intendUpdateSource(sourceVar)}"
-								render="editPanel" />
+								render="editPanel, sourcesContent" />
 						</h:column>
 					</h:dataTable>
 					<rich:dataScroller for="sourcesTable" maxPages="5" fastStep="5"

@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import di.vdrchman.event.ChannelAction;
+import di.vdrchman.event.ScannedChannelAction;
 import di.vdrchman.event.SourceAction;
 import di.vdrchman.event.TransponderAction;
 import di.vdrchman.model.Channel;
@@ -103,7 +104,7 @@ public class GroupChannelsManager implements Serializable {
 		return result;
 	}
 
-	// Cleanup the GroupChannelManager's data on SourceAction if needed
+	// Cleanup the GroupChannelsManager's data on SourceAction if needed
 	public void onSourceAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final SourceAction sourceAction) {
 		Transponder transponder;
@@ -126,7 +127,7 @@ public class GroupChannelsManager implements Serializable {
 		}
 	}
 
-	// Cleanup the GroupChannelManager's data on TransponderAction if needed
+	// Cleanup the GroupChannelsManager's data on TransponderAction if needed
 	public void onTransponderAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final TransponderAction transponderAction) {
 		if (transponderAction.getAction() == TransponderAction.Action.DELETE) {
@@ -141,7 +142,7 @@ public class GroupChannelsManager implements Serializable {
 		}
 	}
 
-	// Cleanup the GroupChannelManager's data on ChannelAction if needed
+	// Cleanup the GroupChannelsManager's data on ChannelAction if needed
 	public void onChannelAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final ChannelAction channelAction) {
 		if (channelAction.getAction() == ChannelAction.Action.DELETE) {
@@ -158,6 +159,18 @@ public class GroupChannelsManager implements Serializable {
 		if ((channelAction.getAction() == ChannelAction.Action.UPDATE)
 				|| (channelAction.getAction() == ChannelAction.Action.UPDATE_GROUPS)) {
 			channelsRefreshNeeded = true;
+		}
+
+	}
+
+	// Cleanup the GroupChannelsManager's data on ScannedChannelAction if needed
+	public void onScannedChannelAction(
+			@Observes(notifyObserver = Reception.IF_EXISTS) final ScannedChannelAction scannedChannelAction) {
+		if ((scannedChannelAction.getAction() == ScannedChannelAction.Action.SCAN_PROCESSED)
+				|| (scannedChannelAction.getAction() == ScannedChannelAction.Action.CHANNEL_UPDATED)
+				|| (scannedChannelAction.getAction() == ScannedChannelAction.Action.CHANNEL_REMOVED)) {
+			channelsRefreshNeeded = true;
+			takenChannel = null;
 		}
 
 	}

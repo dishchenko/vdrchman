@@ -120,13 +120,16 @@ public class ScannedChannel implements Serializable {
 		this.tid = scannedChannel.tid;
 		this.sid = scannedChannel.sid;
 		this.vpid = scannedChannel.vpid;
+		this.venc = scannedChannel.venc;
 		this.pcr = scannedChannel.pcr;
 		this.apid = scannedChannel.apid;
+		this.aenc = scannedChannel.aenc;
 		this.tpid = scannedChannel.tpid;
 		this.caid = scannedChannel.caid;
 		this.rid = scannedChannel.rid;
 		this.scannedName = scannedChannel.scannedName;
 		this.providerName = scannedChannel.providerName;
+		this.refreshed = scannedChannel.refreshed;
 	}
 
 	public Long getId() {
