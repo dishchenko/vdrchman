@@ -45,10 +45,10 @@ function isExactlyOneChannelCheckboxChecked() {
 	return result;
 }
 
-//The Add To Main List panel form key press listener
-//Emulates 'OK' button click on hitting the 'Enter' key
-//Emulates 'Cancel' button click on hitting the 'Esc' key
-//Loops input focus through the form inputs on pressing 'Tab' / 'Shift+Tab'
+// The Add To Main List panel form key press listener
+// Emulates 'OK' button click on hitting the 'Enter' key
+// Emulates 'Cancel' button click on hitting the 'Esc' key
+// Loops input focus through the form inputs on pressing 'Tab' / 'Shift+Tab'
 function addToChannelsPanelFormKeyPressHandler(event) {
 	var result;
 	var element;
@@ -60,12 +60,15 @@ function addToChannelsPanelFormKeyPressHandler(event) {
 	if (event.keyCode == 13) {
 		if (document.activeElement != document
 				.getElementById('addToChannelsPanelForm:cancelButton')) {
-			element = document.getElementById('addToChannelsPanelForm:okAddButton');
+			element = document
+					.getElementById('addToChannelsPanelForm:okAddButton');
 			if (element == null) {
-				element = document.getElementById('addToChannelsPanelForm:okNoTransponderButton');
+				element = document
+						.getElementById('addToChannelsPanelForm:okNoTransponderButton');
 			}
 			if (element == null) {
-				element = document.getElementById('addToChannelsPanelForm:okNoSourceButton');
+				element = document
+						.getElementById('addToChannelsPanelForm:okNoSourceButton');
 			}
 			element.click();
 			result = false;
@@ -81,13 +84,15 @@ function addToChannelsPanelFormKeyPressHandler(event) {
 		if (event.shiftKey) {
 			if (document.activeElement == document
 					.getElementById('addToChannelsPanelForm:nameInput')) {
-				document.getElementById('addToChannelsPanelForm:cancelButton').focus();
+				document.getElementById('addToChannelsPanelForm:cancelButton')
+						.focus();
 				result = false;
 			}
 		} else {
 			if (document.activeElement == document
 					.getElementById('addToChannelsPanelForm:cancelButton')) {
-				document.getElementById('addToChannelsPanelForm:nameInput').focus();
+				document.getElementById('addToChannelsPanelForm:nameInput')
+						.focus();
 				result = false;
 			}
 		}
@@ -96,10 +101,10 @@ function addToChannelsPanelFormKeyPressHandler(event) {
 	return result;
 }
 
-//The Add To Ignored panel form key press listener
-//Emulates 'Cancel' button click on hitting the 'Esc' key
-//Loops input focus through 'OK' and 'Cancel' buttons on pressing 'Tab' /
-//'Shift+Tab'
+// The Add To Ignored panel form key press listener
+// Emulates 'Cancel' button click on hitting the 'Esc' key
+// Loops input focus through 'OK' and 'Cancel' buttons on pressing 'Tab' /
+// 'Shift+Tab'
 function addToIgnoredChannelsPanelFormKeyPressHandler(event) {
 	var result;
 
@@ -108,7 +113,8 @@ function addToIgnoredChannelsPanelFormKeyPressHandler(event) {
 	event = event || window.event;
 
 	if (event.keyCode == 27) {
-		document.getElementById('addToIgnoredChannelsPanelForm:cancelButton').click();
+		document.getElementById('addToIgnoredChannelsPanelForm:cancelButton')
+				.click();
 		result = false;
 	}
 
@@ -116,13 +122,15 @@ function addToIgnoredChannelsPanelFormKeyPressHandler(event) {
 		if (event.shiftKey) {
 			if (document.activeElement == document
 					.getElementById('addToIgnoredChannelsPanelForm:okAddButton')) {
-				document.getElementById('addToIgnoredChannelsPanelForm:cancelButton').focus();
+				document.getElementById(
+						'addToIgnoredChannelsPanelForm:cancelButton').focus();
 				result = false;
 			}
 		} else {
 			if (document.activeElement == document
 					.getElementById('addToIgnoredChannelsPanelForm:cancelButton')) {
-				document.getElementById('addToIgnoredChannelsPanelForm:okAddButton').focus();
+				document.getElementById(
+						'addToIgnoredChannelsPanelForm:okAddButton').focus();
 				result = false;
 			}
 		}
@@ -131,10 +139,10 @@ function addToIgnoredChannelsPanelFormKeyPressHandler(event) {
 	return result;
 }
 
-//The Update In Main List panel form key press listener
-//Emulates 'OK' button click on hitting the 'Enter' key
-//Emulates 'Cancel' button click on hitting the 'Esc' key
-//Loops input focus through the form inputs on pressing 'Tab' / 'Shift+Tab'
+// The Update In Main List panel form key press listener
+// Emulates 'OK' button click on hitting the 'Enter' key
+// Emulates 'Cancel' button click on hitting the 'Esc' key
+// Loops input focus through the form inputs on pressing 'Tab' / 'Shift+Tab'
 function updateInChannelsPanelFormKeyPressHandler(event) {
 	var result;
 
@@ -145,13 +153,15 @@ function updateInChannelsPanelFormKeyPressHandler(event) {
 	if (event.keyCode == 13) {
 		if (document.activeElement != document
 				.getElementById('updateInChannelsPanelForm:cancelButton')) {
-			document.getElementById('updateInChannelsPanelForm:okUpdateButton').click();
+			document.getElementById('updateInChannelsPanelForm:okUpdateButton')
+					.click();
 			result = false;
 		}
 	}
 
 	if (event.keyCode == 27) {
-		document.getElementById('updateInChannelsPanelForm:cancelButton').click();
+		document.getElementById('updateInChannelsPanelForm:cancelButton')
+				.click();
 		result = false;
 	}
 
@@ -159,13 +169,53 @@ function updateInChannelsPanelFormKeyPressHandler(event) {
 		if (event.shiftKey) {
 			if (document.activeElement == document
 					.getElementById('updateInChannelsPanelForm:nameInput')) {
-				document.getElementById('updateInChannelsPanelForm:cancelButton').focus();
+				document.getElementById(
+						'updateInChannelsPanelForm:cancelButton').focus();
 				result = false;
 			}
 		} else {
 			if (document.activeElement == document
 					.getElementById('updateInChannelsPanelForm:cancelButton')) {
-				document.getElementById('updateInChannelsPanelForm:nameInput').focus();
+				document.getElementById('updateInChannelsPanelForm:nameInput')
+						.focus();
+				result = false;
+			}
+		}
+	}
+
+	return result;
+}
+
+// The Update In Ignored panel form key press listener
+// Emulates 'Cancel' button click on hitting the 'Esc' key
+// Loops input focus through 'OK', 'Remove' and 'Cancel' buttons on pressing
+// 'Tab' / 'Shift+Tab'
+function updateInIgnoredChannelsPanelFormKeyPressHandler(event) {
+	var result;
+
+	result = true;
+
+	event = event || window.event;
+
+	if (event.keyCode == 27) {
+		document.getElementById('updateInIgnoredChannelsPanelForm:cancelButton')
+				.click();
+		result = false;
+	}
+
+	if (event.keyCode == 9) {
+		if (event.shiftKey) {
+			if (document.activeElement == document
+					.getElementById('updateInIgnoredChannelsPanelForm:okUpdateButton')) {
+				document.getElementById(
+						'updateInIgnoredChannelsPanelForm:cancelButton').focus();
+				result = false;
+			}
+		} else {
+			if (document.activeElement == document
+					.getElementById('updateInIgnoredChannelsPanelForm:cancelButton')) {
+				document.getElementById(
+						'updateInIgnoredChannelsPanelForm:okUpdateButton').focus();
 				result = false;
 			}
 		}

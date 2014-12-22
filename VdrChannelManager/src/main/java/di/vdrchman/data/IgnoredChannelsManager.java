@@ -177,6 +177,23 @@ public class IgnoredChannelsManager implements Serializable {
 				}
 			}
 		}
+
+		if ((scannedChannelAction.getAction() == ScannedChannelAction.Action.IGNORED_CHANNEL_UPDATED)
+				|| (scannedChannelAction.getAction() == ScannedChannelAction.Action.IGNORED_CHANNEL_REMOVED)) {
+			if ((comparisonFilter == COMPARISON_NONE)
+					|| (comparisonFilter == COMPARISON_CHANGED_MAIN)) {
+				if (filteredSourceId < 0) {
+					channelsRefreshNeeded = true;
+				} else {
+					if (filteredSourceId == scannedChannelAction.getSourceId()) {
+						if ((filteredTranspId == scannedChannelAction
+								.getTranspId()) || (filteredTranspId < 0)) {
+							channelsRefreshNeeded = true;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	// Re(Fill) in the filtered source transponder list only if it is suggested

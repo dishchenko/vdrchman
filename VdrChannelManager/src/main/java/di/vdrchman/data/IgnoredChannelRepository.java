@@ -188,8 +188,8 @@ public class IgnoredChannelRepository {
 	}
 
 	/**
-	 * Adds the channel to the persisted list of ignored channels (stores it in the
-	 * database).
+	 * Adds the channel to the persisted list of ignored channels (stores it in
+	 * the database).
 	 * 
 	 * @param channel
 	 *            the ignored channel to add
@@ -198,6 +198,17 @@ public class IgnoredChannelRepository {
 
 		em.persist(channel);
 		em.flush();
+	}
+
+	/**
+	 * Updates the channel in the persisted list of ignored channels (updates it
+	 * in the database).
+	 * 
+	 * @param channel
+	 *            the ignored channel to update
+	 */
+	public void update(IgnoredChannel channel) {
+		em.merge(channel);
 	}
 
 	/**
