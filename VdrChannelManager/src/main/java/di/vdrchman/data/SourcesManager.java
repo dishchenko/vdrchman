@@ -81,6 +81,149 @@ public class SourcesManager implements Serializable {
 		}
 	}
 
+	// Set scroller page value to the last page if it is beyond now.
+	public void adjustLastScrollerPage() {
+		int maxPageNo;
+
+		maxPageNo = (sources.size() - 1) / rowsPerPage + 1;
+		if (scrollerPage > maxPageNo) {
+			scrollerPage = maxPageNo;
+		}
+	}
+
+	// Build a sources.conf data using current application user defined
+	// sources
+	public String buildSourcesConf() {
+		StringBuilder sb;
+		List<Source> sources;
+
+		sb = new StringBuilder();
+
+		sb.append("# Sources configuration for VDR\n"
+				+ "#\n"
+				+ "# Format:\n"
+				+ "#\n"
+				+ "# code  description\n"
+				+ "#\n"
+				+ "# S (satellite) xy.z (orbital position in degrees) E or W (east or west)\n"
+				+ "# Note: only the first part is actually used by VDR. The description part\n"
+				+ "# is for the \"human\" interface for clarity.\n"
+				+ "#\n"
+				+ "# '&' means same orbital position but different host company.\n"
+				+ "# '/' means same (or very little deviation) orbital position & host.\n"
+				+ "# A value in () means this satellite is still in it's test phase.\n"
+				+ "#\n"
+				+ "# Please contact kls@tvdr.de before assigning a new code\n"
+				+ "# to a description, in order to keep them unique.\n" + "\n"
+				+ "# Satellites\n" + "\n" + "\n");
+
+		sources = sourceRepository.findAll();
+
+		for (Source source : sources) {
+			sb.append(source.getName() + "    " + source.getDescription()
+					+ "\n");
+		}
+
+		return sb.toString();
+	}
+
+	// Build a diseqc.conf data using current application user defined
+	// sources
+	public String buildDiseqcConf() {
+		StringBuilder sb;
+		List<Source> sources;
+
+		sb = new StringBuilder();
+
+		sb.append("# DiSEqC configuration for VDR\n"
+				+ "#\n"
+				+ "# Format:\n"
+				+ "#\n"
+				+ "# satellite slof polarization lof command...\n"
+				+ "#\n"
+				+ "# satellite:      one of the 'S' codes defined in sources.conf\n"
+				+ "# slof:           switch frequency of LNB; the first entry with\n"
+				+ "#                 an slof greater than the actual transponder\n"
+				+ "#                 frequency will be used\n"
+				+ "# polarization:   V = vertical, H = horizontal, L = Left circular, R = Right circular\n"
+				+ "# lof:            the local oscillator frequency to subtract from\n"
+				+ "#                 the actual transponder frequency\n"
+				+ "# command:\n"
+				+ "#   t         tone off\n"
+				+ "#   T         tone on\n"
+				+ "#   v         voltage low (13V)\n"
+				+ "#   V         voltage high (18V)\n"
+				+ "#   A         mini A\n"
+				+ "#   B         mini B\n"
+				+ "#   Sn        Satellite channel routing code sequence for bank n follows\n"
+				+ "#   Wnn       wait nn milliseconds (nn may be any positive integer number)\n"
+				+ "#   [xx ...]  hex code sequence (max. 6)\n"
+				+ "#\n"
+				+ "# The 'command...' part is optional.\n"
+				+ "#\n"
+				+ "# A line containing space separated integer numbers, terminated with a ':',\n"
+				+ "# defines that any following DiSEqC sequences apply only to the given list\n"
+				+ "# of device numbers.\n" + "\n");
+
+		sources = sourceRepository.findAll();
+
+		for (Source source : sources) {
+			sb.append("\n");
+			sb.append(source.getName() + " " + source.getLoV() + "\n");
+			sb.append(source.getName() + " " + source.getHiV() + "\n");
+			sb.append(source.getName() + " " + source.getLoH() + "\n");
+			sb.append(source.getName() + " " + source.getHiH() + "\n");
+		}
+
+		return sb.toString();
+	}
+
+	// Build a rotor.conf data using current application user defined
+	// sources
+	public String buildRotorConf() {
+		StringBuilder sb;
+		List<Source> sources;
+
+		sb = new StringBuilder();
+
+		sb.append("# Format:\n" + "# position source\n"
+				+ "# position - number\n" + "# source - S<angle><E|W>\n" + "\n"
+				+ "\n");
+
+		sources = sourceRepository.findAll();
+
+		for (Source source : sources) {
+			if (source.getRotor() != null) {
+				sb.append(source.getRotor() + " " + source.getName() + "\n");
+			}
+		}
+
+		return sb.toString();
+	}
+
+	// Build a rotorng.conf data using current application user defined
+	// sources
+	public String buildRotorngConf() {
+		StringBuilder sb;
+		List<Source> sources;
+
+		sb = new StringBuilder();
+
+		sb.append("# Format:\n" + "# source position\n"
+				+ "# source - S<angle><E|W>\n" + "# position - number\n" + "\n"
+				+ "\n");
+
+		sources = sourceRepository.findAll();
+
+		for (Source source : sources) {
+			if (source.getRotor() != null) {
+				sb.append(source.getName() + " " + source.getRotor() + "\n");
+			}
+		}
+
+		return sb.toString();
+	}
+
 	// (Re)Fill in the source list
 	@PostConstruct
 	public void retrieveAllSources() {

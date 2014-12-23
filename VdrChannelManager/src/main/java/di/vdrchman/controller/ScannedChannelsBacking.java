@@ -108,7 +108,6 @@ public class ScannedChannelsBacking {
 		Channel editedChannel;
 		Transponder workingChannelTransponder;
 		ScannedChannel workingChannel;
-		int maxPageNo;
 
 		editedChannel = scannedChannelsManager.getEditedChannel();
 		workingChannelTransponder = scannedChannelsManager
@@ -132,11 +131,7 @@ public class ScannedChannelsBacking {
 		scannedChannelsManager.retrieveAllChannels();
 		scannedChannelsManager.clearCheckedChannels();
 		scannedChannelsManager.clearChannelCheckboxes();
-		maxPageNo = scannedChannelsManager.getChannels().size()
-				/ scannedChannelsManager.getRowsPerPage() + 1;
-		if (scannedChannelsManager.getScrollerPage() > maxPageNo) {
-			scannedChannelsManager.setScrollerPage(maxPageNo);
-		}
+		scannedChannelsManager.adjustLastScrollerPage();
 	}
 
 	// The user is going to add to ignored channel list the new channel based on
@@ -173,7 +168,6 @@ public class ScannedChannelsBacking {
 		IgnoredChannel editedIgnoredChannel;
 		Transponder workingChannelTransponder;
 		ScannedChannel workingChannel;
-		int maxPageNo;
 
 		editedIgnoredChannel = scannedChannelsManager.getEditedIgnoredChannel();
 		workingChannelTransponder = scannedChannelsManager
@@ -194,11 +188,7 @@ public class ScannedChannelsBacking {
 		scannedChannelsManager.retrieveAllChannels();
 		scannedChannelsManager.clearCheckedChannels();
 		scannedChannelsManager.clearChannelCheckboxes();
-		maxPageNo = scannedChannelsManager.getChannels().size()
-				/ scannedChannelsManager.getRowsPerPage() + 1;
-		if (scannedChannelsManager.getScrollerPage() > maxPageNo) {
-			scannedChannelsManager.setScrollerPage(maxPageNo);
-		}
+		scannedChannelsManager.adjustLastScrollerPage();
 	}
 
 	// The user is going to update channel in main channel list based on
@@ -231,7 +221,6 @@ public class ScannedChannelsBacking {
 	// data
 	public void doUpdateInChannels() {
 		Transponder editedChannelTransponder;
-		int maxPageNo;
 
 		channelRepository.update(scannedChannelsManager.getEditedChannel());
 		editedChannelTransponder = transponderRepository
@@ -244,17 +233,12 @@ public class ScannedChannelsBacking {
 		scannedChannelsManager.retrieveAllChannels();
 		scannedChannelsManager.clearCheckedChannels();
 		scannedChannelsManager.clearChannelCheckboxes();
-		maxPageNo = scannedChannelsManager.getChannels().size()
-				/ scannedChannelsManager.getRowsPerPage() + 1;
-		if (scannedChannelsManager.getScrollerPage() > maxPageNo) {
-			scannedChannelsManager.setScrollerPage(maxPageNo);
-		}
+		scannedChannelsManager.adjustLastScrollerPage();
 	}
 
 	// Remove the channel from main list
 	public void doRemoveFromChannels() {
 		Transponder editedChannelTransponder;
-		int maxPageNo;
 
 		channelRepository.delete(scannedChannelsManager.getEditedChannel());
 		editedChannelTransponder = transponderRepository
@@ -267,11 +251,7 @@ public class ScannedChannelsBacking {
 		scannedChannelsManager.retrieveAllChannels();
 		scannedChannelsManager.clearCheckedChannels();
 		scannedChannelsManager.clearChannelCheckboxes();
-		maxPageNo = scannedChannelsManager.getChannels().size()
-				/ scannedChannelsManager.getRowsPerPage() + 1;
-		if (scannedChannelsManager.getScrollerPage() > maxPageNo) {
-			scannedChannelsManager.setScrollerPage(maxPageNo);
-		}
+		scannedChannelsManager.adjustLastScrollerPage();
 	}
 
 	// The user is going to update channel in ignored channel list based on
@@ -307,7 +287,6 @@ public class ScannedChannelsBacking {
 		IgnoredChannel editedIgnoredChannel;
 		ScannedChannel workingChannel;
 		Transponder editedIgnoredChannelTransponder;
-		int maxPageNo;
 
 		editedIgnoredChannel = scannedChannelsManager.getEditedIgnoredChannel();
 		workingChannel = scannedChannelsManager.getWorkingChannel();
@@ -326,17 +305,12 @@ public class ScannedChannelsBacking {
 		scannedChannelsManager.retrieveAllChannels();
 		scannedChannelsManager.clearCheckedChannels();
 		scannedChannelsManager.clearChannelCheckboxes();
-		maxPageNo = scannedChannelsManager.getChannels().size()
-				/ scannedChannelsManager.getRowsPerPage() + 1;
-		if (scannedChannelsManager.getScrollerPage() > maxPageNo) {
-			scannedChannelsManager.setScrollerPage(maxPageNo);
-		}
+		scannedChannelsManager.adjustLastScrollerPage();
 	}
 
 	// Remove the channel from ignored channel list
 	public void doRemoveFromIgnoredChannels() {
 		Transponder editedIgnoredChannelTransponder;
-		int maxPageNo;
 
 		ignoredChannelRepository.delete(scannedChannelsManager
 				.getEditedIgnoredChannel());
@@ -350,11 +324,7 @@ public class ScannedChannelsBacking {
 		scannedChannelsManager.retrieveAllChannels();
 		scannedChannelsManager.clearCheckedChannels();
 		scannedChannelsManager.clearChannelCheckboxes();
-		maxPageNo = scannedChannelsManager.getChannels().size()
-				/ scannedChannelsManager.getRowsPerPage() + 1;
-		if (scannedChannelsManager.getScrollerPage() > maxPageNo) {
-			scannedChannelsManager.setScrollerPage(maxPageNo);
-		}
+		scannedChannelsManager.adjustLastScrollerPage();
 	}
 
 	// On changing the source filter selection clear the transponder filter

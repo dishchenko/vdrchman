@@ -19,6 +19,9 @@
 			<h1>Channels</h1>
 			<!-- Channels form -->
 			<h:form id="channelsForm">
+				<button
+					style="overflow: visible !important; height: 0 !important; width: 0 !important; margin: 0 !important; border: 0 !important; padding: 0 !important; display: block !important;"
+					type="submit" value="default action" />
 				<!-- 'Add', 'Remove' etc. buttons panel -->
 				<h:panelGrid columns="8">
 					<a4j:commandButton id="addOnTopButton" value="Add on top..."
@@ -255,7 +258,7 @@
 					</f:facet>
 					<f:facet name="controls">
 						<h:panelGroup>
-							<h:commandLink value="Close" immediate="true"
+							<a4j:commandLink value="Close" immediate="true"
 								onclick="#{rich:component('updateGroupsPanel')}.hide()"
 								action="#{formResetter.resetForm(rich:findComponent('updateGroupsPanelForm'))}" />
 						</h:panelGroup>
@@ -306,7 +309,7 @@
 					</f:facet>
 					<f:facet name="controls">
 						<h:panelGroup>
-							<h:commandLink value="Close" immediate="true"
+							<a4j:commandLink value="Close" immediate="true"
 								onclick="#{rich:component('editPanel')}.hide()"
 								action="#{formResetter.resetForm(rich:findComponent('editPanelForm'))}" />
 						</h:panelGroup>
@@ -491,8 +494,7 @@
 							value="#{not empty channelsManager.comparedScannedChannel and channelsManager.comparedScannedChannel.caid ne channelsManager.editedChannel.caid ? '--&gt; '.concat(channelsManager.comparedScannedChannel.caid) : ''}"
 							styleClass="preformattedtext" />
 						<h:outputLabel value="Scanned as:" styleClass="preformattedtext" />
-						<h:outputText
-							value="#{channelsManager.editedChannel.scannedName}"
+						<h:outputText value="#{channelsManager.editedChannel.scannedName}"
 							styleClass="preformattedtext" />
 						<h:outputText
 							value="#{not empty channelsManager.comparedScannedChannel and channelsManager.comparedScannedChannel.scannedName ne channelsManager.editedChannel.scannedName ? '--&gt; '.concat(channelsManager.comparedScannedChannel.scannedName) : ''}"
@@ -538,7 +540,7 @@
 					</f:facet>
 					<f:facet name="controls">
 						<h:panelGroup>
-							<h:commandLink value="Close" immediate="true"
+							<a4j:commandLink value="Close" immediate="true"
 								onclick="#{rich:component('removePanel')}.hide()"
 								action="#{formResetter.resetForm(rich:findComponent('removePanelForm'))}" />
 						</h:panelGroup>

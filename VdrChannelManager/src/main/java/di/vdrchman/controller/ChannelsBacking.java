@@ -1,5 +1,7 @@
 package di.vdrchman.controller;
 
+import static di.vdrchman.util.Tools.*;
+
 import java.util.List;
 
 import javax.enterprise.event.Event;
@@ -19,7 +21,6 @@ import di.vdrchman.event.ChannelAction;
 import di.vdrchman.model.Channel;
 import di.vdrchman.model.Source;
 import di.vdrchman.model.Transponder;
-import di.vdrchman.util.Tools;
 
 @Model
 public class ChannelsBacking {
@@ -105,7 +106,7 @@ public class ChannelsBacking {
 		Transponder transponder;
 
 		channelsManager.setEditedChannel(new Channel(channel));
-		if (channelsManager.getComparisonFilter() == Tools.COMPARISON_CHANGED_MAIN) {
+		if (channelsManager.getComparisonFilter() == COMPARISON_CHANGED_MAIN) {
 			transponder = transponderRepository.findById(channel.getTranspId());
 			channelsManager.setComparedScannedChannel(scannedChannelRepository
 					.findBySourceFrequencyPolarizationStreamSidApid(
@@ -128,6 +129,9 @@ public class ChannelsBacking {
 		channelsManager.retrieveAllChannels();
 		channelsManager.clearCheckedChannels();
 		channelsManager.clearChannelCheckboxes();
+		if (channelsManager.getComparisonFilter() != COMPARISON_NONE) {
+			channelsManager.adjustLastScrollerPage();
+		}
 	}
 
 	// Going to remove some checked channels
@@ -145,6 +149,7 @@ public class ChannelsBacking {
 		channelsManager.retrieveAllChannels();
 		channelsManager.clearCheckedChannels();
 		channelsManager.clearChannelCheckboxes();
+		channelsManager.adjustLastScrollerPage();
 	}
 
 	// Let's take the checked channel's data on the "clipboard"

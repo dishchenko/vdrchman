@@ -70,6 +70,7 @@ public class SourcesBacking {
 		sourcesManager.retrieveAllSources();
 		sourcesManager.clearCheckedSources();
 		sourcesManager.clearSourceCheckboxes();
+		sourcesManager.adjustLastScrollerPage();
 	}
 
 	// Let's take the checked source's data on the "clipboard"

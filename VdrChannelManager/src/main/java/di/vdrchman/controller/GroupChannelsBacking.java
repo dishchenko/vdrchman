@@ -33,6 +33,7 @@ public class GroupChannelsBacking {
 		groupChannelsManager.retrieveAllChannels();
 		groupChannelsManager.clearCheckedChannels();
 		groupChannelsManager.clearChannelCheckboxes();
+		groupChannelsManager.adjustLastScrollerPage();
 	}
 
 	// Let's take the checked channel's data on the "clipboard"

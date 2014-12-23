@@ -24,6 +24,9 @@
 			</h1>
 			<!-- Group channels form -->
 			<h:form id="groupChannelsForm">
+				<button
+					style="overflow: visible !important; height: 0 !important; width: 0 !important; margin: 0 !important; border: 0 !important; padding: 0 !important; display: block !important;"
+					type="submit" value="default action" />
 				<!-- 'Remove', 'Take' etc. buttons panel -->
 				<h:panelGrid columns="4">
 					<a4j:commandButton id="removeButton" value="Remove..."
@@ -184,7 +187,7 @@
 					</f:facet>
 					<f:facet name="controls">
 						<h:panelGroup>
-							<h:commandLink value="Close" immediate="true"
+							<a4j:commandLink value="Close" immediate="true"
 								onclick="#{rich:component('removePanel')}.hide()"
 								action="#{formResetter.resetForm(rich:findComponent('removePanelForm'))}" />
 						</h:panelGroup>

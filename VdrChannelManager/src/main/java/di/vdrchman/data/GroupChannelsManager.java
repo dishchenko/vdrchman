@@ -88,6 +88,16 @@ public class GroupChannelsManager implements Serializable {
 				shownGroupId) - 1) / rowsPerPage + 1;
 	}
 
+	// Set scroller page value to the last page if it is beyond now.
+	public void adjustLastScrollerPage() {
+		int maxPageNo;
+
+		maxPageNo = (channels.size() - 1) / rowsPerPage + 1;
+		if (scrollerPage > maxPageNo) {
+			scrollerPage = maxPageNo;
+		}
+	}
+
 	// Calculate the sequence number for the channel to be placed on top
 	// of the current channel list. If current channel list is not empty
 	// then it is the sequence number of its top channel. Otherwise it is 1

@@ -59,6 +59,7 @@ public class GroupsBacking {
 		groupsManager.retrieveAllGroups();
 		groupsManager.clearCheckedGroups();
 		groupsManager.clearGroupCheckboxes();
+		groupsManager.adjustLastScrollerPage();
 	}
 
 	// Let's take the checked group's data on the "clipboard"

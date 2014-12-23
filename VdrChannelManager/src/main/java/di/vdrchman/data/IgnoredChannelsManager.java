@@ -120,6 +120,16 @@ public class IgnoredChannelsManager implements Serializable {
 		return result;
 	}
 
+	// Set scroller page value to the last page if it is beyond now.
+	public void adjustLastScrollerPage() {
+		int maxPageNo;
+
+		maxPageNo = (channels.size() - 1) / rowsPerPage + 1;
+		if (scrollerPage > maxPageNo) {
+			scrollerPage = maxPageNo;
+		}
+	}
+
 	// Cleanup the IgnoredChannelsManager's data on SourceAction if needed
 	public void onSourceAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final SourceAction sourceAction) {

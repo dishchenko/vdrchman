@@ -19,6 +19,9 @@
 			<h1>Scanned Channels</h1>
 			<!-- Scanned channels form -->
 			<h:form id="scannedChannelsForm">
+				<button
+					style="overflow: visible !important; height: 0 !important; width: 0 !important; margin: 0 !important; border: 0 !important; padding: 0 !important; display: block !important;"
+					type="submit" value="default action" />
 				<!-- 'Process' etc. buttons panel -->
 				<h:panelGrid columns="3">
 					<a4j:commandButton id="processUploadedScansButton"
@@ -245,7 +248,7 @@
 					</f:facet>
 					<f:facet name="controls">
 						<h:panelGroup>
-							<h:commandLink value="Close" immediate="true"
+							<a4j:commandLink value="Close" immediate="true"
 								onclick="#{rich:component('addToChannelsPanel')}.hide()"
 								action="#{formResetter.resetForm(rich:findComponent('addToChannelsPanelForm'))}" />
 						</h:panelGroup>
@@ -387,7 +390,7 @@
 					</f:facet>
 					<f:facet name="controls">
 						<h:panelGroup>
-							<h:commandLink value="Close" immediate="true"
+							<a4j:commandLink value="Close" immediate="true"
 								onclick="#{rich:component('addToIgnoredChannelsPanel')}.hide()"
 								action="#{formResetter.resetForm(rich:findComponent('addToIgnoredChannelsPanelForm'))}" />
 						</h:panelGroup>
@@ -480,7 +483,7 @@
 					</f:facet>
 					<f:facet name="controls">
 						<h:panelGroup>
-							<h:commandLink value="Close" immediate="true"
+							<a4j:commandLink value="Close" immediate="true"
 								onclick="#{rich:component('updateInChannelsPanel')}.hide()"
 								action="#{formResetter.resetForm(rich:findComponent('updateInChannelsPanelForm'))}" />
 						</h:panelGroup>
@@ -616,7 +619,7 @@
 					</f:facet>
 					<f:facet name="controls">
 						<h:panelGroup>
-							<h:commandLink value="Close" immediate="true"
+							<a4j:commandLink value="Close" immediate="true"
 								onclick="#{rich:component('updateInIgnoredChannelsPanel')}.hide()"
 								action="#{formResetter.resetForm(rich:findComponent('updateInIgnoredChannelsPanelForm'))}" />
 						</h:panelGroup>

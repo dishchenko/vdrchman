@@ -5,6 +5,7 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	template="/WEB-INF/templates/default.xhtml">
 	<ui:define name="content">
 		<h:outputScript library="javax.faces" name="jsf.js" target="head" />
@@ -16,6 +17,9 @@
 			<!-- Upload Scan form -->
 			<h:panelGroup id="uploadScanPanel">
 				<h:form id="uploadScanForm">
+					<button
+						style="overflow: visible !important; height: 0 !important; width: 0 !important; margin: 0 !important; border: 0 !important; padding: 0 !important; display: block !important;"
+						type="submit" value="default action" />
 					<h:panelGrid columns="1">
 						<h:outputText styleClass="preformattedtext"
 							value="Upload scans (scanned channels in files named '&lt;sourceName&gt;.scanned') here" />
@@ -36,6 +40,37 @@
 				</h:form>
 			</h:panelGroup>
 			<h2>Export</h2>
+			<!-- Download channels.conf etc. files form -->
+			<h:panelGroup id="downloadFilesPanel">
+				<h:form id="downloadFilesForm">
+					<button
+						style="overflow: visible !important; height: 0 !important; width: 0 !important; margin: 0 !important; border: 0 !important; padding: 0 !important; display: block !important;"
+						type="submit" value="default action" />
+					<h:panelGrid columns="1">
+						<h:outputText styleClass="preformattedtext"
+							value="Click a button to download corresponding configuration file" />
+						<br />
+						<h:panelGrid columns="4">
+							<h:commandButton action="#{filesBacking.downloadSourcesConf}"
+								value="sources.conf" />
+							<h:commandButton action="#{filesBacking.downloadDiseqcConf}"
+								value="diseqc.conf" />
+							<h:commandButton action="#{filesBacking.downloadRotorConf}"
+								value="rotor.conf" />
+							<h:commandButton action="#{filesBacking.downloadRotorngConf}"
+								value="rotorng.conf" />
+						</h:panelGrid>
+						<br />
+						<h:panelGrid columns="10">
+							<c:forEach items="#{sourceRepository.findAll()}" var="sourceVar">
+								<h:commandButton
+									action="#{filesBacking.downloadFreq(sourceVar)}"
+									value="#{sourceVar.name}.freq" />
+							</c:forEach>
+						</h:panelGrid>
+					</h:panelGrid>
+				</h:form>
+			</h:panelGroup>
 		</h:panelGroup>
 	</ui:define>
 </ui:composition>

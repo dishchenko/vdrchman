@@ -81,6 +81,16 @@ public class GroupsManager implements Serializable {
 		}
 	}
 
+	// Set scroller page value to the last page if it is beyond now.
+	public void adjustLastScrollerPage() {
+		int maxPageNo;
+
+		maxPageNo = (groups.size() - 1) / rowsPerPage + 1;
+		if (scrollerPage > maxPageNo) {
+			scrollerPage = maxPageNo;
+		}
+	}
+
 	// (Re)Fill in the group list
 	@PostConstruct
 	public void retrieveAllGroups() {

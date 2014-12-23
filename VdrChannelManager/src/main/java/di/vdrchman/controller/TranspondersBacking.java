@@ -96,6 +96,7 @@ public class TranspondersBacking {
 		transpondersManager.retrieveAllTransponders();
 		transpondersManager.clearCheckedTransponders();
 		transpondersManager.clearTransponderCheckboxes();
+		transpondersManager.adjustLastScrollerPage();
 	}
 
 	// Let's take the checked transponder's data on the "clipboard"

@@ -54,6 +54,7 @@ public class IgnoredChannelsBacking {
 		ignoredChannelsManager.retrieveAllChannels();
 		ignoredChannelsManager.clearCheckedChannels();
 		ignoredChannelsManager.clearChannelCheckboxes();
+		ignoredChannelsManager.adjustLastScrollerPage();
 	}
 
 	// The user is going to update a channel
@@ -93,6 +94,7 @@ public class IgnoredChannelsBacking {
 		ignoredChannelsManager.retrieveAllChannels();
 		ignoredChannelsManager.clearCheckedChannels();
 		ignoredChannelsManager.clearChannelCheckboxes();
+		ignoredChannelsManager.adjustLastScrollerPage();
 	}
 
 	// On changing the source filter selection clear the transponder filter
