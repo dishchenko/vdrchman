@@ -52,6 +52,9 @@ public class ScannedChannelsManager implements Serializable {
 	private ChannelRepository channelRepository;
 
 	@Inject
+	private IgnoredChannelRepository ignoredChannelRepository;
+
+	@Inject
 	Logger logger;
 
 	// ID of the source to filter scanned channel list on.
@@ -343,8 +346,8 @@ public class ScannedChannelsManager implements Serializable {
 	}
 
 	// Process scan data and store results in the scanned channels table.
-	// Update channels in main channel list if updates are "technical" i.e.
-	// programs not changed
+	// Update channels in main channel list and ignored channels if updates are
+	// "technical" i.e. programs not changed
 	public String processScanData(String scanSourceName, byte[] data) {
 		String result;
 		int lineNo;
@@ -383,6 +386,7 @@ public class ScannedChannelsManager implements Serializable {
 		Source source;
 		List<Channel> forcedUpdateChannels;
 		Transponder transponder;
+		List<IgnoredChannel> forcedUpdateIgnoredChannels;
 
 		result = "OK";
 		lineNo = 0;
@@ -609,6 +613,31 @@ public class ScannedChannelsManager implements Serializable {
 					updatedChannel.setProviderName(scannedChannel
 							.getProviderName());
 					channelRepository.update(updatedChannel);
+				}
+
+				forcedUpdateIgnoredChannels = ignoredChannelRepository.findAll(
+						source.getId(), -1, COMPARISON_CHANGED_IGNORED_FORCED);
+
+				for (IgnoredChannel updatedIgnoredChannel : forcedUpdateIgnoredChannels) {
+					transponder = transponderRepository
+							.findById(updatedIgnoredChannel.getTranspId());
+					scannedChannel = scannedChannelRepository
+							.findBySourceFrequencyPolarizationStreamSidApid(
+									scanSourceName, transponder.getFrequency(),
+									transponder.getPolarization(),
+									transponder.getStreamId(),
+									updatedIgnoredChannel.getSid(),
+									updatedIgnoredChannel.getApid());
+
+					transponder.setDvbsGen(scannedChannel.getDvbsGen());
+					transponder.setSymbolRate(scannedChannel.getSymbolRate());
+					transponder.setNid(scannedChannel.getNid());
+					transponder.setTid(scannedChannel.getTid());
+					transponderRepository.update(transponder);
+
+					updatedIgnoredChannel.setProviderName(scannedChannel
+							.getProviderName());
+					ignoredChannelRepository.update(updatedIgnoredChannel);
 				}
 			}
 		}

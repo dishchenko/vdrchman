@@ -46,7 +46,10 @@ public class IgnoredChannelRepository {
 	 *            scanned channel list (COMPARISON_NONE - no filtering,
 	 *            COMPARISON_CHANGED_IGNORED - changed channels (compared to the
 	 *            channels from scanned channel list), COMPARISON_NOT_SCANNED -
-	 *            channels not found in the scanned channel list)
+	 *            channels not found in the scanned channel list,
+	 *            COMPARISON_CHANGED_IGNORED_FORCED - changed channels (compared
+	 *            to the channels from scanned channel list) eligible for forced
+	 *            updating with scanned channels data)
 	 * @return the list of ignored channels found for the current application
 	 *         user and given source and transponder IDs
 	 */
@@ -123,6 +126,31 @@ public class IgnoredChannelRepository {
 				query = em
 						.createQuery(
 								"select ic from IgnoredChannel ic where ic.transpId = :transpId and not exists (select sc from Source s, Transponder t, ScannedChannel sc where ic.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and coalesce(sc.streamId, 0) = coalesce(t.streamId, 0) and sc.sid = ic.sid and sc.apid = ic.apid and sc.userId = :userId) order by ic.id",
+								IgnoredChannel.class);
+				query.setParameter("userId", user.getId());
+				query.setParameter("transpId", transpId);
+			}
+			break;
+		case COMPARISON_CHANGED_IGNORED_FORCED:
+			if (transpId < 0) {
+				if (sourceId < 0) {
+					query = em
+							.createQuery(
+									"select ic from IgnoredChannel ic, Transponder o_t, Source o_s where ic.transpId = o_t.id and o_t.sourceId = o_s.id and o_s.userId = :userId and exists (select sc from Source s, Transponder t, ScannedChannel sc where ic.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and coalesce(sc.streamId, 0) = coalesce(t.streamId, 0) and sc.sid = ic.sid and sc.apid = ic.apid and (t.dvbsGen <> sc.dvbsGen or t.symbolRate <> sc.symbolRate or coalesce(t.nid, 0) <> coalesce(sc.nid, 0) or coalesce(t.tid, 0) <> coalesce(sc.tid, 0) or coalesce(ic.providerName, ' ') <> coalesce(sc.providerName, ' ')) and sc.userId = :userId) order by ic.id",
+									IgnoredChannel.class);
+					query.setParameter("userId", user.getId());
+				} else {
+					query = em
+							.createQuery(
+									"select ic from IgnoredChannel ic, Transponder o_t where ic.transpId = o_t.id and o_t.sourceId = :sourceId and exists (select sc from Source s, Transponder t, ScannedChannel sc where ic.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and coalesce(sc.streamId, 0) = coalesce(t.streamId, 0) and sc.sid = ic.sid and sc.apid = ic.apid and (t.dvbsGen <> sc.dvbsGen or t.symbolRate <> sc.symbolRate or coalesce(t.nid, 0) <> coalesce(sc.nid, 0) or coalesce(t.tid, 0) <> coalesce(sc.tid, 0) or coalesce(ic.providerName, ' ') <> coalesce(sc.providerName, ' ')) and sc.userId = :userId) order by ic.id",
+									IgnoredChannel.class);
+					query.setParameter("userId", user.getId());
+					query.setParameter("sourceId", sourceId);
+				}
+			} else {
+				query = em
+						.createQuery(
+								"select ic from IgnoredChannel ic where ic.transpId = :transpId and exists (select sc from Source s, Transponder t, ScannedChannel sc where ic.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and coalesce(sc.streamId, 0) = coalesce(t.streamId, 0) and sc.sid = ic.sid and sc.apid = ic.apid and (t.dvbsGen <> sc.dvbsGen or t.symbolRate <> sc.symbolRate or coalesce(t.nid, 0) <> coalesce(sc.nid, 0) or coalesce(t.tid, 0) <> coalesce(sc.tid, 0) or coalesce(ic.providerName, ' ') <> coalesce(sc.providerName, ' ')) and sc.userId = :userId) order by ic.id",
 								IgnoredChannel.class);
 				query.setParameter("userId", user.getId());
 				query.setParameter("transpId", transpId);

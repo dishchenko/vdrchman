@@ -39,21 +39,21 @@
 						rendered="#{scannedChannelsManager.comparisonFilter == tools.comparisonConst['NEW']}"
 						action="#{scannedChannelsBacking.intendAddToIgnoredChannels()}"
 						onclick="this.disabled=true"
-						oncomplete="#{rich:component('addToIgnoredChannelsPanel')}.show();element=document.getElementById('addToIgnoredChannelsPanelForm:okAddButton');if (element != null) element.focus();document.getElementById('scannedChannelsForm:addToIgnoredChannelsButton').disabled=!isExactlyOneChannelCheckboxChecked()"
+						oncomplete="if (#{rich:component('addToIgnoredChannelsPanel')} != null) {#{rich:component('addToIgnoredChannelsPanel')}.show();element=document.getElementById('addToIgnoredChannelsPanelForm:okAddButton');if (element != null) element.focus();document.getElementById('scannedChannelsForm:addToIgnoredChannelsButton').disabled=!isExactlyOneChannelCheckboxChecked()} else {document.getElementById('scannedChannelsForm').submit()}"
 						render="addToIgnoredChannelsPanel, scannedChannelsContent" />
 					<a4j:commandButton id="updateInChannelsButton"
 						value="Update in Main list..."
 						rendered="#{scannedChannelsManager.comparisonFilter == tools.comparisonConst['CHANGED_MAIN']}"
 						action="#{scannedChannelsBacking.intendUpdateInChannels()}"
 						onclick="this.disabled=true"
-						oncomplete="#{rich:component('updateInChannelsPanel')}.show();document.getElementById('updateInChannelsPanelForm:nameInput').focus();document.getElementById('scannedChannelsForm:updateInChannelsButton').disabled=!isExactlyOneChannelCheckboxChecked()"
+						oncomplete="if (#{rich:component('updateInChannelsPanel')} != null) {#{rich:component('updateInChannelsPanel')}.show();document.getElementById('updateInChannelsPanelForm:nameInput').focus();document.getElementById('scannedChannelsForm:updateInChannelsButton').disabled=!isExactlyOneChannelCheckboxChecked()} else {document.getElementById('scannedChannelsForm').submit()}"
 						render="updateInChannelsPanel, scannedChannelsContent" />
 					<a4j:commandButton id="updateInIgnoredChannelsButton"
 						value="Update in Ignored..."
 						rendered="#{scannedChannelsManager.comparisonFilter == tools.comparisonConst['CHANGED_IGNORED']}"
 						action="#{scannedChannelsBacking.intendUpdateInIgnoredChannels()}"
 						onclick="this.disabled=true"
-						oncomplete="#{rich:component('updateInIgnoredChannelsPanel')}.show();document.getElementById('updateInIgnoredChannelsPanelForm:okUpdateButton').focus();document.getElementById('scannedChannelsForm:updateInIgnoredChannelsButton').disabled=!isExactlyOneChannelCheckboxChecked()"
+						oncomplete="if (#{rich:component('updateInIgnoredChannelsPanel')} != null) {#{rich:component('updateInIgnoredChannelsPanel')}.show();document.getElementById('updateInIgnoredChannelsPanelForm:okUpdateButton').focus();document.getElementById('scannedChannelsForm:updateInIgnoredChannelsButton').disabled=!isExactlyOneChannelCheckboxChecked()} else {document.getElementById('scannedChannelsForm').submit()}"
 						render="updateInIgnoredChannelsPanel, scannedChannelsContent" />
 				</h:panelGrid>
 				<!-- Filter(s) panel -->
@@ -638,7 +638,8 @@
 							styleClass="preformattedtext" />
 						<h:outputText value="" />
 						<h:outputLabel value="Video PID:" styleClass="preformattedtext" />
-						<h:outputText value="#{scannedChannelsManager.editedIgnoredChannel.vpid}"
+						<h:outputText
+							value="#{scannedChannelsManager.editedIgnoredChannel.vpid}"
 							styleClass="preformattedtext" />
 						<h:outputText
 							value="#{not empty scannedChannelsManager.editedIgnoredChannel.vpid and scannedChannelsManager.editedIgnoredChannel.vpid ne scannedChannelsManager.workingChannel.vpid ? '--&gt; '.concat(scannedChannelsManager.workingChannel.vpid) : ''}"
@@ -650,7 +651,8 @@
 						<h:outputText value="" />
 						<h:outputLabel value="Conditional Access ID:"
 							styleClass="preformattedtext" />
-						<h:outputText value="#{scannedChannelsManager.editedIgnoredChannel.caid}"
+						<h:outputText
+							value="#{scannedChannelsManager.editedIgnoredChannel.caid}"
 							styleClass="preformattedtext" />
 						<h:outputText
 							value="#{scannedChannelsManager.workingChannel.caid ne scannedChannelsManager.editedIgnoredChannel.caid ? '--&gt; '.concat(scannedChannelsManager.workingChannel.caid) : ''}"
