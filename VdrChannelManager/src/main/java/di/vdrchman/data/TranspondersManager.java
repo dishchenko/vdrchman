@@ -211,41 +211,6 @@ public class TranspondersManager implements Serializable {
 		}
 	}
 
-	// Build frequencies data using current application user defined
-	// source transponders
-	public String buildFreq(Source source) {
-		StringBuilder sb;
-		List<Transponder> transponders;
-		Integer streamId;
-
-		sb = new StringBuilder();
-
-		sb.append("# Format:\n"
-				+ "# S frequency polarity symbol_rate [AUTO] [AUTO] [AUTO] [stream ID]\n"
-				+ "# S - S1|S2\n" + "# frequency - kHz\n"
-				+ "# polarity - H|V\n" + "# symbol_rate - sps\n"
-				+ "# stream ID - if multistream\n" + "\n" + "\n");
-
-		transponders = transponderRepository.findAll(source.getId());
-
-		for (Transponder transponder : transponders) {
-			if (transponder.getIgnored()) {
-				sb.append("# ");
-			}
-			sb.append("S" + transponder.getDvbsGen() + " "
-					+ transponder.getFrequency() + "000 "
-					+ transponder.getPolarization() + " "
-					+ transponder.getSymbolRate() + "000");
-			streamId = transponder.getStreamId();
-			if (streamId != null) {
-				sb.append(" AUTO AUTO AUTO " + streamId);
-			}
-			sb.append("\n");
-		}
-
-		return sb.toString();
-	}
-
 	// (Re)Fill in the transponder list
 	@PostConstruct
 	public void retrieveAllTransponders() {

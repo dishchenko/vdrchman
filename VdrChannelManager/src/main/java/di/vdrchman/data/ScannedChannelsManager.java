@@ -507,7 +507,7 @@ public class ScannedChannelsManager implements Serializable {
 					}
 					caidSb = new StringBuilder();
 					for (String caidItem : caidSet) {
-						caidSb.append(caidItem + ",");
+						caidSb.append(caidItem).append(",");
 					}
 					caidSb.setLength(caidSb.length() - 1);
 					caid = caidSb.toString();

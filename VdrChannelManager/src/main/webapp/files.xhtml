@@ -68,6 +68,16 @@
 									value="#{sourceVar.name}.freq" />
 							</c:forEach>
 						</h:panelGrid>
+						<br />
+						<h:panelGrid columns="3">
+							<h:commandButton action="#{filesBacking.downloadChannelsConf}"
+								value="channels.conf" />
+							<h:outputLabel value="Export locked:"
+								styleClass="preformattedtext" />
+							<h:selectBooleanCheckbox
+								value="#{filesManager.lockedChannelsExported}"
+								styleClass="preformattedtext" />
+						</h:panelGrid>
 					</h:panelGrid>
 				</h:form>
 			</h:panelGroup>

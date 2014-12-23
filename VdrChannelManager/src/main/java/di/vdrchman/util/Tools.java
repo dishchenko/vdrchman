@@ -50,7 +50,7 @@ public class Tools {
 
 		if (!groups.isEmpty()) {
 			for (Group group : groups) {
-				sb.append(group.getName() + ", ");
+				sb.append(group.getName()).append(", ");
 			}
 
 			sb.setLength(sb.length() - 2);
@@ -69,8 +69,8 @@ public class Tools {
 
 		if (!groups.isEmpty()) {
 			for (Group group : groups) {
-				sb.append(group.getName() + " (" + group.getDescription()
-						+ "), ");
+				sb.append(group.getName()).append(" (")
+						.append(group.getDescription()).append("), ");
 			}
 
 			sb.setLength(sb.length() - 2);
@@ -140,7 +140,7 @@ public class Tools {
 
 		if (!scans.isEmpty()) {
 			for (Scan scan : scans) {
-				sb.append(scan.getFileName() + ", ");
+				sb.append(scan.getFileName()).append(", ");
 			}
 
 			sb.setLength(sb.length() - 2);
