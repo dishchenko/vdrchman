@@ -183,12 +183,12 @@ public class FilesManager implements Serializable {
 
 		for (Source source : sources) {
 			sb.append('\n').append(source.getName()).append(' ')
-					.append(source.getLoV()).append('\n');
-			sb.append('\n').append(source.getName()).append(' ')
-					.append(source.getHiV()).append('\n');
-			sb.append('\n').append(source.getName()).append(' ')
-					.append(source.getLoH()).append('\n');
-			sb.append('\n').append(source.getName()).append(' ')
+					.append(source.getLoV()).append('\n')
+					.append(source.getName()).append(' ')
+					.append(source.getHiV()).append('\n')
+					.append(source.getName()).append(' ')
+					.append(source.getLoH()).append('\n')
+					.append(source.getName()).append(' ')
 					.append(source.getHiH()).append('\n');
 		}
 
