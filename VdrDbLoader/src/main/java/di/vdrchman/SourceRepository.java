@@ -10,6 +10,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.jboss.logging.Logger;
+import org.jboss.logging.Logger.Level;
+
 public class SourceRepository {
 
 	private EntityManager em;
@@ -33,79 +36,113 @@ public class SourceRepository {
 			BufferedReader diseqcConf, BufferedReader rotorConf)
 			throws IOException {
 		StringBuffer sb;
+		int lineNo;
 		String line;
 		String[] splitLine;
 		Source source;
 
 		sb = new StringBuffer();
 
-		while ((line = sourcesConf.readLine()) != null) {
+		lineNo = 0;
 
-			if (line.length() == 0) {
-				continue;
-			}
-			if (line.charAt(0) == '#') {
-				continue;
-			}
-			splitLine = line.split("\\s+");
+		try {
+			while ((line = sourcesConf.readLine()) != null) {
 
-			source = new Source();
-			source.setUserId(userId);
-			source.setName(splitLine[0]);
-			sb.setLength(0);
-			for (int i = 1; i < splitLine.length; ++i) {
-				sb.append(splitLine[i]).append(' ');
+				if (line.length() == 0) {
+					continue;
+				}
+				if (line.charAt(0) == '#') {
+					continue;
+				}
+				splitLine = line.split("\\s+");
+
+				source = new Source();
+				source.setUserId(userId);
+				source.setName(splitLine[0]);
+				sb.setLength(0);
+				for (int i = 1; i < splitLine.length; ++i) {
+					sb.append(splitLine[i]).append(' ');
+				}
+				sb.setLength(sb.length() - 1);
+				source.setDescription(sb.toString());
+				em.persist(source);
 			}
-			sb.setLength(sb.length() - 1);
-			source.setDescription(sb.toString());
-			em.persist(source);
+		} catch (Throwable ex) {
+			Logger.getLogger(this.getClass()).log(
+					Level.ERROR,
+					"Exception while processing sources.conf line " + lineNo
+							+ "\n\n");
+
+			throw ex;
 		}
 
-		while ((line = diseqcConf.readLine()) != null) {
+		lineNo = 0;
 
-			if (line.length() == 0) {
-				continue;
-			}
-			if (line.charAt(0) == '#') {
-				continue;
-			}
-			splitLine = line.split("\\s+");
+		try {
+			while ((line = diseqcConf.readLine()) != null) {
 
-			source = findByName(userId, splitLine[0]);
-			sb.setLength(0);
-			for (int i = 1; i < splitLine.length; ++i) {
-				sb.append(splitLine[i]).append(' ');
-			}
-			sb.setLength(sb.length() - 1);
-			if (splitLine[1].equals("11700")) {
-				if (splitLine[2].equals("V")) {
-					source.setLoV(sb.toString());
-				} else {
-					source.setLoH(sb.toString());
+				if (line.length() == 0) {
+					continue;
 				}
-			} else {
-				if (splitLine[2].equals("V")) {
-					source.setHiV(sb.toString());
-				} else {
-					source.setHiH(sb.toString());
+				if (line.charAt(0) == '#') {
+					continue;
 				}
+				splitLine = line.split("\\s+");
+
+				source = findByName(userId, splitLine[0]);
+				sb.setLength(0);
+				for (int i = 1; i < splitLine.length; ++i) {
+					sb.append(splitLine[i]).append(' ');
+				}
+				sb.setLength(sb.length() - 1);
+				if (splitLine[1].equals("11700")) {
+					if (splitLine[2].equals("V")) {
+						source.setLoV(sb.toString());
+					} else {
+						source.setLoH(sb.toString());
+					}
+				} else {
+					if (splitLine[2].equals("V")) {
+						source.setHiV(sb.toString());
+					} else {
+						source.setHiH(sb.toString());
+					}
+				}
+				em.flush();
 			}
-			em.flush();
+		} catch (Throwable ex) {
+			Logger.getLogger(this.getClass()).log(
+					Level.ERROR,
+					"Exception while processing diseqc.conf line " + lineNo
+							+ "\n\n");
+
+			throw ex;
 		}
 
-		while ((line = rotorConf.readLine()) != null) {
+		lineNo = 0;
 
-			if (line.length() == 0) {
-				continue;
-			}
-			if (line.charAt(0) == '#') {
-				continue;
-			}
-			splitLine = line.split("\\s+");
+		try {
+			while ((line = rotorConf.readLine()) != null) {
 
-			source = findByName(userId, splitLine[1]);
-			source.setRotor(Integer.valueOf(splitLine[0]));
-			em.flush();
+				if (line.length() == 0) {
+					continue;
+				}
+				if (line.charAt(0) == '#') {
+					continue;
+				}
+				splitLine = line.split("\\s+");
+
+				source = findByName(userId, splitLine[1]);
+				source.setRotor(Integer.valueOf(splitLine[0]));
+				em.flush();
+			}
+		} catch (Throwable ex) {
+			Logger.getLogger(this.getClass()).log(
+					Level.ERROR,
+					"Exception while processing rotor.conf line " + lineNo
+							+ "\n\n");
+
+			throw ex;
 		}
 	}
 

@@ -31,6 +31,7 @@ public class TransponderRepository {
 		TypedQuery<Integer> query;
 		Integer queryResult;
 		int seqno;
+		int lineNo;
 		String line;
 		boolean ignored;
 		String[] splitLine;
@@ -51,43 +52,54 @@ public class TransponderRepository {
 			seqno = 1;
 		}
 
-		while ((line = sourceFreq.readLine()) != null) {
+		lineNo = 0;
 
-			if (line.length() == 0) {
-				continue;
-			}
-			if (line.charAt(0) == '#') {
-				continue;
-			}
-			ignored = false;
-			if (line.charAt(0) == '!') {
-				ignored = true;
-				line = line.substring(2);
-			}
-			splitLine = line.split("\\s+");
+		try {
+			while ((line = sourceFreq.readLine()) != null) {
 
-			transponder = new Transponder();
-			transponder.setSourceId(sourceId);
-			transponder.setDvbsGen(Integer.parseInt(splitLine[0].substring(1)));
-			transponder.setFrequency(Integer.parseInt(splitLine[1]) / 1000);
-			transponder.setPolarization(splitLine[2]);
-			transponder.setSymbolRate(Integer.parseInt(splitLine[3]) / 1000);
-			streamId = null;
-			if (splitLine.length == 8) {
-				streamId = Integer.parseInt(splitLine[7]);
+				if (line.length() == 0) {
+					continue;
+				}
+				if (line.charAt(0) == '#') {
+					continue;
+				}
+				ignored = false;
+				if (line.charAt(0) == '!') {
+					ignored = true;
+					line = line.substring(2);
+				}
+				splitLine = line.split("\\s+");
+
+				transponder = new Transponder();
+				transponder.setSourceId(sourceId);
+				transponder.setDvbsGen(Integer.parseInt(splitLine[0]
+						.substring(1)));
+				transponder.setFrequency(Integer.parseInt(splitLine[1]) / 1000);
+				transponder.setPolarization(splitLine[2]);
+				transponder
+						.setSymbolRate(Integer.parseInt(splitLine[3]) / 1000);
+				streamId = null;
+				if (splitLine.length == 8) {
+					streamId = Integer.parseInt(splitLine[7]);
+				}
+				transponder.setStreamIdNullable(streamId);
+				transponder.setIgnored(ignored);
+				em.persist(transponder);
+				em.flush();
+
+				transpSeqno = new TranspSeqno();
+				transpSeqno.setTranspId(transponder.getId());
+				transpSeqno.setUserId(userId);
+				transpSeqno.setSeqno(seqno);
+				em.persist(transpSeqno);
+
+				++seqno;
 			}
-			transponder.setStreamIdNullable(streamId);
-			transponder.setIgnored(ignored);
-			em.persist(transponder);
-			em.flush();
+		} catch (Throwable ex) {
+			Logger.getLogger(this.getClass()).log(Level.ERROR,
+					"Exception while processing line " + lineNo + "\n\n");
 
-			transpSeqno = new TranspSeqno();
-			transpSeqno.setTranspId(transponder.getId());
-			transpSeqno.setUserId(userId);
-			transpSeqno.setSeqno(seqno);
-			em.persist(transpSeqno);
-
-			++seqno;
+			throw ex;
 		}
 	}
 
@@ -104,6 +116,7 @@ public class TransponderRepository {
 		SourceRepository sr;
 		String curSourceName;
 		Source curSource;
+		int lineNo;
 		String line;
 		String[] splitLine;
 		int frequency;
@@ -118,78 +131,89 @@ public class TransponderRepository {
 		curSourceName = null;
 		curSource = null;
 
-		while ((line = channelsCfg.readLine()) != null) {
+		lineNo = 0;
 
-			if (line.length() == 0) {
-				continue;
-			}
-			if (line.charAt(0) == '#') {
-				continue;
-			}
-			splitLine = line.split(":");
+		try {
+			while ((line = channelsCfg.readLine()) != null) {
 
-			if ("S".equals(splitLine[0])) {
-				curSourceName = splitLine[1];
-				if (source != null) {
-					if (curSourceName.equals(source.getName())) {
-						curSource = source;
+				if (line.length() == 0) {
+					continue;
+				}
+				if (line.charAt(0) == '#') {
+					continue;
+				}
+				splitLine = line.split(":");
+
+				if ("S".equals(splitLine[0])) {
+					curSourceName = splitLine[1];
+					if (source != null) {
+						if (curSourceName.equals(source.getName())) {
+							curSource = source;
+						} else {
+							if (curSource != null) {
+								break;
+							}
+						}
 					} else {
-						if (curSource != null) {
-							break;
+						curSource = sr.findByName(userId, curSourceName);
+						if (curSource == null) {
+							Logger.getLogger(this.getClass()).log(
+									Level.WARN,
+									"Can't find Source named '" + curSourceName
+											+ "'");
 						}
 					}
-				} else {
-					curSource = sr.findByName(userId, curSourceName);
-					if (curSource == null) {
-						Logger.getLogger(this.getClass()).log(
-								Level.WARN,
-								"Can't find Source named '" + curSourceName
-										+ "'");
+				}
+
+				if ("T".equals(splitLine[0])) {
+					if (curSource != null) {
+						frequency = Integer.parseInt(splitLine[1]);
+						polarization = splitLine[2].substring(0, 1);
+						streamId = null;
+						streamIdPos = splitLine[2].indexOf("X");
+						if (streamIdPos >= 0) {
+							try {
+								streamId = NumberFormat
+										.getInstance()
+										.parse(splitLine[2]
+												.substring(streamIdPos + 1))
+										.intValue();
+							} catch (ParseException ex) {
+								// do nothing
+							}
+						}
+						transponder = findBySourceFrequencyPolarizationStream(
+								curSource.getId(), frequency, polarization,
+								streamId);
+						if (transponder != null) {
+							nid = Integer.parseInt(splitLine[4]);
+							if (nid != 0) {
+								transponder.setNid(nid);
+							}
+							tid = Integer.parseInt(splitLine[5]);
+							if (tid != 0) {
+								transponder.setTid(tid);
+							}
+							em.flush();
+						} else {
+							Logger.getLogger(this.getClass()).log(
+									Level.WARN,
+									"Can't find Transponder for Source '"
+											+ curSourceName
+											+ "' with frequency '" + frequency
+											+ "', polarization '"
+											+ polarization
+											+ "' and stream ID '" + streamId
+											+ "'");
+						}
 					}
 				}
 			}
+		} catch (Throwable ex) {
+			Logger.getLogger(this.getClass()).log(Level.ERROR,
+					"Exception while processing line " + lineNo + "\n\n");
 
-			if ("T".equals(splitLine[0])) {
-				if (curSource != null) {
-					frequency = Integer.parseInt(splitLine[1]);
-					polarization = splitLine[2].substring(0, 1);
-					streamId = null;
-					streamIdPos = splitLine[2].indexOf("X");
-					if (streamIdPos >= 0) {
-						try {
-							streamId = NumberFormat
-									.getInstance()
-									.parse(splitLine[2]
-											.substring(streamIdPos + 1))
-									.intValue();
-						} catch (ParseException ex) {
-							// do nothing
-						}
-					}
-					transponder = findBySourceFrequencyPolarizationStream(
-							curSource.getId(), frequency, polarization,
-							streamId);
-					if (transponder != null) {
-						nid = Integer.parseInt(splitLine[4]);
-						if (nid != 0) {
-							transponder.setNid(nid);
-						}
-						tid = Integer.parseInt(splitLine[5]);
-						if (tid != 0) {
-							transponder.setTid(tid);
-						}
-						em.flush();
-					} else {
-						Logger.getLogger(this.getClass()).log(
-								Level.WARN,
-								"Can't find Transponder for Source '"
-										+ curSourceName + "' with frequency '"
-										+ frequency + "', polarization '"
-										+ polarization + "' and stream ID '"
-										+ streamId + "'");
-					}
-				}
-			}
+			throw ex;
 		}
 	}
 

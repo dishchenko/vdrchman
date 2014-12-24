@@ -10,6 +10,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.jboss.logging.Logger;
+import org.jboss.logging.Logger.Level;
+
 public class GroupRepository {
 
 	private EntityManager em;
@@ -31,6 +34,7 @@ public class GroupRepository {
 	// from configuration reader
 	public void load(Long userId, BufferedReader groupsCfg) throws IOException {
 		StringBuffer sb;
+		int lineNo;
 		String line;
 		String[] splitLine;
 		String[] ncInfo;
@@ -38,29 +42,38 @@ public class GroupRepository {
 
 		sb = new StringBuffer();
 
-		while ((line = groupsCfg.readLine()) != null) {
+		lineNo = 0;
 
-			if (line.length() == 0) {
-				continue;
-			}
-			if (line.charAt(0) == '#') {
-				continue;
-			}
-			splitLine = line.split("\\s+");
-			ncInfo = splitLine[0].split(":@");
+		try {
+			while ((line = groupsCfg.readLine()) != null) {
 
-			group = new Group();
-			group.setUserId(userId);
-			group.setName(ncInfo[0]);
-			group.setStartChannelNo(Integer.parseInt(ncInfo[1]));
-			sb.setLength(0);
-			for (int i = 1; i < splitLine.length; ++i) {
-				sb.append(splitLine[i]).append(' ');
+				if (line.length() == 0) {
+					continue;
+				}
+				if (line.charAt(0) == '#') {
+					continue;
+				}
+				splitLine = line.split("\\s+");
+				ncInfo = splitLine[0].split(":@");
+
+				group = new Group();
+				group.setUserId(userId);
+				group.setName(ncInfo[0]);
+				group.setStartChannelNo(Integer.parseInt(ncInfo[1]));
+				sb.setLength(0);
+				for (int i = 1; i < splitLine.length; ++i) {
+					sb.append(splitLine[i]).append(' ');
+				}
+				sb.setLength(sb.length() - 1);
+				group.setDescription(sb.toString());
+				group.setIgnored(false);
+				em.persist(group);
 			}
-			sb.setLength(sb.length() - 1);
-			group.setDescription(sb.toString());
-			group.setIgnored(false);
-			em.persist(group);
+		} catch (Throwable ex) {
+			Logger.getLogger(this.getClass()).log(Level.ERROR,
+					"Exception while processing line " + lineNo + "\n\n");
+
+			throw ex;
 		}
 	}
 
