@@ -81,7 +81,7 @@
 						<f:selectItems
 							value="#{scannedChannelsManager.filteredSourceTransponders}"
 							var="transponderVar" itemValue="#{transponderVar.id}"
-							itemLabel="#{transponderVar.frequency} #{transponderVar.polarization}#{not empty transponderVar.streamId ? ' stream '.concat(transponderVar.streamId) : ''}" />
+							itemLabel="#{transponderVar.frequency} #{transponderVar.polarization}#{not empty transponderVar.streamIdNullable ? ' stream '.concat(transponderVar.streamIdNullable) : ''}" />
 					</h:selectOneMenu>
 					<h:outputLabel styleClass="preformattedtext"
 						value="Comparison result" />
@@ -125,7 +125,7 @@
 							rendered="#{scannedChannelsManager.filteredTranspId lt 0}">
 							<f:facet name="header">Frequency</f:facet>
 							<h:outputText styleClass="preformattedtext"
-								value="#{channelVar.frequency} #{channelVar.polarization}#{not empty channelVar.streamId ? ' stream '.concat(channelVar.streamId) : ''}" />
+								value="#{channelVar.frequency} #{channelVar.polarization}#{not empty channelVar.streamIdNullable ? ' stream '.concat(channelVar.streamIdNullable) : ''}" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">SID</f:facet>
@@ -270,7 +270,7 @@
 					<ui:fragment
 						rendered="#{not empty scannedChannelsManager.workingChannelSource and empty scannedChannelsManager.workingChannelTransponder}">
 						<h:outputText
-							value="Please add Transponder with frequency '#{scannedChannelsManager.workingChannel.frequency}', polarization '#{scannedChannelsManager.workingChannel.frequency}'#{not empty scannedChannelsManager.workingChannel.streamId ? ', stream \''.concat(scannedChannelsManager.workingChannel.streamId).concat('\'') : ''} first!" />
+							value="Please add Transponder with frequency '#{scannedChannelsManager.workingChannel.frequency}', polarization '#{scannedChannelsManager.workingChannel.frequency}'#{not empty scannedChannelsManager.workingChannel.streamIdNullable ? ', stream \''.concat(scannedChannelsManager.workingChannel.streamIdNullable).concat('\'') : ''} first!" />
 						<h:panelGrid columns="1">
 							<a4j:commandButton id="okNoTransponderButton" value="OK"
 								onclick="this.disabled=true"
@@ -288,7 +288,7 @@
 								styleClass="preformattedtext" />
 							<h:outputLabel value="Transponder:" styleClass="preformattedtext" />
 							<h:outputText
-								value="#{scannedChannelsManager.workingChannelTransponder.frequency} #{scannedChannelsManager.workingChannelTransponder.polarization}#{not empty scannedChannelsManager.workingChannelTransponder.streamId ? ' stream '.concat(scannedChannelsManager.workingChannelTransponder.streamId) : ''}"
+								value="#{scannedChannelsManager.workingChannelTransponder.frequency} #{scannedChannelsManager.workingChannelTransponder.polarization}#{not empty scannedChannelsManager.workingChannelTransponder.streamIdNullable ? ' stream '.concat(scannedChannelsManager.workingChannelTransponder.streamIdNullable) : ''}"
 								styleClass="preformattedtext" />
 							<h:outputLabel value="Name:" styleClass="preformattedtext" />
 							<h:panelGrid columns="2">
@@ -412,7 +412,7 @@
 					<ui:fragment
 						rendered="#{not empty scannedChannelsManager.workingChannelSource and empty scannedChannelsManager.workingChannelTransponder}">
 						<h:outputText
-							value="Please add Transponder with frequency '#{scannedChannelsManager.workingChannel.frequency}', polarization '#{scannedChannelsManager.workingChannel.frequency}'#{not empty scannedChannelsManager.workingChannel.streamId ? ', stream \''.concat(scannedChannelsManager.workingChannel.streamId).concat('\'') : ''} first!" />
+							value="Please add Transponder with frequency '#{scannedChannelsManager.workingChannel.frequency}', polarization '#{scannedChannelsManager.workingChannel.frequency}'#{not empty scannedChannelsManager.workingChannel.streamIdNullable ? ', stream \''.concat(scannedChannelsManager.workingChannel.streamIdNullable).concat('\'') : ''} first!" />
 						<h:panelGrid columns="1">
 							<a4j:commandButton id="okNoTransponderButton" value="OK"
 								onclick="this.disabled=true"
@@ -430,7 +430,7 @@
 								styleClass="preformattedtext" />
 							<h:outputLabel value="Transponder:" styleClass="preformattedtext" />
 							<h:outputText
-								value="#{scannedChannelsManager.workingChannelTransponder.frequency} #{scannedChannelsManager.workingChannelTransponder.polarization}#{not empty scannedChannelsManager.workingChannelTransponder.streamId ? ' stream '.concat(scannedChannelsManager.workingChannelTransponder.streamId) : ''}"
+								value="#{scannedChannelsManager.workingChannelTransponder.frequency} #{scannedChannelsManager.workingChannelTransponder.polarization}#{not empty scannedChannelsManager.workingChannelTransponder.streamIdNullable ? ' stream '.concat(scannedChannelsManager.workingChannelTransponder.streamIdNullable) : ''}"
 								styleClass="preformattedtext" />
 							<h:outputLabel value="Service ID:" styleClass="preformattedtext" />
 							<h:outputText
@@ -497,7 +497,7 @@
 						<h:outputText value="" />
 						<h:outputLabel value="Transponder:" styleClass="preformattedtext" />
 						<h:outputText
-							value="#{scannedChannelsManager.workingChannelTransponder.frequency} #{scannedChannelsManager.workingChannelTransponder.polarization}#{not empty scannedChannelsManager.workingChannelTransponder.streamId ? ' stream '.concat(scannedChannelsManager.workingChannelTransponder.streamId) : ''}"
+							value="#{scannedChannelsManager.workingChannelTransponder.frequency} #{scannedChannelsManager.workingChannelTransponder.polarization}#{not empty scannedChannelsManager.workingChannelTransponder.streamIdNullable ? ' stream '.concat(scannedChannelsManager.workingChannelTransponder.streamIdNullable) : ''}"
 							styleClass="preformattedtext" />
 						<h:outputText value="" />
 						<h:outputLabel value="Name:" styleClass="preformattedtext" />
@@ -633,7 +633,7 @@
 						<h:outputText value="" />
 						<h:outputLabel value="Transponder:" styleClass="preformattedtext" />
 						<h:outputText
-							value="#{scannedChannelsManager.workingChannelTransponder.frequency} #{scannedChannelsManager.workingChannelTransponder.polarization}#{not empty scannedChannelsManager.workingChannelTransponder.streamId ? ' stream '.concat(scannedChannelsManager.workingChannelTransponder.streamId) : ''}"
+							value="#{scannedChannelsManager.workingChannelTransponder.frequency} #{scannedChannelsManager.workingChannelTransponder.polarization}#{not empty scannedChannelsManager.workingChannelTransponder.streamIdNullable ? ' stream '.concat(scannedChannelsManager.workingChannelTransponder.streamIdNullable) : ''}"
 							styleClass="preformattedtext" />
 						<h:outputText value="" />
 						<h:outputLabel value="Service ID:" styleClass="preformattedtext" />

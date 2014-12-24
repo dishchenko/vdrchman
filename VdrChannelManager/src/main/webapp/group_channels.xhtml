@@ -99,7 +99,7 @@
 								value="#{transponderRepository.findById(channelVar.transpId)}">
 							</ui:param>
 							<h:outputText styleClass="preformattedtext"
-								value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamId ? ' stream '.concat(transponderParam.streamId) : ''}" />
+								value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamIdNullable ? ' stream '.concat(transponderParam.streamIdNullable) : ''}" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">Name</f:facet>
@@ -205,7 +205,7 @@
 						<ui:param name="transponderParam"
 							value="#{transponderRepository.findById(channelVar.transpId)}">
 						</ui:param>
-							(on #{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamId ? ' stream '.concat(transponderParam.streamId) : ''}
+							(on #{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamIdNullable ? ' stream '.concat(transponderParam.streamIdNullable) : ''}
 						<ui:param name="sourceParam"
 							value="#{sourceRepository.findById(transponderParam.sourceId)}">
 						</ui:param>

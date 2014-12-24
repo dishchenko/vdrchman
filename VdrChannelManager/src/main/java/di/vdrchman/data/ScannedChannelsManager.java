@@ -565,7 +565,7 @@ public class ScannedChannelsManager implements Serializable {
 						scannedChannel.setSourceName(sourceName);
 						scannedChannel.setFrequency(frequency);
 						scannedChannel.setPolarization(polarization);
-						scannedChannel.setStreamId(streamId);
+						scannedChannel.setStreamIdNullable(streamId);
 						scannedChannel.setSid(sid);
 						scannedChannel.setApid(apid);
 					}

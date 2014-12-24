@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
@@ -130,6 +131,17 @@ public class ScannedChannel implements Serializable {
 		this.scannedName = scannedChannel.scannedName;
 		this.providerName = scannedChannel.providerName;
 		this.refreshed = scannedChannel.refreshed;
+	}
+
+	@Transient
+	public Integer getStreamIdNullable() {
+
+		return streamId == 0 ? null : streamId;
+	}
+
+	@Transient
+	public void setStreamIdNullable(Integer streamId) {
+		this.streamId = streamId == null ? 0 : streamId;
 	}
 
 	public Long getId() {

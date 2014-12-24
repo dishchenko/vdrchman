@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
@@ -48,6 +49,7 @@ public class Transponder implements Serializable {
 	@Column(name = "symbol_rate")
 	private Integer symbolRate;
 
+	@NotNull
 	@Digits(fraction = 0, integer = 5)
 	@Column(name = "stream_id")
 	private Integer streamId;
@@ -61,6 +63,17 @@ public class Transponder implements Serializable {
 	@NotNull
 	@Column(columnDefinition = "BIT", length = 1)
 	private Boolean ignored;
+
+	@Transient
+	public Integer getStreamIdNullable() {
+
+		return streamId == 0 ? null : streamId;
+	}
+
+	@Transient
+	public void setStreamIdNullable(Integer streamId) {
+		this.streamId = streamId == null ? 0 : streamId;
+	}
 
 	public Long getId() {
 

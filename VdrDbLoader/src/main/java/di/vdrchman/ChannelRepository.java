@@ -415,7 +415,7 @@ public class ChannelRepository {
 										+ "', polarization '"
 										+ transponder.getPolarization()
 										+ "' and stream ID '"
-										+ transponder.getStreamId() + "'");
+										+ transponder.getStreamIdNullable() + "'");
 					}
 				}
 			}

@@ -268,7 +268,7 @@ public class FilesManager implements Serializable {
 					.append(transponder.getFrequency()).append("000 ")
 					.append(transponder.getPolarization()).append(' ')
 					.append(transponder.getSymbolRate()).append("000");
-			streamId = transponder.getStreamId();
+			streamId = transponder.getStreamIdNullable();
 			if (streamId != null) {
 				sb.append(" AUTO AUTO AUTO ").append(streamId);
 			}
@@ -342,7 +342,7 @@ public class FilesManager implements Serializable {
 							lang = "";
 						}
 
-						streamId = transponder.getStreamId();
+						streamId = transponder.getStreamIdNullable();
 						transponderParams = transponder.getPolarization() + "S"
 								+ (transponder.getDvbsGen() - 1);
 						if (streamId != null) {

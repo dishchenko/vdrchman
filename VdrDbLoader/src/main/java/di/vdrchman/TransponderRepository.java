@@ -35,6 +35,7 @@ public class TransponderRepository {
 		boolean ignored;
 		String[] splitLine;
 		Transponder transponder;
+		Integer streamId;
 		TranspSeqno transpSeqno;
 
 		query = em
@@ -71,9 +72,11 @@ public class TransponderRepository {
 			transponder.setFrequency(Integer.parseInt(splitLine[1]) / 1000);
 			transponder.setPolarization(splitLine[2]);
 			transponder.setSymbolRate(Integer.parseInt(splitLine[3]) / 1000);
+			streamId = null;
 			if (splitLine.length == 8) {
-				transponder.setStreamId(Integer.parseInt(splitLine[7]));
+				streamId = Integer.parseInt(splitLine[7]);
 			}
+			transponder.setStreamIdNullable(streamId);
 			transponder.setIgnored(ignored);
 			em.persist(transponder);
 			em.flush();
@@ -164,7 +167,8 @@ public class TransponderRepository {
 						}
 					}
 					transponder = findBySourceFrequencyPolarizationStream(
-							curSource.getId(), frequency, polarization, streamId);
+							curSource.getId(), frequency, polarization,
+							streamId);
 					if (transponder != null) {
 						nid = Integer.parseInt(splitLine[4]);
 						if (nid != 0) {
@@ -200,6 +204,10 @@ public class TransponderRepository {
 		Root<Transponder> transponderRoot;
 		Predicate p;
 
+		if (streamId == null) {
+			streamId = 0;
+		}
+
 		cb = em.getCriteriaBuilder();
 		criteria = cb.createQuery(Transponder.class);
 		transponderRoot = criteria.from(Transponder.class);
@@ -207,12 +215,9 @@ public class TransponderRepository {
 		p = cb.conjunction();
 		p = cb.and(p, cb.equal(transponderRoot.get("sourceId"), sourceId));
 		p = cb.and(p, cb.equal(transponderRoot.get("frequency"), frequency));
-		p = cb.and(p, cb.equal(transponderRoot.get("polarization"), polarization));
-		if (streamId == null) {
-			p = cb.and(p, cb.isNull(transponderRoot.get("streamId")));
-		} else {
-			p = cb.and(p, cb.equal(transponderRoot.get("streamId"), streamId));
-		}
+		p = cb.and(p,
+				cb.equal(transponderRoot.get("polarization"), polarization));
+		p = cb.and(p, cb.equal(transponderRoot.get("streamId"), streamId));
 		criteria.where(p);
 
 		try {

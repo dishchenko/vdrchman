@@ -134,7 +134,7 @@
 						<h:column>
 							<f:facet name="header">Stream ID</f:facet>
 							<a4j:commandLink styleClass="preformattedtext"
-								value="#{transponderVar.streamId}"
+								value="#{transponderVar.streamIdNullable}"
 								onclick="this.setAttribute('onclick', 'return false')"
 								oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:streamIdInput').focus()"
 								action="#{transpondersBacking.intendUpdateTransponder(transponderVar)}"
@@ -288,7 +288,7 @@
 						<h:outputLabel value="Stream ID:" styleClass="preformattedtext" />
 						<h:panelGrid columns="2">
 							<h:inputText id="streamIdInput"
-								value="#{transpondersManager.editedTransponder.streamId}"
+								value="#{transpondersManager.editedTransponder.streamIdNullable}"
 								maxlength="5" size="5"
 								converterMessage="Stream ID must be a number">
 								<rich:validator />
@@ -368,7 +368,7 @@
 					<br />
 					<ui:repeat value="#{transpondersManager.checkedTransponders}"
 						var="transponderVar" varStatus="loopVar">
-				            #{transponderVar.frequency} #{transponderVar.polarization}#{not empty transponderVar.streamId ? ' stream '.concat(transponderVar.streamId) : ''}
+				            #{transponderVar.frequency} #{transponderVar.polarization}#{not empty transponderVar.streamIdNullable ? ' stream '.concat(transponderVar.streamIdNullable) : ''}
 						<ui:param name="sourceParam"
 							value="#{sourceRepository.findById(transponderVar.sourceId)}">
 						</ui:param>

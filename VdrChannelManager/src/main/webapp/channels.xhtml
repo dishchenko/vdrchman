@@ -91,7 +91,7 @@
 						<f:selectItems
 							value="#{channelsManager.filteredSourceTransponders}"
 							var="transponderVar" itemValue="#{transponderVar.id}"
-							itemLabel="#{transponderVar.frequency} #{transponderVar.polarization}#{not empty transponderVar.streamId ? ' stream '.concat(transponderVar.streamId) : ''}" />
+							itemLabel="#{transponderVar.frequency} #{transponderVar.polarization}#{not empty transponderVar.streamIdNullable ? ' stream '.concat(transponderVar.streamIdNullable) : ''}" />
 					</h:selectOneMenu>
 					<h:outputLabel styleClass="preformattedtext"
 						value="Comparison result" />
@@ -141,7 +141,7 @@
 								value="#{transponderRepository.findById(channelVar.transpId)}">
 							</ui:param>
 							<h:outputText styleClass="preformattedtext"
-								value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamId ? ' stream '.concat(transponderParam.streamId) : ''}" />
+								value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamIdNullable ? ' stream '.concat(transponderParam.streamIdNullable) : ''}" />
 						</h:column>
 						<h:column>
 							<f:facet name="header">Name</f:facet>
@@ -371,7 +371,7 @@
 									<f:selectItems
 										value="#{channelsManager.editedSourceTransponders}"
 										var="transponderVar" itemValue="#{transponderVar.id}"
-										itemLabel="#{transponderVar.frequency} #{transponderVar.polarization}#{not empty transponderVar.streamId ? ' stream '.concat(transponderVar.streamId) : ''}" />
+										itemLabel="#{transponderVar.frequency} #{transponderVar.polarization}#{not empty transponderVar.streamIdNullable ? ' stream '.concat(transponderVar.streamIdNullable) : ''}" />
 									<rich:validator />
 								</h:selectOneMenu>
 								<rich:message for="transpondersMenu" />
@@ -383,7 +383,7 @@
 								value="#{transponderRepository.findById(channelsManager.filteredTranspId)}">
 							</ui:param>
 							<h:outputText
-								value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamId ? ' stream '.concat(transponderParam.streamId) : ''}"
+								value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamIdNullable ? ' stream '.concat(transponderParam.streamIdNullable) : ''}"
 								styleClass="preformattedtext" />
 						</ui:fragment>
 						<ui:fragment
@@ -392,7 +392,7 @@
 								value="#{transponderRepository.findById(channelsManager.editedChannel.transpId)}">
 							</ui:param>
 							<h:outputText
-								value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamId ? ' stream '.concat(transponderParam.streamId) : ''}"
+								value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamIdNullable ? ' stream '.concat(transponderParam.streamIdNullable) : ''}"
 								styleClass="preformattedtext" />
 						</ui:fragment>
 						<h:outputText value="" />
@@ -558,7 +558,7 @@
 						<ui:param name="transponderParam"
 							value="#{transponderRepository.findById(channelVar.transpId)}">
 						</ui:param>
-							(on #{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamId ? ' stream '.concat(transponderParam.streamId) : ''}
+							(on #{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamIdNullable ? ' stream '.concat(transponderParam.streamIdNullable) : ''}
 						<ui:param name="sourceParam"
 							value="#{sourceRepository.findById(transponderParam.sourceId)}">
 						</ui:param>

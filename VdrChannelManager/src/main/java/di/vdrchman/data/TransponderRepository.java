@@ -73,9 +73,9 @@ public class TransponderRepository {
 	}
 
 	/**
-	 * Finds a transponder by the combination of source ID, frequency, polarization
-	 * and stream ID given among the transponders belonging to the current
-	 * application user.
+	 * Finds a transponder by the combination of source ID, frequency,
+	 * polarization and stream ID given among the transponders belonging to the
+	 * current application user.
 	 * 
 	 * @param sourceId
 	 *            the source ID to find a transponder within
@@ -84,8 +84,8 @@ public class TransponderRepository {
 	 * @param polarization
 	 *            the polarization of transponder to find
 	 * @param streamId
-	 *            the stream ID within a multistream transponder to find or null
-	 *            if not multistream transponder
+	 *            the stream ID within a multistream transponder to find or
+	 *            null/zero if not multistream transponder
 	 * @return the transponder found or null if no transponder found
 	 */
 	public Transponder findBySourceFrequencyPolarizationStream(long sourceId,
@@ -96,6 +96,10 @@ public class TransponderRepository {
 		Root<Transponder> transponderRoot;
 		Predicate p;
 
+		if (streamId == null) {
+			streamId = 0;
+		}
+
 		cb = em.getCriteriaBuilder();
 		criteria = cb.createQuery(Transponder.class);
 		transponderRoot = criteria.from(Transponder.class);
@@ -103,12 +107,9 @@ public class TransponderRepository {
 		p = cb.conjunction();
 		p = cb.and(p, cb.equal(transponderRoot.get("sourceId"), sourceId));
 		p = cb.and(p, cb.equal(transponderRoot.get("frequency"), frequency));
-		p = cb.and(p, cb.equal(transponderRoot.get("polarization"), polarization));
-		if (streamId == null) {
-			p = cb.and(p, cb.isNull(transponderRoot.get("streamId")));
-		} else {
-			p = cb.and(p, cb.equal(transponderRoot.get("streamId"), streamId));
-		}
+		p = cb.and(p,
+				cb.equal(transponderRoot.get("polarization"), polarization));
+		p = cb.and(p, cb.equal(transponderRoot.get("streamId"), streamId));
 		criteria.where(p);
 
 		try {
