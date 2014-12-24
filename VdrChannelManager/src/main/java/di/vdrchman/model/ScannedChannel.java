@@ -87,7 +87,7 @@ public class ScannedChannel implements Serializable {
 	@Digits(fraction = 0, integer = 5)
 	private Integer tpid;
 
-	@Size(max = 20)
+	@Size(max = 50)
 	private String caid;
 
 	private Integer rid;

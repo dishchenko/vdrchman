@@ -42,7 +42,7 @@ public class IgnoredChannel implements Serializable {
 	@Digits(fraction = 0, integer = 5)
 	private Integer apid;
 
-	@Size(max = 20)
+	@Size(max = 50)
 	private String caid;
 
 	@Size(max = 50)

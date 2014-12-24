@@ -427,8 +427,14 @@ public class ScannedChannelsManager implements Serializable {
 
 				snInfo = splitLine[0].split(";");
 				scannedName = snInfo[0];
+				if (scannedName.length() > 50) {
+					scannedName = scannedName.substring(0, 50);
+				}
 				if (snInfo.length == 2) {
 					providerName = snInfo[1];
+					if (providerName.length() > 50) {
+						providerName = providerName.substring(0, 50);
+					}
 				} else {
 					providerName = null;
 				}
@@ -513,6 +519,9 @@ public class ScannedChannelsManager implements Serializable {
 					caid = caidSb.toString();
 				} catch (NumberFormatException ex) {
 					// do nothing
+				}
+				if (caid.length() > 50) {
+					caid = caid.substring(0, 50);
 				}
 				try {
 					if (Integer.parseInt(caid) == 0) {
