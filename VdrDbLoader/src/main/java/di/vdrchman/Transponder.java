@@ -67,7 +67,7 @@ public class Transponder implements Serializable {
 	@Transient
 	public Integer getStreamIdNullable() {
 
-		return streamId == 0 ? null : streamId;
+		return streamId == null ? null : (streamId == 0 ? null : streamId);
 	}
 
 	@Transient
