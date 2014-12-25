@@ -23,7 +23,12 @@ public class Main {
 		ap.parse(args);
 
 		if (ap.getCommand() == null) {
-			System.err.println("Usage: java -jar <JAR> cleanDb <userId>");
+			System.err
+					.println("Usage: java -jar <JAR> addUser <userName> <passwordHash>");
+			System.err
+					.println("                       setPassword <userId> <passwordHash>");
+			System.err.println("                       removeUser <userId>");
+			System.err.println("                       cleanDb <userId>");
 			System.err.println("                       loadSources <userId>");
 			System.err
 					.println("                       loadTransponders <userId> <sourceName>");
@@ -63,6 +68,15 @@ public class Main {
 
 			em.getTransaction().begin();
 
+			if (ap.getCommand() == Command.ADD_USER) {
+				addUser();
+			}
+			if (ap.getCommand() == Command.SET_PASSWORD) {
+				setPassword();
+			}
+			if (ap.getCommand() == Command.REMOVE_USER) {
+				removeUser();
+			}
 			if (ap.getCommand() == Command.CLEAN_DB) {
 				cleanDb();
 			}
@@ -101,6 +115,41 @@ public class Main {
 				em.close();
 			}
 			PersistenceManager.INSTANCE.close();
+		}
+	}
+
+	// Add new user to the VDR Channel Manager database
+	private void addUser() {
+		UserRepository ur;
+		Long userId;
+
+		ur = new UserRepository(em);
+		userId = ur.add(ap.getUserName(), ap.getPasswordHash());
+
+		System.out.println("User added. ID = " + userId);
+	}
+
+	// Set current user password to the hash value provided
+	private void setPassword() {
+		UserRepository ur;
+
+		ur = new UserRepository(em);
+
+		if (!ur.setPassword(ap.getUserId(), ap.getPasswordHash())) {
+			System.err.println("User with ID = " + ap.getUserId()
+					+ " not found.");
+		}
+	}
+
+	// Remove current user from the VDR Channel Manager database
+	private void removeUser() {
+		UserRepository ur;
+
+		ur = new UserRepository(em);
+
+		if (!ur.remove(ap.getUserId())) {
+			System.err.println("User with ID = " + ap.getUserId()
+					+ " not found.");
 		}
 	}
 
@@ -334,10 +383,13 @@ public class Main {
 
 	// Load Ignored Channels from channels.ignored file.
 	// The file must reside in the directory where the loader is launched.
-	// When a special source name 'ALL_SOURCES' is used, Ignored Channels are loaded
+	// When a special source name 'ALL_SOURCES' is used, Ignored Channels are
+	// loaded
 	// for all Sources belonging to the current User.
-	// Otherwise only Ignored Channels for the Source defined are taken into account
-	private void loadIgnoredChannels() throws FileNotFoundException, IOException {
+	// Otherwise only Ignored Channels for the Source defined are taken into
+	// account
+	private void loadIgnoredChannels() throws FileNotFoundException,
+			IOException {
 		BufferedReader channelsIgnored;
 		IgnoredChannelRepository icr;
 		SourceRepository sr;

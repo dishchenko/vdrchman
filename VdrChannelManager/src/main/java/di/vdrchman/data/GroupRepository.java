@@ -21,7 +21,7 @@ public class GroupRepository {
 	private EntityManager em;
 
 	@Inject
-	private User user;
+	private SessionUser sessionUser;
 
 	/**
 	 * Builds a list of groups belonging to the current application user. Adds
@@ -39,7 +39,7 @@ public class GroupRepository {
 		groupRoot = criteria.from(Group.class);
 
 		criteria.select(groupRoot);
-		criteria.where(cb.equal(groupRoot.get("userId"), user.getId()));
+		criteria.where(cb.equal(groupRoot.get("userId"), sessionUser.getId()));
 		criteria.orderBy(cb.asc(groupRoot.get("description")));
 
 		return em.createQuery(criteria).getResultList();
@@ -64,7 +64,7 @@ public class GroupRepository {
 		groupRoot = criteria.from(Group.class);
 
 		criteria.select(groupRoot);
-		criteria.where(cb.and(cb.equal(groupRoot.get("userId"), user.getId()),
+		criteria.where(cb.and(cb.equal(groupRoot.get("userId"), sessionUser.getId()),
 				cb.equal(groupRoot.get("name"), name)));
 
 		try {
@@ -95,7 +95,7 @@ public class GroupRepository {
 		groupRoot = criteria.from(Group.class);
 
 		criteria.select(groupRoot);
-		criteria.where(cb.and(cb.equal(groupRoot.get("userId"), user.getId()),
+		criteria.where(cb.and(cb.equal(groupRoot.get("userId"), sessionUser.getId()),
 				cb.equal(groupRoot.get("startChannelNo"), startChannelNo)));
 
 		try {
@@ -127,7 +127,7 @@ public class GroupRepository {
 	 *            the group to add
 	 */
 	public void add(Group group) {
-		group.setUserId(user.getId());
+		group.setUserId(sessionUser.getId());
 		em.persist(group);
 		em.flush();
 	}

@@ -12,6 +12,32 @@
 		<!-- Main panel group -->
 		<h:panelGroup id="userContent">
 			<h1>User</h1>
+			<!-- User form -->
+			<h:form id="sourcesForm">
+				<button
+					style="overflow: visible !important; height: 0 !important; width: 0 !important; margin: 0 !important; border: 0 !important; padding: 0 !important; display: block !important;"
+					type="submit" value="default action" />
+				<h2>
+					<h:outputText value="#{userManager.passwordChangeResult}"
+						rendered="#{not empty userManager.passwordChangeResult}" />
+				</h2>
+				<h:panelGrid columns="2">
+					<h:outputLabel value="Current password:"
+						styleClass="preformattedtext" />
+					<h:inputSecret value="#{userManager.currentPassword}"
+						maxlength="50" size="50" />
+					<h:outputLabel value="New password:" styleClass="preformattedtext" />
+					<h:inputSecret value="#{userManager.newPassword}" maxlength="50"
+						size="50" />
+					<h:outputLabel value="New password again:"
+						styleClass="preformattedtext" />
+					<h:inputSecret value="#{userManager.newPasswordAgain}"
+						maxlength="50" size="50" />
+					<h:commandButton action="#{userBacking.changePassword()}"
+						value="Change password" />
+				</h:panelGrid>
+				#{userManager.clearPasswordChangeResult()}
+			</h:form>
 		</h:panelGroup>
 	</ui:define>
 </ui:composition>

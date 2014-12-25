@@ -30,7 +30,7 @@ public class ChannelRepository {
 	private EntityManager em;
 
 	@Inject
-	private User user;
+	private SessionUser sessionUser;
 
 	/**
 	 * Builds a full or partial list of channels belonging to the current
@@ -72,13 +72,13 @@ public class ChannelRepository {
 							.createQuery(
 									"select c, cs.seqno from Channel c, ChannelSeqno cs where c.id = cs.channelId and cs.userId = :userId order by cs.seqno",
 									Object[].class);
-					query.setParameter("userId", user.getId());
+					query.setParameter("userId", sessionUser.getId());
 				} else {
 					query = em
 							.createQuery(
 									"select c, cs.seqno from Channel c, ChannelSeqno cs, Transponder t where c.id = cs.channelId and c.transpId = t.id and cs.userId = :userId and t.sourceId = :sourceId order by cs.seqno",
 									Object[].class);
-					query.setParameter("userId", user.getId());
+					query.setParameter("userId", sessionUser.getId());
 					query.setParameter("sourceId", sourceId);
 				}
 			} else {
@@ -86,7 +86,7 @@ public class ChannelRepository {
 						.createQuery(
 								"select c, cs.seqno from Channel c, ChannelSeqno cs where c.id = cs.channelId and cs.userId = :userId and c.transpId = :transpId order by cs.seqno",
 								Object[].class);
-				query.setParameter("userId", user.getId());
+				query.setParameter("userId", sessionUser.getId());
 				query.setParameter("transpId", transpId);
 			}
 			break;
@@ -97,13 +97,13 @@ public class ChannelRepository {
 							.createQuery(
 									"select c, cs.seqno from Channel c, ChannelSeqno cs where c.id = cs.channelId and cs.userId = :userId and exists (select sc from Source s, Transponder t, ScannedChannel sc where c.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and sc.streamId = t.streamId and sc.sid = c.sid and sc.apid = c.apid and (t.dvbsGen <> sc.dvbsGen or t.symbolRate <> sc.symbolRate or coalesce(t.nid, 0) <> coalesce(sc.nid, 0) or coalesce(t.tid, 0) <> coalesce(sc.tid, 0) or c.vpid <> coalesce(sc.vpid, 0) or coalesce(c.venc, 0) <> sc.venc or coalesce(c.pcr, 0) <> coalesce(sc.pcr, 0) or coalesce(c.aenc, 0) <> sc.aenc or coalesce(c.tpid, 0) <> coalesce(sc.tpid, 0) or coalesce(c.caid, ' ') <> coalesce(sc.caid, ' ') or coalesce(c.rid, 0) <> coalesce(sc.rid, 0) or coalesce(c.scannedName, ' ') <> coalesce(sc.scannedName, ' ') or coalesce(c.providerName, ' ') <> coalesce(sc.providerName, ' ')) and sc.userId = :userId) order by cs.seqno",
 									Object[].class);
-					query.setParameter("userId", user.getId());
+					query.setParameter("userId", sessionUser.getId());
 				} else {
 					query = em
 							.createQuery(
 									"select c, cs.seqno from Channel c, ChannelSeqno cs, Transponder o_t where c.id = cs.channelId and c.transpId = o_t.id and cs.userId = :userId and o_t.sourceId = :sourceId and exists (select sc from Source s, Transponder t, ScannedChannel sc where c.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and sc.streamId = t.streamId and sc.sid = c.sid and sc.apid = c.apid and (t.dvbsGen <> sc.dvbsGen or t.symbolRate <> sc.symbolRate or coalesce(t.nid, 0) <> coalesce(sc.nid, 0) or coalesce(t.tid, 0) <> coalesce(sc.tid, 0) or c.vpid <> coalesce(sc.vpid, 0) or coalesce(c.venc, 0) <> sc.venc or coalesce(c.pcr, 0) <> coalesce(sc.pcr, 0) or coalesce(c.aenc, 0) <> sc.aenc or coalesce(c.tpid, 0) <> coalesce(sc.tpid, 0) or coalesce(c.caid, ' ') <> coalesce(sc.caid, ' ') or coalesce(c.rid, 0) <> coalesce(sc.rid, 0) or coalesce(c.scannedName, ' ') <> coalesce(sc.scannedName, ' ') or coalesce(c.providerName, ' ') <> coalesce(sc.providerName, ' ')) and sc.userId = :userId) order by cs.seqno",
 									Object[].class);
-					query.setParameter("userId", user.getId());
+					query.setParameter("userId", sessionUser.getId());
 					query.setParameter("sourceId", sourceId);
 				}
 			} else {
@@ -111,7 +111,7 @@ public class ChannelRepository {
 						.createQuery(
 								"select c, cs.seqno from Channel c, ChannelSeqno cs where c.id = cs.channelId and cs.userId = :userId and c.transpId = :transpId and exists (select sc from Source s, Transponder t, ScannedChannel sc where c.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and sc.streamId = t.streamId and sc.sid = c.sid and sc.apid = c.apid and (t.dvbsGen <> sc.dvbsGen or t.symbolRate <> sc.symbolRate or coalesce(t.nid, 0) <> coalesce(sc.nid, 0) or coalesce(t.tid, 0) <> coalesce(sc.tid, 0) or c.vpid <> coalesce(sc.vpid, 0) or coalesce(c.venc, 0) <> sc.venc or coalesce(c.pcr, 0) <> coalesce(sc.pcr, 0) or coalesce(c.aenc, 0) <> sc.aenc or coalesce(c.tpid, 0) <> coalesce(sc.tpid, 0) or coalesce(c.caid, ' ') <> coalesce(sc.caid, ' ') or coalesce(c.rid, 0) <> coalesce(sc.rid, 0) or coalesce(c.scannedName, ' ') <> coalesce(sc.scannedName, ' ') or coalesce(c.providerName, ' ') <> coalesce(sc.providerName, ' ')) and sc.userId = :userId) order by cs.seqno",
 								Object[].class);
-				query.setParameter("userId", user.getId());
+				query.setParameter("userId", sessionUser.getId());
 				query.setParameter("transpId", transpId);
 			}
 			break;
@@ -122,13 +122,13 @@ public class ChannelRepository {
 							.createQuery(
 									"select c, cs.seqno from Channel c, ChannelSeqno cs where c.id = cs.channelId and cs.userId = :userId and not exists (select sc from Source s, Transponder t, ScannedChannel sc where c.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and sc.streamId = t.streamId and sc.sid = c.sid and sc.apid = c.apid and sc.userId = :userId) order by cs.seqno",
 									Object[].class);
-					query.setParameter("userId", user.getId());
+					query.setParameter("userId", sessionUser.getId());
 				} else {
 					query = em
 							.createQuery(
 									"select c, cs.seqno from Channel c, ChannelSeqno cs, Transponder o_t where c.id = cs.channelId and c.transpId = o_t.id and cs.userId = :userId and o_t.sourceId = :sourceId and not exists (select sc from Source s, Transponder t, ScannedChannel sc where c.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and sc.streamId = t.streamId and sc.sid = c.sid and sc.apid = c.apid and sc.userId = :userId) order by cs.seqno",
 									Object[].class);
-					query.setParameter("userId", user.getId());
+					query.setParameter("userId", sessionUser.getId());
 					query.setParameter("sourceId", sourceId);
 				}
 			} else {
@@ -136,7 +136,7 @@ public class ChannelRepository {
 						.createQuery(
 								"select c, cs.seqno from Channel c, ChannelSeqno cs where c.id = cs.channelId and cs.userId = :userId and c.transpId = :transpId and not exists (select sc from Source s, Transponder t, ScannedChannel sc where c.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and sc.streamId = t.streamId and sc.sid = c.sid and sc.apid = c.apid and sc.userId = :userId) order by cs.seqno",
 								Object[].class);
-				query.setParameter("userId", user.getId());
+				query.setParameter("userId", sessionUser.getId());
 				query.setParameter("transpId", transpId);
 			}
 			break;
@@ -147,13 +147,13 @@ public class ChannelRepository {
 							.createQuery(
 									"select c, cs.seqno from Channel c, ChannelSeqno cs where c.id = cs.channelId and cs.userId = :userId and exists (select sc from Source s, Transponder t, ScannedChannel sc where c.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and sc.streamId = t.streamId and sc.sid = c.sid and sc.apid = c.apid and (t.dvbsGen <> sc.dvbsGen or t.symbolRate <> sc.symbolRate or coalesce(t.nid, 0) <> coalesce(sc.nid, 0) or coalesce(t.tid, 0) <> coalesce(sc.tid, 0) or coalesce(c.pcr, 0) <> coalesce(sc.pcr, 0) or coalesce(c.tpid, 0) <> coalesce(sc.tpid, 0) or coalesce(c.rid, 0) <> coalesce(sc.rid, 0) or coalesce(c.providerName, ' ') <> coalesce(sc.providerName, ' ')) and sc.userId = :userId) order by cs.seqno",
 									Object[].class);
-					query.setParameter("userId", user.getId());
+					query.setParameter("userId", sessionUser.getId());
 				} else {
 					query = em
 							.createQuery(
 									"select c, cs.seqno from Channel c, ChannelSeqno cs, Transponder o_t where c.id = cs.channelId and c.transpId = o_t.id and cs.userId = :userId and o_t.sourceId = :sourceId and exists (select sc from Source s, Transponder t, ScannedChannel sc where c.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and sc.streamId = t.streamId and sc.sid = c.sid and sc.apid = c.apid and (t.dvbsGen <> sc.dvbsGen or t.symbolRate <> sc.symbolRate or coalesce(t.nid, 0) <> coalesce(sc.nid, 0) or coalesce(t.tid, 0) <> coalesce(sc.tid, 0) or coalesce(c.pcr, 0) <> coalesce(sc.pcr, 0) or coalesce(c.tpid, 0) <> coalesce(sc.tpid, 0) or coalesce(c.rid, 0) <> coalesce(sc.rid, 0) or coalesce(c.providerName, ' ') <> coalesce(sc.providerName, ' ')) and sc.userId = :userId) order by cs.seqno",
 									Object[].class);
-					query.setParameter("userId", user.getId());
+					query.setParameter("userId", sessionUser.getId());
 					query.setParameter("sourceId", sourceId);
 				}
 			} else {
@@ -161,7 +161,7 @@ public class ChannelRepository {
 						.createQuery(
 								"select c, cs.seqno from Channel c, ChannelSeqno cs where c.id = cs.channelId and cs.userId = :userId and c.transpId = :transpId and exists (select sc from Source s, Transponder t, ScannedChannel sc where c.transpId = t.id and t.sourceId = s.id and sc.sourceName = s.name and sc.frequency = t.frequency and sc.polarization = t.polarization and sc.streamId = t.streamId and sc.sid = c.sid and sc.apid = c.apid and (t.dvbsGen <> sc.dvbsGen or t.symbolRate <> sc.symbolRate or coalesce(t.nid, 0) <> coalesce(sc.nid, 0) or coalesce(t.tid, 0) <> coalesce(sc.tid, 0) or coalesce(c.pcr, 0) <> coalesce(sc.pcr, 0) or coalesce(c.tpid, 0) <> coalesce(sc.tpid, 0) or coalesce(c.rid, 0) <> coalesce(sc.rid, 0) or coalesce(c.providerName, ' ') <> coalesce(sc.providerName, ' ')) and sc.userId = :userId) order by cs.seqno",
 								Object[].class);
-				query.setParameter("userId", user.getId());
+				query.setParameter("userId", sessionUser.getId());
 				query.setParameter("transpId", transpId);
 			}
 			break;
@@ -251,13 +251,13 @@ public class ChannelRepository {
 					.createQuery(
 							"select max(cs.seqno) from ChannelSeqno cs, Channel c where c.id = cs.channelId and cs.userId = :userId",
 							Integer.class);
-			query.setParameter("userId", user.getId());
+			query.setParameter("userId", sessionUser.getId());
 		} else {
 			query = em
 					.createQuery(
 							"select max(cs.seqno) from ChannelSeqno cs, Channel c where c.id = cs.channelId and cs.userId = :userId and c.transpId = :transpId",
 							Integer.class);
-			query.setParameter("userId", user.getId());
+			query.setParameter("userId", sessionUser.getId());
 			query.setParameter("transpId", transpId);
 		}
 
@@ -427,26 +427,26 @@ public class ChannelRepository {
 
 			query = em
 					.createQuery("update ChannelSeqno cs set cs.seqno = -cs.seqno where cs.userId = :userId and cs.seqno > :curSeqno");
-			query.setParameter("userId", user.getId());
+			query.setParameter("userId", sessionUser.getId());
 			query.setParameter("curSeqno", curSeqno);
 			query.executeUpdate();
 
 			query = em
 					.createQuery("update ChannelSeqno cs set cs.seqno = -cs.seqno - 1 where cs.userId = :userId and cs.seqno < -:curSeqno");
-			query.setParameter("userId", user.getId());
+			query.setParameter("userId", sessionUser.getId());
 			query.setParameter("curSeqno", curSeqno);
 			query.executeUpdate();
 		}
 
 		query = em
 				.createQuery("update ChannelSeqno cs set cs.seqno = -cs.seqno where cs.userId = :userId and cs.seqno >= :seqno");
-		query.setParameter("userId", user.getId());
+		query.setParameter("userId", sessionUser.getId());
 		query.setParameter("seqno", seqno);
 		query.executeUpdate();
 
 		query = em
 				.createQuery("update ChannelSeqno cs set cs.seqno = -cs.seqno + 1 where cs.userId = :userId and cs.seqno <= -:seqno");
-		query.setParameter("userId", user.getId());
+		query.setParameter("userId", sessionUser.getId());
 		query.setParameter("seqno", seqno);
 		query.executeUpdate();
 
@@ -455,7 +455,7 @@ public class ChannelRepository {
 		} else {
 			channelSeqno = new ChannelSeqno();
 			channelSeqno.setChannelId(channel.getId());
-			channelSeqno.setUserId(user.getId());
+			channelSeqno.setUserId(sessionUser.getId());
 			channelSeqno.setSeqno(seqno);
 			em.persist(channelSeqno);
 		}
@@ -482,13 +482,13 @@ public class ChannelRepository {
 
 			query = em
 					.createQuery("update ChannelSeqno cs set cs.seqno = -cs.seqno where cs.userId = :userId and cs.seqno > :seqno");
-			query.setParameter("userId", user.getId());
+			query.setParameter("userId", sessionUser.getId());
 			query.setParameter("seqno", seqno);
 			query.executeUpdate();
 
 			query = em
 					.createQuery("update ChannelSeqno cs set cs.seqno = -cs.seqno - 1 where cs.userId = :userId and cs.seqno < -:seqno");
-			query.setParameter("userId", user.getId());
+			query.setParameter("userId", sessionUser.getId());
 			query.setParameter("seqno", seqno);
 			query.executeUpdate();
 		}

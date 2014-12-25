@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import di.vdrchman.model.Source;
-import di.vdrchman.data.User;
 
 @Stateless
 @Named
@@ -23,7 +22,7 @@ public class SourceRepository {
 	private EntityManager em;
 
 	@Inject
-	private User user;
+	private SessionUser sessionUser;
 
 	/**
 	 * Builds a list of sources belonging to the current application user. First
@@ -45,7 +44,7 @@ public class SourceRepository {
 		sourceRoot = criteria.from(Source.class);
 
 		criteria.select(sourceRoot);
-		criteria.where(cb.and(cb.equal(sourceRoot.get("userId"), user.getId()),
+		criteria.where(cb.and(cb.equal(sourceRoot.get("userId"), sessionUser.getId()),
 				cb.isNull(sourceRoot.get("rotor"))));
 		criteria.orderBy(cb.asc(sourceRoot.get("name")));
 		result.addAll(em.createQuery(criteria).getResultList());
@@ -54,7 +53,7 @@ public class SourceRepository {
 		criteria = cb.createQuery(Source.class);
 		sourceRoot = criteria.from(Source.class);
 		criteria.select(sourceRoot);
-		criteria.where(cb.and(cb.equal(sourceRoot.get("userId"), user.getId()),
+		criteria.where(cb.and(cb.equal(sourceRoot.get("userId"), sessionUser.getId()),
 				cb.isNotNull(sourceRoot.get("rotor"))));
 		criteria.orderBy(cb.asc(sourceRoot.get("rotor")));
 		result.addAll(em.createQuery(criteria).getResultList());
@@ -81,7 +80,7 @@ public class SourceRepository {
 		sourceRoot = criteria.from(Source.class);
 
 		criteria.select(sourceRoot);
-		criteria.where(cb.and(cb.equal(sourceRoot.get("userId"), user.getId()),
+		criteria.where(cb.and(cb.equal(sourceRoot.get("userId"), sessionUser.getId()),
 				cb.equal(sourceRoot.get("name"), name)));
 
 		try {
@@ -112,7 +111,7 @@ public class SourceRepository {
 		sourceRoot = criteria.from(Source.class);
 
 		criteria.select(sourceRoot);
-		criteria.where(cb.and(cb.equal(sourceRoot.get("userId"), user.getId()),
+		criteria.where(cb.and(cb.equal(sourceRoot.get("userId"), sessionUser.getId()),
 				cb.equal(sourceRoot.get("rotor"), rotor)));
 
 		try {
@@ -174,7 +173,7 @@ public class SourceRepository {
 	 *            the source to add
 	 */
 	public void add(Source source) {
-		source.setUserId(user.getId());
+		source.setUserId(sessionUser.getId());
 		em.persist(source);
 		em.flush();
 	}

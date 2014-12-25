@@ -17,7 +17,6 @@ import javax.persistence.criteria.Root;
 
 import di.vdrchman.model.TranspSeqno;
 import di.vdrchman.model.Transponder;
-import di.vdrchman.data.User;
 
 @Stateless
 @Named
@@ -27,7 +26,7 @@ public class TransponderRepository {
 	private EntityManager em;
 
 	@Inject
-	private User user;
+	private SessionUser sessionUser;
 
 	/**
 	 * Builds a full or partial list of transponders belonging to the current
@@ -51,13 +50,13 @@ public class TransponderRepository {
 					.createQuery(
 							"select t, ts.seqno from Transponder t, TranspSeqno ts where t.id = ts.transpId and ts.userId = :userId order by ts.seqno",
 							Object[].class);
-			query.setParameter("userId", user.getId());
+			query.setParameter("userId", sessionUser.getId());
 		} else {
 			query = em
 					.createQuery(
 							"select t, ts.seqno from Transponder t, TranspSeqno ts where t.id = ts.transpId and ts.userId = :userId and t.sourceId = :sourceId order by ts.seqno",
 							Object[].class);
-			query.setParameter("userId", user.getId());
+			query.setParameter("userId", sessionUser.getId());
 			query.setParameter("sourceId", sourceId);
 		}
 
@@ -150,13 +149,13 @@ public class TransponderRepository {
 					.createQuery(
 							"select max(ts.seqno) from TranspSeqno ts, Transponder t where t.id = ts.transpId and ts.userId = :userId",
 							Integer.class);
-			query.setParameter("userId", user.getId());
+			query.setParameter("userId", sessionUser.getId());
 		} else {
 			query = em
 					.createQuery(
 							"select max(ts.seqno) from TranspSeqno ts, Transponder t where t.id = ts.transpId and ts.userId = :userId and t.sourceId = :sourceId",
 							Integer.class);
-			query.setParameter("userId", user.getId());
+			query.setParameter("userId", sessionUser.getId());
 			query.setParameter("sourceId", sourceId);
 		}
 
@@ -202,7 +201,7 @@ public class TransponderRepository {
 				.createQuery(
 						"select ts.transpId from TranspSeqno ts where ts.userId = :userId and ts.seqno = :seqno",
 						Integer.class);
-		query.setParameter("userId", user.getId());
+		query.setParameter("userId", sessionUser.getId());
 		query.setParameter("seqno", seqno);
 
 		try {
@@ -298,26 +297,26 @@ public class TransponderRepository {
 
 			query = em
 					.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno where ts.userId = :userId and ts.seqno > :curSeqno");
-			query.setParameter("userId", user.getId());
+			query.setParameter("userId", sessionUser.getId());
 			query.setParameter("curSeqno", curSeqno);
 			query.executeUpdate();
 
 			query = em
 					.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno - 1 where ts.userId = :userId and ts.seqno < -:curSeqno");
-			query.setParameter("userId", user.getId());
+			query.setParameter("userId", sessionUser.getId());
 			query.setParameter("curSeqno", curSeqno);
 			query.executeUpdate();
 		}
 
 		query = em
 				.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno where ts.userId = :userId and ts.seqno >= :seqno");
-		query.setParameter("userId", user.getId());
+		query.setParameter("userId", sessionUser.getId());
 		query.setParameter("seqno", seqno);
 		query.executeUpdate();
 
 		query = em
 				.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno + 1 where ts.userId = :userId and ts.seqno <= -:seqno");
-		query.setParameter("userId", user.getId());
+		query.setParameter("userId", sessionUser.getId());
 		query.setParameter("seqno", seqno);
 		query.executeUpdate();
 
@@ -326,7 +325,7 @@ public class TransponderRepository {
 		} else {
 			transpSeqno = new TranspSeqno();
 			transpSeqno.setTranspId(transponder.getId());
-			transpSeqno.setUserId(user.getId());
+			transpSeqno.setUserId(sessionUser.getId());
 			transpSeqno.setSeqno(seqno);
 			em.persist(transpSeqno);
 		}
@@ -353,13 +352,13 @@ public class TransponderRepository {
 
 			query = em
 					.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno where ts.userId = :userId and ts.seqno > :seqno");
-			query.setParameter("userId", user.getId());
+			query.setParameter("userId", sessionUser.getId());
 			query.setParameter("seqno", seqno);
 			query.executeUpdate();
 
 			query = em
 					.createQuery("update TranspSeqno ts set ts.seqno = -ts.seqno - 1 where ts.userId = :userId and ts.seqno < -:seqno");
-			query.setParameter("userId", user.getId());
+			query.setParameter("userId", sessionUser.getId());
 			query.setParameter("seqno", seqno);
 			query.executeUpdate();
 		}

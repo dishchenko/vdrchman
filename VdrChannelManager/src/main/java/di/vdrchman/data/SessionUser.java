@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @SessionScoped
 @Named
-public class User implements Serializable {
+public class SessionUser implements Serializable {
 
 	private static final long serialVersionUID = 5646515466286495465L;
 

@@ -13,9 +13,10 @@ create table tuser (
 -- Application User Roles
 -- 'AuthUser' role grants access to the application's main functionality
 create table tuser_role (
+	id bigint(20) not null primary key auto_increment,
 	user_id bigint(20) not null,
 	role varchar(100) not null,
-	primary key (user_id, role),
+	unique (user_id, role),
 	foreign key (user_id) references tuser (id) on delete cascade
 ) engine=InnoDB;
 

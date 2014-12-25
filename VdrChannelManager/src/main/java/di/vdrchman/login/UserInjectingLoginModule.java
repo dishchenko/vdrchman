@@ -15,10 +15,10 @@ import javax.sql.DataSource;
 
 import org.jboss.security.auth.spi.DatabaseServerLoginModule;
 
-import di.vdrchman.data.User;
+import di.vdrchman.data.SessionUser;
 
 // Customized login module which saves ID of the logged in user
-// in the User bean
+// in the SessionUser bean
 public class UserInjectingLoginModule extends DatabaseServerLoginModule {
 
 	@Override
@@ -31,9 +31,9 @@ public class UserInjectingLoginModule extends DatabaseServerLoginModule {
 		DataSource ds;
 		String username;
 		BeanManager bm;
-		Bean<User> bean;
-		CreationalContext<User> cctx;
-		User user;
+		Bean<SessionUser> bean;
+		CreationalContext<SessionUser> cctx;
+		SessionUser sessionUser;
 
 		result = super.login();
 
@@ -47,16 +47,18 @@ public class UserInjectingLoginModule extends DatabaseServerLoginModule {
 				ds = (DataSource) ictx.lookup(dsJndiName);
 				username = getUsername();
 				bm = (BeanManager) ictx.lookup("java:comp/BeanManager");
-				bean = getUserBean(bm);
+				bean = getSessionUserBean(bm);
 				cctx = bm.createCreationalContext(bean);
-				user = (User) bm.getReference(bean, User.class, cctx);
+				sessionUser = (SessionUser) bm.getReference(bean,
+						SessionUser.class, cctx);
 				conn = ds.getConnection();
-				ps = conn.prepareStatement("select id from tuser where name=?");
+				ps = conn
+						.prepareStatement("select id from tuser where name=?");
 				ps.setString(1, username);
 				rs = ps.executeQuery();
 				rs.next();
-				user.setId(rs.getLong(1));
-				user.setName(username);
+				sessionUser.setId(rs.getLong(1));
+				sessionUser.setName(username);
 			}
 
 			catch (NamingException ex) {
@@ -94,8 +96,9 @@ public class UserInjectingLoginModule extends DatabaseServerLoginModule {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Bean<User> getUserBean(BeanManager bm) {
+	private Bean<SessionUser> getSessionUserBean(BeanManager bm) {
 
-		return (Bean<User>) bm.getBeans(User.class).iterator().next();
+		return (Bean<SessionUser>) bm.getBeans(SessionUser.class).iterator()
+				.next();
 	}
 }
