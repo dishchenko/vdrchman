@@ -142,7 +142,7 @@ public class IgnoredChannelRepository {
 							ignoredChannel.setApid(apid);
 							ignoredChannel.setScannedName(scannedName);
 							ignoredChannel.setProviderName(providerName);
-							em.persist(ignoredChannel);
+							em.merge(ignoredChannel);
 						}
 					}
 				}

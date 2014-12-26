@@ -257,9 +257,11 @@ public class TransponderRepository {
 	 *            the sequence number of the added transponder
 	 */
 	public void add(Transponder transponder, int seqno) {
+		Transponder mergedTransponder;
 
-		em.persist(transponder);
+		mergedTransponder = em.merge(transponder);
 		em.flush();
+		transponder.setId(mergedTransponder.getId());
 
 		move(transponder, seqno);
 	}
@@ -327,7 +329,7 @@ public class TransponderRepository {
 			transpSeqno.setTranspId(transponder.getId());
 			transpSeqno.setUserId(sessionUser.getId());
 			transpSeqno.setSeqno(seqno);
-			em.persist(transpSeqno);
+			em.merge(transpSeqno);
 		}
 	}
 

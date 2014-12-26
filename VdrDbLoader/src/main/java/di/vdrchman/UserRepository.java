@@ -13,20 +13,22 @@ public class UserRepository {
 	// Add new User
 	public Long add(String userName, String passwordHash) {
 		User user;
+		User mergedUser;
 		UserRole userRole;
 
 		user = new User();
 		user.setName(userName);
 		user.setPassword(passwordHash);
 
-		em.persist(user);
+		mergedUser = em.merge(user);
 		em.flush();
+		user.setId(mergedUser.getId());
 
 		userRole = new UserRole();
 		userRole.setUserId(user.getId());
 		userRole.setRole("AuthUser");
 
-		em.persist(userRole);
+		em.merge(userRole);
 
 		return user.getId();
 	}

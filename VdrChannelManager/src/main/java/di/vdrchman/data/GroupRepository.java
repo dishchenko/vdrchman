@@ -64,7 +64,8 @@ public class GroupRepository {
 		groupRoot = criteria.from(Group.class);
 
 		criteria.select(groupRoot);
-		criteria.where(cb.and(cb.equal(groupRoot.get("userId"), sessionUser.getId()),
+		criteria.where(cb.and(
+				cb.equal(groupRoot.get("userId"), sessionUser.getId()),
 				cb.equal(groupRoot.get("name"), name)));
 
 		try {
@@ -95,7 +96,8 @@ public class GroupRepository {
 		groupRoot = criteria.from(Group.class);
 
 		criteria.select(groupRoot);
-		criteria.where(cb.and(cb.equal(groupRoot.get("userId"), sessionUser.getId()),
+		criteria.where(cb.and(
+				cb.equal(groupRoot.get("userId"), sessionUser.getId()),
 				cb.equal(groupRoot.get("startChannelNo"), startChannelNo)));
 
 		try {
@@ -127,9 +129,12 @@ public class GroupRepository {
 	 *            the group to add
 	 */
 	public void add(Group group) {
+		Group mergedGroup;
+
 		group.setUserId(sessionUser.getId());
-		em.persist(group);
+		mergedGroup = em.merge(group);
 		em.flush();
+		group.setId(mergedGroup.getId());
 	}
 
 	/**
@@ -144,8 +149,8 @@ public class GroupRepository {
 	}
 
 	/**
-	 * Deletes the group from the persisted list of groups (deletes it from
-	 * the database).
+	 * Deletes the group from the persisted list of groups (deletes it from the
+	 * database).
 	 * 
 	 * @param group
 	 *            the group to delete

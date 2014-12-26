@@ -71,6 +71,7 @@ public class ChannelRepository {
 		String name;
 		String lang;
 		Channel channel;
+		Channel mergedChannel;
 		ChannelSeqno channelSeqno;
 
 		query = em
@@ -262,14 +263,15 @@ public class ChannelRepository {
 						channel.setName(name);
 						channel.setLang(lang);
 						channel.setLocked("L".equals(splitLine[11]));
-						em.persist(channel);
+						mergedChannel = em.merge(channel);
 						em.flush();
+						channel.setId(mergedChannel.getId());
 
 						channelSeqno = new ChannelSeqno();
 						channelSeqno.setChannelId(channel.getId());
 						channelSeqno.setUserId(userId);
 						channelSeqno.setSeqno(seqno);
-						em.persist(channelSeqno);
+						em.merge(channelSeqno);
 
 						++seqno;
 					}
@@ -420,7 +422,7 @@ public class ChannelRepository {
 									channelGroup.setChannelId(channel.getId());
 									channelGroup.setGroupId(group.getId());
 									channelGroup.setSeqno(seqno);
-									em.persist(channelGroup);
+									em.merge(channelGroup);
 								} else {
 									Logger.getLogger(this.getClass()).log(
 											Level.WARN,

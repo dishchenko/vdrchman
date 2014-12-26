@@ -17,6 +17,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import di.vdrchman.model.Biss;
 import di.vdrchman.model.Channel;
 import di.vdrchman.model.ChannelGroup;
 import di.vdrchman.model.ChannelSeqno;
@@ -378,6 +379,18 @@ public class ChannelRepository {
 	}
 
 	/**
+	 * Returns BISS keys for the channel given.
+	 * 
+	 * @param channel
+	 *            the channel to get BISS keys for
+	 * @return the BISS keys or null if no keys found
+	 */
+	public Biss findBissKeys(Channel channel) {
+
+		return em.find(Biss.class, channel.getId());
+	}
+
+	/**
 	 * Adds the channel to the persisted list of channels (stores it in the
 	 * database).
 	 * 
@@ -387,9 +400,11 @@ public class ChannelRepository {
 	 *            the sequence number of the added channel
 	 */
 	public void add(Channel channel, int seqno) {
+		Channel mergedChannel;
 
-		em.persist(channel);
+		mergedChannel = em.merge(channel);
 		em.flush();
+		channel.setId(mergedChannel.getId());
 
 		move(channel, seqno);
 	}
@@ -457,7 +472,7 @@ public class ChannelRepository {
 			channelSeqno.setChannelId(channel.getId());
 			channelSeqno.setUserId(sessionUser.getId());
 			channelSeqno.setSeqno(seqno);
-			em.persist(channelSeqno);
+			em.merge(channelSeqno);
 		}
 	}
 
@@ -529,7 +544,7 @@ public class ChannelRepository {
 		channelGroup.setGroupId(groupId);
 		channelGroup.setSeqno(seqno);
 
-		em.persist(channelGroup);
+		em.merge(channelGroup);
 	}
 
 	/**
@@ -672,6 +687,16 @@ public class ChannelRepository {
 				add(channelId, groupId, seqno);
 			}
 		}
+	}
+
+	/**
+	 * Adds or updates channel BISS keys in the database.
+	 * 
+	 * @param biss
+	 *            the channel BISS keys to add/update
+	 */
+	public void addOrUpdateBissKeys(Biss biss) {
+		em.merge(biss);
 	}
 
 	// Move the (merged into EM) channel to group relation to the new sequence

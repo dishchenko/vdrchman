@@ -18,6 +18,7 @@ import javax.inject.Named;
 import di.vdrchman.event.ScannedChannelAction;
 import di.vdrchman.event.SourceAction;
 import di.vdrchman.event.TransponderAction;
+import di.vdrchman.model.Biss;
 import di.vdrchman.model.Channel;
 import di.vdrchman.model.Group;
 import di.vdrchman.model.ScannedChannel;
@@ -99,6 +100,9 @@ public class ChannelsManager implements Serializable {
 
 	// The scanned channel corresponding to the edited channel
 	private ScannedChannel comparedScannedChannel;
+
+	// BISS keys the user is updating
+	private Biss editedBiss;
 
 	// Fill in checkedChannels list with channels corresponding
 	// to checkboxes checked in the data table on the page
@@ -571,6 +575,15 @@ public class ChannelsManager implements Serializable {
 
 	public void setComparedScannedChannel(ScannedChannel comparedScannedChannel) {
 		this.comparedScannedChannel = comparedScannedChannel;
+	}
+
+	public Biss getEditedBiss() {
+
+		return editedBiss;
+	}
+
+	public void setEditedBiss(Biss editedBiss) {
+		this.editedBiss = editedBiss;
 	}
 
 }

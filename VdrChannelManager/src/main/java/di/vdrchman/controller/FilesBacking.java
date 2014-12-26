@@ -56,4 +56,9 @@ public class FilesBacking {
 		filesManager.download("channels.conf", filesManager.buildChannelsConf());
 	}
 
+	// Build SoftCam.Key BISS keys data and download it as a file to the browser
+	public void downloadSoftCamKey() throws IOException {
+		filesManager.download("SoftCam.Key", filesManager.buildSoftCamKey());
+	}
+
 }

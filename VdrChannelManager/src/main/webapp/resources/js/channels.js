@@ -208,3 +208,48 @@ function updateGroupsPanelFormKeyPressHandler(event) {
 
 	return result;
 }
+
+//The Update BISS Keys panel form key press listener
+//Emulates 'OK' button click on hitting the 'Enter' key
+//Emulates 'Cancel' button click on hitting the 'Esc' key
+//Loops input focus through the form inputs on pressing 'Tab' / 'Shift+Tab'
+function updateBissKeysPanelFormKeyPressHandler(event) {
+	var result;
+	var element;
+
+	result = true;
+
+	event = event || window.event;
+
+	if (event.keyCode == 13) {
+		if (document.activeElement != document
+				.getElementById('updateBissKeysPanelForm:cancelButton')) {
+			element = document.getElementById('updateBissKeysPanelForm:okButton');
+			element.click();
+			result = false;
+		}
+	}
+
+	if (event.keyCode == 27) {
+		document.getElementById('updateBissKeysPanelForm:cancelButton').click();
+		result = false;
+	}
+
+	if (event.keyCode == 9) {
+		if (event.shiftKey) {
+			if (document.activeElement == document
+					.getElementById('updateBissKeysPanelForm:vkeyInput')) {
+				document.getElementById('updateBissKeysPanelForm:cancelButton').focus();
+				result = false;
+			}
+		} else {
+			if (document.activeElement == document
+					.getElementById('updateBissKeysPanelForm:cancelButton')) {
+				document.getElementById('updateBissKeysPanelForm:vkeyInput').focus();
+				result = false;
+			}
+		}
+	}
+
+	return result;
+}

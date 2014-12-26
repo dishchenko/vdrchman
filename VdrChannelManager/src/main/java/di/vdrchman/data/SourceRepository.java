@@ -44,7 +44,8 @@ public class SourceRepository {
 		sourceRoot = criteria.from(Source.class);
 
 		criteria.select(sourceRoot);
-		criteria.where(cb.and(cb.equal(sourceRoot.get("userId"), sessionUser.getId()),
+		criteria.where(cb.and(
+				cb.equal(sourceRoot.get("userId"), sessionUser.getId()),
 				cb.isNull(sourceRoot.get("rotor"))));
 		criteria.orderBy(cb.asc(sourceRoot.get("name")));
 		result.addAll(em.createQuery(criteria).getResultList());
@@ -53,7 +54,8 @@ public class SourceRepository {
 		criteria = cb.createQuery(Source.class);
 		sourceRoot = criteria.from(Source.class);
 		criteria.select(sourceRoot);
-		criteria.where(cb.and(cb.equal(sourceRoot.get("userId"), sessionUser.getId()),
+		criteria.where(cb.and(
+				cb.equal(sourceRoot.get("userId"), sessionUser.getId()),
 				cb.isNotNull(sourceRoot.get("rotor"))));
 		criteria.orderBy(cb.asc(sourceRoot.get("rotor")));
 		result.addAll(em.createQuery(criteria).getResultList());
@@ -80,7 +82,8 @@ public class SourceRepository {
 		sourceRoot = criteria.from(Source.class);
 
 		criteria.select(sourceRoot);
-		criteria.where(cb.and(cb.equal(sourceRoot.get("userId"), sessionUser.getId()),
+		criteria.where(cb.and(
+				cb.equal(sourceRoot.get("userId"), sessionUser.getId()),
 				cb.equal(sourceRoot.get("name"), name)));
 
 		try {
@@ -111,7 +114,8 @@ public class SourceRepository {
 		sourceRoot = criteria.from(Source.class);
 
 		criteria.select(sourceRoot);
-		criteria.where(cb.and(cb.equal(sourceRoot.get("userId"), sessionUser.getId()),
+		criteria.where(cb.and(
+				cb.equal(sourceRoot.get("userId"), sessionUser.getId()),
 				cb.equal(sourceRoot.get("rotor"), rotor)));
 
 		try {
@@ -173,9 +177,12 @@ public class SourceRepository {
 	 *            the source to add
 	 */
 	public void add(Source source) {
+		Source mergedSource;
+
 		source.setUserId(sessionUser.getId());
-		em.persist(source);
+		mergedSource = em.merge(source);
 		em.flush();
+		source.setId(mergedSource.getId());
 	}
 
 	/**

@@ -223,9 +223,11 @@ public class IgnoredChannelRepository {
 	 *            the ignored channel to add
 	 */
 	public void add(IgnoredChannel channel) {
+		IgnoredChannel mergedChannel;
 
-		em.persist(channel);
+		mergedChannel = em.merge(channel);
 		em.flush();
+		channel.setId(mergedChannel.getId());
 	}
 
 	/**

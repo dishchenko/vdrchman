@@ -193,10 +193,21 @@
 						</h:column>
 						<h:column>
 							<f:facet name="header">CAID</f:facet>
-							<ui:fragment rendered="#{not empty channelVar.caid}">
+							<ui:fragment
+								rendered="#{not empty channelVar.caid and channelVar.caid eq '2600'}">
+								<h:panelGroup style="background-color: #ffcc99;">
+									<a4j:commandLink styleClass="preformattedtext" value="BISS"
+										onclick="this.setAttribute('onclick', 'return false')"
+										oncomplete="#{rich:component('updateBissKeysPanel')}.show();document.getElementById('updateBissKeysPanelForm:vkeyInput').focus()"
+										action="#{channelsBacking.intendUpdateBissKeys(channelVar)}"
+										render="updateBissKeysPanel, channelsContent" />
+								</h:panelGroup>
+							</ui:fragment>
+							<ui:fragment
+								rendered="#{not empty channelVar.caid and channelVar.caid ne '2600'}">
 								<h:panelGroup style="background-color: #ffcc99;">
 									<h:outputText styleClass="preformattedtext"
-										value="#{channelVar.caid eq '2600' ? 'BISS' : channelVar.caid}" />
+										value="#{channelVar.caid}" />
 								</h:panelGroup>
 							</ui:fragment>
 						</h:column>
@@ -243,7 +254,62 @@
 			</h:outputScript>
 		</h:panelGroup>
 		<!-- Pop-up forms panel -->
-		<h:panelGrid columns="3">
+		<h:panelGrid columns="4">
+			<!-- Outer form for the Update BISS Keys panel -->
+			<h:form id="updateBissKeysPanelForm" styleClass="zerosize"
+				onkeypress="return updateBissKeysPanelFormKeyPressHandler(event)">
+				<!-- The Update BISS Keys panel -->
+				<rich:popupPanel id="updateBissKeysPanel" modal="true"
+					autosized="true" domElementAttachment="form">
+					<!-- Header -->
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Update Channel BISS Keys" />
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<a4j:commandLink value="Close" immediate="true"
+								onclick="#{rich:component('updateBissKeysPanel')}.hide()"
+								action="#{formResetter.resetForm(rich:findComponent('updateBissKeysPanelForm'))}" />
+						</h:panelGroup>
+					</f:facet>
+					<!-- Content -->
+					<h:panelGrid columns="2">
+						<h:outputLabel value="Video key:" styleClass="preformattedtext" />
+						<h:panelGrid columns="2">
+							<h:inputText id="vkeyInput"
+								value="#{channelsManager.editedBiss.vkey}" maxlength="16"
+								size="16">
+								<rich:validator />
+							</h:inputText>
+							<rich:message for="vkeyInput" />
+						</h:panelGrid>
+						<h:outputLabel value="Audio key:" styleClass="preformattedtext" />
+						<h:panelGrid columns="2">
+							<h:inputText id="akeyInput"
+								value="#{channelsManager.editedBiss.akey}" maxlength="16"
+								size="16">
+								<rich:validator />
+							</h:inputText>
+							<rich:message for="akeyInput" />
+						</h:panelGrid>
+					</h:panelGrid>
+					<br />
+					<!-- Action buttons -->
+					<h:panelGrid columns="2">
+						<a4j:commandButton id="okButton" value="OK"
+							onclick="this.disabled=true"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('updateBissKeysPanel')}.hide();document.getElementById('updateBissKeysPanelForm:okButton').disabled=false"
+							action="#{channelsBacking.doUpdateBissKeys()}"
+							render="channelsContent" />
+						<a4j:commandButton id="cancelButton" value="Cancel"
+							immediate="true"
+							action="#{formResetter.resetForm(rich:findComponent('updateBissKeysPanelForm'))}"
+							onclick="#{rich:component('updateBissKeysPanel')}.hide()" />
+					</h:panelGrid>
+				</rich:popupPanel>
+			</h:form>
 			<!-- Outer form for the Update Groups panel -->
 			<h:form id="updateGroupsPanelForm" styleClass="zerosize"
 				onkeypress="return updateGroupsPanelFormKeyPressHandler(event)">

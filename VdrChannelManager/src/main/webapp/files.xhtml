@@ -72,11 +72,16 @@
 						<h:panelGrid columns="3">
 							<h:commandButton action="#{filesBacking.downloadChannelsConf}"
 								value="channels.conf" />
-							<h:outputLabel value="Export locked:"
+							<h:outputLabel value="Export locked channels:"
 								styleClass="preformattedtext" />
 							<h:selectBooleanCheckbox
 								value="#{filesManager.lockedChannelsExported}"
 								styleClass="preformattedtext" />
+						</h:panelGrid>
+						<br />
+						<h:panelGrid columns="1">
+							<h:commandButton action="#{filesBacking.downloadSoftCamKey}"
+								value="SoftCam.Key (BISS)" />
 						</h:panelGrid>
 					</h:panelGrid>
 				</h:form>

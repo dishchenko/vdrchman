@@ -37,6 +37,7 @@ public class TransponderRepository {
 		String[] splitLine;
 		Transponder transponder;
 		Integer streamId;
+		Transponder mergedTransponder;
 		TranspSeqno transpSeqno;
 
 		query = em
@@ -84,14 +85,15 @@ public class TransponderRepository {
 				}
 				transponder.setStreamIdNullable(streamId);
 				transponder.setIgnored(ignored);
-				em.persist(transponder);
+				mergedTransponder = em.merge(transponder);
 				em.flush();
+				transponder.setId(mergedTransponder.getId());
 
 				transpSeqno = new TranspSeqno();
 				transpSeqno.setTranspId(transponder.getId());
 				transpSeqno.setUserId(userId);
 				transpSeqno.setSeqno(seqno);
-				em.persist(transpSeqno);
+				em.merge(transpSeqno);
 
 				++seqno;
 			}
@@ -194,7 +196,6 @@ public class TransponderRepository {
 							if (tid != 0) {
 								transponder.setTid(tid);
 							}
-							em.flush();
 						} else {
 							Logger.getLogger(this.getClass()).log(
 									Level.WARN,

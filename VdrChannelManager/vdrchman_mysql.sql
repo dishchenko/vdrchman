@@ -193,3 +193,11 @@ create table tscanned_channel (
 	unique (source_name, frequency, polarization, stream_id, sid, apid),
 	foreign key (user_id) references tuser (id) on delete cascade
 ) engine=InnoDB;
+
+-- BISS keys
+create table tbiss (
+	channel_id bigint(20) not null primary key,
+	vkey varchar(16) not null,
+	akey varchar(16) not null,
+	foreign key (channel_id) references tchannel (id) on delete cascade
+) engine=InnoDB;

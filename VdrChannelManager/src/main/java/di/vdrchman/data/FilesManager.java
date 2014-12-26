@@ -1,5 +1,7 @@
 package di.vdrchman.data;
 
+import static di.vdrchman.util.Tools.*;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -16,6 +18,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
+import di.vdrchman.model.Biss;
 import di.vdrchman.model.Channel;
 import di.vdrchman.model.Group;
 import di.vdrchman.model.Source;
@@ -407,6 +410,66 @@ public class FilesManager implements Serializable {
 								.append(nid).append(':').append(tid)
 								.append(':').append(channelLineNo).append('\n');
 					}
+				}
+			}
+		}
+
+		return sb.toString();
+	}
+
+	// Build a SoftCam.Key BISS keys data using current application user defined
+	// channels
+	public String buildSoftCamKey() {
+		StringBuilder sb;
+		List<Source> sources;
+		Map<Long, Source> sourceMap;
+		List<Transponder> transponders;
+		Map<Long, Transponder> transponderMap;
+		List<Channel> channels;
+		Biss biss;
+		Transponder transponder;
+
+		sb = new StringBuilder();
+
+		sb.append("; Constant CW\n" + ";\n"
+				+ "; X YYYY freq:pol:src:sid <32 characters>\n" + ";\n"
+				+ "; YYYY      - CA system id (2600)\n"
+				+ "; freq      - frequency\n"
+				+ "; pol       - polarization (v/h/r/l)\n"
+				+ "; src       - source\n" + "; sid       - service ID\n"
+				+ "\n" + "\n");
+
+		sources = sourceRepository.findAll();
+		sourceMap = new HashMap<Long, Source>();
+		for (Source theSource : sources) {
+			sourceMap.put(theSource.getId(), theSource);
+		}
+
+		transponders = transponderRepository.findAll(-1);
+		transponderMap = new HashMap<Long, Transponder>();
+		for (Transponder theTransponder : transponders) {
+			transponderMap.put(theTransponder.getId(), theTransponder);
+		}
+
+		channels = channelRepository.findAll(-1, -1, COMPARISON_NONE);
+
+		for (Channel channel : channels) {
+			if ("2600".equals(channel.getCaid())) {
+				biss = channelRepository.findBissKeys(channel);
+
+				if (biss != null) {
+					transponder = transponderMap.get(channel.getTranspId());
+
+					sb.append("X 2600 ")
+							.append(transponder.getFrequency())
+							.append(':')
+							.append(transponder.getPolarization().toLowerCase())
+							.append(':')
+							.append(sourceMap.get(transponder.getSourceId())
+									.getName()).append(':')
+							.append(channel.getSid()).append(' ')
+							.append(biss.getVkey()).append(biss.getAkey())
+							.append('\n');
 				}
 			}
 		}

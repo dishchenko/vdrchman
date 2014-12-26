@@ -65,7 +65,7 @@ public class SourceRepository {
 				}
 				sb.setLength(sb.length() - 1);
 				source.setDescription(sb.toString());
-				em.persist(source);
+				em.merge(source);
 			}
 		} catch (Throwable ex) {
 			Logger.getLogger(this.getClass()).log(
@@ -108,7 +108,6 @@ public class SourceRepository {
 						source.setHiH(sb.toString());
 					}
 				}
-				em.flush();
 			}
 		} catch (Throwable ex) {
 			Logger.getLogger(this.getClass()).log(
@@ -134,7 +133,6 @@ public class SourceRepository {
 
 				source = findByName(userId, splitLine[1]);
 				source.setRotor(Integer.valueOf(splitLine[0]));
-				em.flush();
 			}
 		} catch (Throwable ex) {
 			Logger.getLogger(this.getClass()).log(

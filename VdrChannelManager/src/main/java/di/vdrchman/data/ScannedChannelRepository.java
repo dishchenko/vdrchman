@@ -241,9 +241,12 @@ public class ScannedChannelRepository {
 	 *            the scanned channel to add
 	 */
 	public void add(ScannedChannel channel) {
+		ScannedChannel mergedChannel;
+
 		channel.setUserId(sessionUser.getId());
-		em.persist(channel);
+		mergedChannel = em.merge(channel);
 		em.flush();
+		channel.setId(mergedChannel.getId());
 	}
 
 	/**

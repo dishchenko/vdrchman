@@ -18,6 +18,7 @@ import di.vdrchman.data.ScannedChannelRepository;
 import di.vdrchman.data.SourceRepository;
 import di.vdrchman.data.TransponderRepository;
 import di.vdrchman.event.ChannelAction;
+import di.vdrchman.model.Biss;
 import di.vdrchman.model.Channel;
 import di.vdrchman.model.Source;
 import di.vdrchman.model.Transponder;
@@ -132,6 +133,27 @@ public class ChannelsBacking {
 		if (channelsManager.getComparisonFilter() != COMPARISON_NONE) {
 			channelsManager.adjustLastScrollerPage();
 		}
+	}
+
+	// The user is going to update channel BISS keys
+	public void intendUpdateBissKeys(Channel channel) {
+		Biss biss;
+
+		biss = channelRepository.findBissKeys(channel);
+
+		if (biss == null) {
+			biss = new Biss();
+			biss.setChannelId(channel.getId());
+		} else {
+			biss = new Biss(biss);
+		}
+
+		channelsManager.setEditedBiss(biss);
+	}
+
+	// BISS keys update confirmed
+	public void doUpdateBissKeys() {
+		channelRepository.addOrUpdateBissKeys(channelsManager.getEditedBiss());
 	}
 
 	// Going to remove some checked channels
