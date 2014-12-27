@@ -26,7 +26,7 @@ public class SourcesManager implements Serializable {
 	private List<Source> sources;
 
 	// Number of table rows per page
-	private final int rowsPerPage = 5;
+	private final int rowsPerPage = 3;
 	// Current table scroller page
 	private int scrollerPage = 1;
 

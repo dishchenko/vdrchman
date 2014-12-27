@@ -92,14 +92,17 @@ public class ChannelsBacking {
 
 	// Really adding a new channel to the place specified
 	public void doAddChannel() {
-		channelRepository.add(channelsManager.getEditedChannel(),
+		Channel editedChannel;
+
+		editedChannel = channelsManager.getEditedChannel();
+		channelRepository.add(editedChannel,
 				channelsManager.getEditedChannelSeqno());
-		channelActionEvent.fire(new ChannelAction(channelsManager
-				.getEditedChannel(), ChannelAction.Action.ADD));
+		channelActionEvent.fire(new ChannelAction(editedChannel,
+				ChannelAction.Action.ADD));
 		channelsManager.retrieveAllChannels();
 		channelsManager.clearCheckedChannels();
 		channelsManager.clearChannelCheckboxes();
-		channelsManager.turnScrollerPage(channelsManager.getEditedChannel());
+		channelsManager.turnScrollerPage(editedChannel);
 	}
 
 	// The user is going to update a channel
@@ -124,9 +127,16 @@ public class ChannelsBacking {
 
 	// Really updating the channel
 	public void doUpdateChannel() {
-		channelRepository.update(channelsManager.getEditedChannel());
-		channelActionEvent.fire(new ChannelAction(channelsManager
-				.getEditedChannel(), ChannelAction.Action.UPDATE));
+		Channel editedChannel;
+
+		editedChannel = channelsManager.getEditedChannel();
+		if (channelsManager.getComparisonFilter() == COMPARISON_CHANGED_MAIN) {
+			editedChannel.setScannedName(channelsManager
+					.getComparedScannedChannel().getScannedName());
+		}
+		channelRepository.update(editedChannel);
+		channelActionEvent.fire(new ChannelAction(editedChannel,
+				ChannelAction.Action.UPDATE));
 		channelsManager.retrieveAllChannels();
 		channelsManager.clearCheckedChannels();
 		channelsManager.clearChannelCheckboxes();
@@ -256,11 +266,14 @@ public class ChannelsBacking {
 
 	// Channel's group set change confirmed
 	public void doUpdateGroups() {
+		Channel editedChannel;
+
 		channelsManager.collectCheckedChannelGroups();
-		channelRepository.updateGroups(channelsManager.getEditedChannel()
-				.getId(), channelsManager.getCheckedChannelGroups());
-		channelActionEvent.fire(new ChannelAction(channelsManager
-				.getEditedChannel(), ChannelAction.Action.UPDATE_GROUPS));
+		editedChannel = channelsManager.getEditedChannel();
+		channelRepository.updateGroups(editedChannel.getId(),
+				channelsManager.getCheckedChannelGroups());
+		channelActionEvent.fire(new ChannelAction(editedChannel,
+				ChannelAction.Action.UPDATE_GROUPS));
 	}
 
 	// On changing the source filter selection clear the "clipboard"

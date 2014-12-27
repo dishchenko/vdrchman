@@ -63,7 +63,7 @@ public class ChannelsManager implements Serializable {
 	private boolean channelsRefreshNeeded = false;
 
 	// Number of table rows per page
-	private final int rowsPerPage = 15;
+	private final int rowsPerPage = 10;
 	// Current table scroller page
 	private int scrollerPage = 1;
 

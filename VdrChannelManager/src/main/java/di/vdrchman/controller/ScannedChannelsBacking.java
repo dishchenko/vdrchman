@@ -220,12 +220,15 @@ public class ScannedChannelsBacking {
 	// Really updating the channel in main list based on the scanned channel
 	// data
 	public void doUpdateInChannels() {
+		Channel editedChannel;
 		Transponder editedChannelTransponder;
 
-		channelRepository.update(scannedChannelsManager.getEditedChannel());
-		editedChannelTransponder = transponderRepository
-				.findById(scannedChannelsManager.getEditedChannel()
-						.getTranspId());
+		editedChannel = scannedChannelsManager.getEditedChannel();
+		editedChannel.setScannedName(scannedChannelsManager.getWorkingChannel()
+				.getScannedName());
+		channelRepository.update(editedChannel);
+		editedChannelTransponder = transponderRepository.findById(editedChannel
+				.getTranspId());
 		scannedChannelActionEvent.fire(new ScannedChannelAction(
 				ScannedChannelAction.Action.CHANNEL_UPDATED,
 				editedChannelTransponder.getSourceId(),
@@ -238,12 +241,13 @@ public class ScannedChannelsBacking {
 
 	// Remove the channel from main list
 	public void doRemoveFromChannels() {
+		Channel editedChannel;
 		Transponder editedChannelTransponder;
 
-		channelRepository.delete(scannedChannelsManager.getEditedChannel());
-		editedChannelTransponder = transponderRepository
-				.findById(scannedChannelsManager.getEditedChannel()
-						.getTranspId());
+		editedChannel = scannedChannelsManager.getEditedChannel();
+		channelRepository.delete(editedChannel);
+		editedChannelTransponder = transponderRepository.findById(editedChannel
+				.getTranspId());
 		scannedChannelActionEvent.fire(new ScannedChannelAction(
 				ScannedChannelAction.Action.CHANNEL_REMOVED,
 				editedChannelTransponder.getSourceId(),
@@ -293,11 +297,9 @@ public class ScannedChannelsBacking {
 		editedIgnoredChannel.setVpid(workingChannel.getVpid());
 		editedIgnoredChannel.setCaid(workingChannel.getCaid());
 		editedIgnoredChannel.setScannedName(workingChannel.getScannedName());
-		ignoredChannelRepository.update(scannedChannelsManager
-				.getEditedIgnoredChannel());
+		ignoredChannelRepository.update(editedIgnoredChannel);
 		editedIgnoredChannelTransponder = transponderRepository
-				.findById(scannedChannelsManager.getEditedIgnoredChannel()
-						.getTranspId());
+				.findById(editedIgnoredChannel.getTranspId());
 		scannedChannelActionEvent.fire(new ScannedChannelAction(
 				ScannedChannelAction.Action.IGNORED_CHANNEL_UPDATED,
 				editedIgnoredChannelTransponder.getSourceId(),
@@ -310,13 +312,13 @@ public class ScannedChannelsBacking {
 
 	// Remove the channel from ignored channel list
 	public void doRemoveFromIgnoredChannels() {
+		IgnoredChannel editedIgnoredChannel;
 		Transponder editedIgnoredChannelTransponder;
 
-		ignoredChannelRepository.delete(scannedChannelsManager
-				.getEditedIgnoredChannel());
+		editedIgnoredChannel = scannedChannelsManager.getEditedIgnoredChannel();
+		ignoredChannelRepository.delete(editedIgnoredChannel);
 		editedIgnoredChannelTransponder = transponderRepository
-				.findById(scannedChannelsManager.getEditedIgnoredChannel()
-						.getTranspId());
+				.findById(editedIgnoredChannel.getTranspId());
 		scannedChannelActionEvent.fire(new ScannedChannelAction(
 				ScannedChannelAction.Action.IGNORED_CHANNEL_REMOVED,
 				editedIgnoredChannelTransponder.getSourceId(),
