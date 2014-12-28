@@ -276,16 +276,13 @@ public class ChannelsBacking {
 				ChannelAction.Action.UPDATE_GROUPS));
 	}
 
-	// On changing the source filter selection clear the "clipboard"
-	// if a source is selected and it is not the one taken channel
-	// relates to. Clear the transponder filter selection if a source is
-	// selected and it is not the one selected transponder relates to.
+	// On changing the source filter selection clear the transponder filter if a
+	// source is selected and it is not the one selected transponder relates to.
 	// Also try to stay on the scroller page which includes the previous shown
 	// page top channel
 	public void onSourceMenuSelection(ValueChangeEvent event) {
 		Channel lastPageTopChannel;
 		long filteredSourceId;
-		Channel takenChannel;
 
 		lastPageTopChannel = null;
 		if (!channelsManager.getChannels().isEmpty()) {
@@ -294,15 +291,6 @@ public class ChannelsBacking {
 							* channelsManager.getRowsPerPage());
 		}
 		filteredSourceId = (Long) event.getNewValue();
-		if (filteredSourceId >= 0) {
-			takenChannel = channelsManager.getTakenChannel();
-			if (takenChannel != null) {
-				if (filteredSourceId != transponderRepository.findById(
-						takenChannel.getTranspId()).getSourceId()) {
-					channelsManager.setTakenChannel(null);
-				}
-			}
-		}
 		channelsManager.setFilteredSourceId(filteredSourceId);
 		channelsManager.setFilteredTranspId(-1);
 		channelsManager.retrieveAllChannels();
@@ -329,14 +317,11 @@ public class ChannelsBacking {
 		}
 	}
 
-	// On changing the transponder filter selection clear the "clipboard"
-	// if a transponder is selected and it is not the one taken channel
-	// relates to. Also try to stay on the scroller page which includes the
-	// previous shown page top channel
+	// On changing the transponder filter selection try to stay on the scroller
+	// page which includes the previous shown page top channel
 	public void onTransponderMenuSelection(ValueChangeEvent event) {
 		Channel lastPageTopChannel;
 		long filteredTranspId;
-		Channel takenChannel;
 
 		lastPageTopChannel = null;
 		if (!channelsManager.getChannels().isEmpty()) {
@@ -345,14 +330,6 @@ public class ChannelsBacking {
 							* channelsManager.getRowsPerPage());
 		}
 		filteredTranspId = (Long) event.getNewValue();
-		if (filteredTranspId >= 0) {
-			takenChannel = channelsManager.getTakenChannel();
-			if (takenChannel != null) {
-				if (filteredTranspId != takenChannel.getTranspId()) {
-					channelsManager.setTakenChannel(null);
-				}
-			}
-		}
 		channelsManager.setFilteredTranspId(filteredTranspId);
 		channelsManager.retrieveAllChannels();
 		channelsManager.clearCheckedChannels();

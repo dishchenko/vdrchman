@@ -24,6 +24,9 @@
 					type="submit" value="default action" />
 				<!-- 'Add', 'Remove' etc. buttons panel -->
 				<h:panelGrid columns="8">
+					<ui:param name="takenChannelSourceId"
+						value="#{not empty channelsManager.takenChannel ? transponderRepository.findById(channelsManager.takenChannel.transpId).sourceId : null}">
+					</ui:param>
 					<a4j:commandButton id="addOnTopButton" value="Add on top..."
 						action="#{channelsBacking.intendAddChannelOnTop()}"
 						onclick="this.disabled=true"
@@ -45,25 +48,25 @@
 						oncomplete="document.getElementById('channelsForm:takeButton').disabled=!isExactlyOneChannelCheckboxChecked()"
 						render="channelsContent" />
 					<a4j:commandButton id="copyOnTopButton" value="Copy on top..."
-						rendered="#{not empty channelsManager.takenChannel}"
+						rendered="#{not empty channelsManager.takenChannel and ((channelsManager.filteredTranspId eq channelsManager.takenChannel.transpId) or (channelsManager.filteredTranspId lt 0)) and ((channelsManager.filteredSourceId eq takenChannelSourceId) or (channelsManager.filteredSourceId lt 0))}"
 						action="#{channelsBacking.intendCopyChannelOnTop()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('channelsForm:copyOnTopButton').disabled=false"
 						render="editPanel, channelsContent" />
 					<a4j:commandButton id="copyAfterButton" value="Copy after..."
-						rendered="#{not empty channelsManager.takenChannel}"
+						rendered="#{not empty channelsManager.takenChannel and ((channelsManager.filteredTranspId eq channelsManager.takenChannel.transpId) or (channelsManager.filteredTranspId lt 0)) and ((channelsManager.filteredSourceId eq takenChannelSourceId) or (channelsManager.filteredSourceId lt 0))}"
 						action="#{channelsBacking.intendCopyChannelAfter()}"
 						onclick="this.disabled=true"
 						oncomplete="#{rich:component('editPanel')}.show();document.getElementById('editPanelForm:nameInput').focus();document.getElementById('channelsForm:copyAfterButton').disabled=!isExactlyOneChannelCheckboxChecked()"
 						render="editPanel, channelsContent" />
 					<a4j:commandButton id="moveOnTopButton" value="Move on top"
-						rendered="#{not empty channelsManager.takenChannel}"
+						rendered="#{not empty channelsManager.takenChannel and ((channelsManager.filteredTranspId eq channelsManager.takenChannel.transpId) or (channelsManager.filteredTranspId lt 0)) and ((channelsManager.filteredSourceId eq takenChannelSourceId) or (channelsManager.filteredSourceId lt 0))}"
 						action="#{channelsBacking.moveChannelOnTop()}"
 						onclick="this.disabled=true"
 						oncomplete="document.getElementById('channelsForm:moveOnTopButton').disabled=false"
 						render="channelsContent" />
 					<a4j:commandButton id="moveAfterButton" value="Move after"
-						rendered="#{not empty channelsManager.takenChannel}"
+						rendered="#{not empty channelsManager.takenChannel and ((channelsManager.filteredTranspId eq channelsManager.takenChannel.transpId) or (channelsManager.filteredTranspId lt 0)) and ((channelsManager.filteredSourceId eq takenChannelSourceId) or (channelsManager.filteredSourceId lt 0))}"
 						action="#{channelsBacking.moveChannelAfter()}"
 						onclick="this.disabled=true"
 						oncomplete="document.getElementById('channelsForm:moveAfterButton').disabled=!isExactlyOneChannelCheckboxChecked()"
@@ -315,7 +318,7 @@
 				onkeypress="return updateGroupsPanelFormKeyPressHandler(event)">
 				<!-- The Update Groups panel -->
 				<rich:popupPanel id="updateGroupsPanel" modal="true" width="480"
-					height="800" domElementAttachment="form">
+					height="600" domElementAttachment="form">
 					<!-- Header -->
 					<f:facet name="header">
 						<h:panelGroup>

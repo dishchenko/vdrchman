@@ -170,14 +170,11 @@ public class TranspondersBacking {
 				.getTakenTransponder());
 	}
 
-	// On changing the source filter selection clear the "clipboard"
-	// if a source is selected and it is not the one taken transponder
-	// relates to. Also try to stay on the scroller page which includes
-	// the previous shown page top transponder
+	// On changing the source filter selection try to stay on the scroller page
+	// which includes the previous shown page top transponder
 	public void onSourceMenuSelection(ValueChangeEvent event) {
 		Transponder lastPageTopTransponder;
 		long filteredSourceId;
-		Transponder takenTransponder;
 
 		lastPageTopTransponder = null;
 		if (!transpondersManager.getTransponders().isEmpty()) {
@@ -186,14 +183,6 @@ public class TranspondersBacking {
 							* transpondersManager.getRowsPerPage());
 		}
 		filteredSourceId = (Long) event.getNewValue();
-		if (filteredSourceId >= 0) {
-			takenTransponder = transpondersManager.getTakenTransponder();
-			if (takenTransponder != null) {
-				if (filteredSourceId != takenTransponder.getSourceId()) {
-					transpondersManager.setTakenTransponder(null);
-				}
-			}
-		}
 		transpondersManager.setFilteredSourceId(filteredSourceId);
 		transpondersManager.retrieveAllTransponders();
 		transpondersManager.clearCheckedTransponders();

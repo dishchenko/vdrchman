@@ -30,7 +30,7 @@ public class TransponderRepository {
 
 	/**
 	 * Builds a full or partial list of transponders belonging to the current
-	 * application user depending on the value of the sourceId parameter.
+	 * application user depending on the value of sourceId parameter.
 	 * Transponders are added to the list in ascending sequence number order.
 	 * 
 	 * @param sourceId
