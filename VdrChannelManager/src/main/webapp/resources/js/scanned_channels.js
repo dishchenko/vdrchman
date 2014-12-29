@@ -121,7 +121,7 @@ function addToIgnoredChannelsPanelFormKeyPressHandler(event) {
 	if (event.keyCode == 9) {
 		if (event.shiftKey) {
 			if (document.activeElement == document
-					.getElementById('addToIgnoredChannelsPanelForm:okAddButton')) {
+					.getElementById('addToIgnoredChannelsPanelForm:okButton')) {
 				document.getElementById(
 						'addToIgnoredChannelsPanelForm:cancelButton').focus();
 				result = false;
@@ -130,7 +130,7 @@ function addToIgnoredChannelsPanelFormKeyPressHandler(event) {
 			if (document.activeElement == document
 					.getElementById('addToIgnoredChannelsPanelForm:cancelButton')) {
 				document.getElementById(
-						'addToIgnoredChannelsPanelForm:okAddButton').focus();
+						'addToIgnoredChannelsPanelForm:okButton').focus();
 				result = false;
 			}
 		}

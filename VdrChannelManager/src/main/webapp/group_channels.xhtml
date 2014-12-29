@@ -201,16 +201,22 @@
 					<br />
 					<ui:repeat value="#{groupChannelsManager.checkedChannels}"
 						var="channelVar" varStatus="loopVar">
-				            #{not empty channelVar.lang ? channelVar.lang.concat(')') : ''} #{channelVar.name}
+						<h:outputText
+							value="#{not empty channelVar.lang ? channelVar.lang.concat(')') : ''} #{channelVar.name}"
+							styleClass="preformattedtext" />
 						<ui:param name="transponderParam"
 							value="#{transponderRepository.findById(channelVar.transpId)}">
 						</ui:param>
-							(on #{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamIdNullable ? ' stream '.concat(transponderParam.streamIdNullable) : ''}
+						<h:outputText
+							value="(on #{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamIdNullable ? ' stream '.concat(transponderParam.streamIdNullable) : ''}"
+							styleClass="preformattedtext" />
 						<ui:param name="sourceParam"
 							value="#{sourceRepository.findById(transponderParam.sourceId)}">
 						</ui:param>
-							at #{sourceParam.name} (#{sourceParam.description}))
-				        <ui:fragment rendered="#{!loopVar.last}">
+						<h:outputText
+							value="at #{sourceParam.name} (#{sourceParam.description}))"
+							styleClass="preformattedtext" />
+						<ui:fragment rendered="#{!loopVar.last}">
 							<br />
 						</ui:fragment>
 						<ui:fragment rendered="#{loopVar.last}">

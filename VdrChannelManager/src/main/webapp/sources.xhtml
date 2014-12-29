@@ -232,8 +232,9 @@
 					<br />
 					<ui:repeat value="#{sourcesManager.checkedSources}" var="sourceVar"
 						varStatus="loopVar">
-				            #{sourceVar.name} (#{sourceVar.description})
-				        <ui:fragment rendered="#{!loopVar.last}">
+						<h:outputText value="#{sourceVar.name} (#{sourceVar.description})"
+							styleClass="preformattedtext" />
+						<ui:fragment rendered="#{!loopVar.last}">
 							<br />
 						</ui:fragment>
 						<ui:fragment rendered="#{loopVar.last}">

@@ -204,8 +204,9 @@
 					<br />
 					<ui:repeat value="#{groupsManager.checkedGroups}" var="groupVar"
 						varStatus="loopVar">
-				            #{groupVar.name} (#{groupVar.description})
-				        <ui:fragment rendered="#{!loopVar.last}">
+						<h:outputText value="#{groupVar.name} (#{groupVar.description})"
+							styleClass="preformattedtext" />
+						<ui:fragment rendered="#{!loopVar.last}">
 							<br />
 						</ui:fragment>
 						<ui:fragment rendered="#{loopVar.last}">

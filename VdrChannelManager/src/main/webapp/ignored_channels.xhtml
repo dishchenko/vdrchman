@@ -181,16 +181,21 @@
 					<br />
 					<ui:repeat value="#{ignoredChannelsManager.checkedChannels}"
 						var="channelVar" varStatus="loopVar">
-				            #{channelVar.scannedName}
+						<h:outputText value="#{channelVar.scannedName}"
+							styleClass="preformattedtext" />
 						<ui:param name="transponderParam"
 							value="#{transponderRepository.findById(channelVar.transpId)}">
 						</ui:param>
-							(on #{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamIdNullable ? ' stream '.concat(transponderParam.streamIdNullable) : ''}
+						<h:outputText
+							value="(on #{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamIdNullable ? ' stream '.concat(transponderParam.streamIdNullable) : ''}"
+							styleClass="preformattedtext" />
 						<ui:param name="sourceParam"
 							value="#{sourceRepository.findById(transponderParam.sourceId)}">
 						</ui:param>
-							at #{sourceParam.name} (#{sourceParam.description}))
-				        <ui:fragment rendered="#{!loopVar.last}">
+						<h:outputText
+							value="at #{sourceParam.name} (#{sourceParam.description}))"
+							styleClass="preformattedtext" />
+						<ui:fragment rendered="#{!loopVar.last}">
 							<br />
 						</ui:fragment>
 						<ui:fragment rendered="#{loopVar.last}">
@@ -254,21 +259,18 @@
 							styleClass="preformattedtext" />
 						<h:outputText value="" />
 						<h:outputLabel value="Video PID:" styleClass="preformattedtext" />
-						<h:outputText
-							value="#{ignoredChannelsManager.editedChannel.vpid}"
+						<h:outputText value="#{ignoredChannelsManager.editedChannel.vpid}"
 							styleClass="preformattedtext" />
 						<h:outputText
 							value="#{not empty ignoredChannelsManager.editedChannel.vpid and ignoredChannelsManager.editedChannel.vpid ne ignoredChannelsManager.comparedScannedChannel.vpid ? '--&gt; '.concat(ignoredChannelsManager.comparedScannedChannel.vpid) : ''}"
 							styleClass="preformattedtext" />
 						<h:outputLabel value="Audio PID:" styleClass="preformattedtext" />
-						<h:outputText
-							value="#{ignoredChannelsManager.editedChannel.apid}"
+						<h:outputText value="#{ignoredChannelsManager.editedChannel.apid}"
 							styleClass="preformattedtext" />
 						<h:outputText value="" />
 						<h:outputLabel value="Conditional Access ID:"
 							styleClass="preformattedtext" />
-						<h:outputText
-							value="#{ignoredChannelsManager.editedChannel.caid}"
+						<h:outputText value="#{ignoredChannelsManager.editedChannel.caid}"
 							styleClass="preformattedtext" />
 						<h:outputText
 							value="#{ignoredChannelsManager.comparedScannedChannel.caid ne ignoredChannelsManager.editedChannel.caid ? '--&gt; '.concat(ignoredChannelsManager.comparedScannedChannel.caid) : ''}"

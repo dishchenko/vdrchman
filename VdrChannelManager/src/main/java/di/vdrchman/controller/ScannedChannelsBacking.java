@@ -134,57 +134,47 @@ public class ScannedChannelsBacking {
 		scannedChannelsManager.adjustLastScrollerPage();
 	}
 
-	// The user is going to add to ignored channel list the new channel based on
+	// The user is going to add to ignored channel list new channels based on
 	// the scanned channel data
 	public void intendAddToIgnoredChannels() {
-		ScannedChannel workingChannel;
-		Source workingChannelSource;
-		Transponder workingChannelTransponder;
-
 		scannedChannelsManager.collectCheckedChannels();
-		workingChannel = scannedChannelsManager.getCheckedChannels().get(0);
-		scannedChannelsManager.setWorkingChannel(workingChannel);
-		workingChannelSource = sourceRepository.findByName(workingChannel
-				.getSourceName());
-		scannedChannelsManager.setWorkingChannelSource(workingChannelSource);
-		if (workingChannelSource != null) {
-			workingChannelTransponder = transponderRepository
-					.findBySourceFrequencyPolarizationStream(
-							workingChannelSource.getId(),
-							workingChannel.getFrequency(),
-							workingChannel.getPolarization(),
-							workingChannel.getStreamId());
-		} else {
-			workingChannelTransponder = null;
-		}
-		scannedChannelsManager
-				.setWorkingChannelTransponder(workingChannelTransponder);
-		scannedChannelsManager.setEditedIgnoredChannel(new IgnoredChannel());
 	}
 
-	// Really adding the new channel based on the scanned channel data to
+	// Really adding new channels based on the scanned channel data to
 	// ignored channel list
 	public void doAddToIgnoredChannels() {
-		IgnoredChannel editedIgnoredChannel;
-		Transponder workingChannelTransponder;
-		ScannedChannel workingChannel;
+		Source source;
+		Transponder transponder;
+		IgnoredChannel ignoredChannel;
 
-		editedIgnoredChannel = scannedChannelsManager.getEditedIgnoredChannel();
-		workingChannelTransponder = scannedChannelsManager
-				.getWorkingChannelTransponder();
-		editedIgnoredChannel.setTranspId(workingChannelTransponder.getId());
-		workingChannel = scannedChannelsManager.getWorkingChannel();
-		editedIgnoredChannel.setSid(workingChannel.getSid());
-		editedIgnoredChannel.setVpid(workingChannel.getVpid());
-		editedIgnoredChannel.setApid(workingChannel.getApid());
-		editedIgnoredChannel.setCaid(workingChannel.getCaid());
-		editedIgnoredChannel.setScannedName(workingChannel.getScannedName());
-		editedIgnoredChannel.setProviderName(workingChannel.getProviderName());
-		ignoredChannelRepository.add(editedIgnoredChannel);
-		scannedChannelActionEvent.fire(new ScannedChannelAction(
-				ScannedChannelAction.Action.IGNORED_CHANNEL_ADDED,
-				workingChannelTransponder.getSourceId(),
-				workingChannelTransponder.getId()));
+		for (ScannedChannel scannedChannel : scannedChannelsManager
+				.getCheckedChannels()) {
+			source = sourceRepository
+					.findByName(scannedChannel.getSourceName());
+			if (source != null) {
+				transponder = transponderRepository
+						.findBySourceFrequencyPolarizationStream(
+								source.getId(), scannedChannel.getFrequency(),
+								scannedChannel.getPolarization(),
+								scannedChannel.getStreamId());
+				if (transponder != null) {
+					ignoredChannel = new IgnoredChannel();
+					ignoredChannel.setTranspId(transponder.getId());
+					ignoredChannel.setSid(scannedChannel.getSid());
+					ignoredChannel.setVpid(scannedChannel.getVpid());
+					ignoredChannel.setApid(scannedChannel.getApid());
+					ignoredChannel.setCaid(scannedChannel.getCaid());
+					ignoredChannel.setScannedName(scannedChannel
+							.getScannedName());
+					ignoredChannel.setProviderName(scannedChannel
+							.getProviderName());
+					ignoredChannelRepository.add(ignoredChannel);
+					scannedChannelActionEvent.fire(new ScannedChannelAction(
+							ScannedChannelAction.Action.IGNORED_CHANNEL_ADDED,
+							transponder.getSourceId(), transponder.getId()));
+				}
+			}
+		}
 		scannedChannelsManager.retrieveAllChannels();
 		scannedChannelsManager.clearCheckedChannels();
 		scannedChannelsManager.clearChannelCheckboxes();

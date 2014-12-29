@@ -42,7 +42,7 @@
 						rendered="#{scannedChannelsManager.comparisonFilter == tools.comparisonConst['NEW']}"
 						action="#{scannedChannelsBacking.intendAddToIgnoredChannels()}"
 						onclick="this.disabled=true"
-						oncomplete="if (#{rich:component('addToIgnoredChannelsPanel')} != null) {#{rich:component('addToIgnoredChannelsPanel')}.show();element=document.getElementById('addToIgnoredChannelsPanelForm:okAddButton');if (element != null) element.focus();document.getElementById('scannedChannelsForm:addToIgnoredChannelsButton').disabled=!isExactlyOneChannelCheckboxChecked()} else {document.getElementById('scannedChannelsForm').submit()}"
+						oncomplete="if (#{rich:component('addToIgnoredChannelsPanel')} != null) {#{rich:component('addToIgnoredChannelsPanel')}.show();element=document.getElementById('addToIgnoredChannelsPanelForm:okButton');if (element != null) element.focus();document.getElementById('scannedChannelsForm:addToIgnoredChannelsButton').disabled=!isAtLeastOneChannelCheckboxChecked()} else {document.getElementById('scannedChannelsForm').submit()}"
 						render="addToIgnoredChannelsPanel, scannedChannelsContent" />
 					<a4j:commandButton id="updateInChannelsButton"
 						value="Update in Main list..."
@@ -113,7 +113,7 @@
 							<h:selectBooleanCheckbox id="channelCheckbox"
 								value="#{scannedChannelsManager.channelCheckboxes[channelVar.id]}"
 								styleClass="preformattedtext"
-								onclick="element=document.getElementById('scannedChannelsForm:addToChannelsButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('scannedChannelsForm:addToIgnoredChannelsButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('scannedChannelsForm:updateInChannelsButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('scannedChannelsForm:updateInIgnoredChannelsButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();" />
+								onclick="element=document.getElementById('scannedChannelsForm:addToChannelsButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('scannedChannelsForm:addToIgnoredChannelsButton');if (element != null) element.disabled=!isAtLeastOneChannelCheckboxChecked();element=document.getElementById('scannedChannelsForm:updateInChannelsButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('scannedChannelsForm:updateInIgnoredChannelsButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();" />
 						</h:column>
 						<h:column
 							rendered="#{scannedChannelsManager.filteredSourceId lt 0}">
@@ -173,7 +173,7 @@
 			<h:outputScript library="js">
 			document.getElementById('scannedChannelsForm:processUploadedScansButton').disabled = (#{filesManager.scans.size() le 0});
 			element = document.getElementById('scannedChannelsForm:addToChannelsButton'); if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();
-			element = document.getElementById('scannedChannelsForm:addToIgnoredChannelsButton'); if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();
+			element = document.getElementById('scannedChannelsForm:addToIgnoredChannelsButton'); if (element != null) element.disabled=!isAtLeastOneChannelCheckboxChecked();
 			element = document.getElementById('scannedChannelsForm:updateInChannelsButton'); if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();
 			element = document.getElementById('scannedChannelsForm:updateInIgnoredChannelsButton'); if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();
 			</h:outputScript>
@@ -193,8 +193,9 @@
 					<br />
 					<ui:repeat value="#{filesManager.scans}" var="scanVar"
 						varStatus="loopVar">
-				            #{scanVar.fileName}
-				        <ui:fragment rendered="#{!loopVar.last}">
+						<h:outputText value="#{scanVar.fileName}"
+							styleClass="preformattedtext" />
+						<ui:fragment rendered="#{!loopVar.last}">
 							<br />
 						</ui:fragment>
 						<ui:fragment rendered="#{loopVar.last}">
@@ -270,7 +271,7 @@
 					<ui:fragment
 						rendered="#{not empty scannedChannelsManager.workingChannelSource and empty scannedChannelsManager.workingChannelTransponder}">
 						<h:outputText
-							value="Please add Transponder with frequency '#{scannedChannelsManager.workingChannel.frequency}', polarization '#{scannedChannelsManager.workingChannel.frequency}'#{not empty scannedChannelsManager.workingChannel.streamIdNullable ? ', stream \''.concat(scannedChannelsManager.workingChannel.streamIdNullable).concat('\'') : ''} first!" />
+							value="Please add Transponder with frequency '#{scannedChannelsManager.workingChannel.frequency}', polarization '#{scannedChannelsManager.workingChannel.polarization}'#{not empty scannedChannelsManager.workingChannel.streamIdNullable ? ', stream \''.concat(scannedChannelsManager.workingChannel.streamIdNullable).concat('\'') : ''} first!" />
 						<h:panelGrid columns="1">
 							<a4j:commandButton id="okNoTransponderButton" value="OK"
 								onclick="this.disabled=true"
@@ -396,77 +397,53 @@
 						</h:panelGroup>
 					</f:facet>
 					<!-- Content -->
-					<!-- Defined Source for scanned channel not found -->
-					<ui:fragment
-						rendered="#{empty scannedChannelsManager.workingChannelSource}">
+
+					<h:outputText
+						value="Adding the following channel(s) to ignored channel list:" />
+					<br />
+					<br />
+					<ui:repeat value="#{scannedChannelsManager.checkedChannels}"
+						var="channelVar" varStatus="loopVar">
+						<ui:param name="sourceParam"
+							value="#{sourceRepository.findByName(channelVar.sourceName)}">
+						</ui:param>
+						<ui:param name="transponderParam"
+							value="#{sourceParam != null ? transponderRepository.findBySourceFrequencyPolarizationStream(sourceParam.id, channelVar.frequency, channelVar.polarization, channelVar.streamId) : null}">
+						</ui:param>
 						<h:outputText
-							value="Please add Source with name '#{scannedChannelsManager.workingChannel.sourceName}' first!" />
-						<h:panelGrid columns="1">
-							<a4j:commandButton id="okNoSourceButton" value="OK"
-								onclick="this.disabled=true"
-								oncomplete="#{rich:component('addToIgnoredChannelsPanel')}.hide();document.getElementById('addToIgnoredChannelsPanelForm:okNoSourceButton').disabled=false"
-								render="scannedChannelsContent" />
-						</h:panelGrid>
-					</ui:fragment>
-					<!-- Defined Transponder for scanned channel not found -->
-					<ui:fragment
-						rendered="#{not empty scannedChannelsManager.workingChannelSource and empty scannedChannelsManager.workingChannelTransponder}">
-						<h:outputText
-							value="Please add Transponder with frequency '#{scannedChannelsManager.workingChannel.frequency}', polarization '#{scannedChannelsManager.workingChannel.frequency}'#{not empty scannedChannelsManager.workingChannel.streamIdNullable ? ', stream \''.concat(scannedChannelsManager.workingChannel.streamIdNullable).concat('\'') : ''} first!" />
-						<h:panelGrid columns="1">
-							<a4j:commandButton id="okNoTransponderButton" value="OK"
-								onclick="this.disabled=true"
-								oncomplete="#{rich:component('addToIgnoredChannelsPanel')}.hide();document.getElementById('addToIgnoredChannelsPanelForm:okNoTransponderButton').disabled=false"
-								render="scannedChannelsContent" />
-						</h:panelGrid>
-					</ui:fragment>
-					<!-- Channel addition is possible -->
-					<ui:fragment
-						rendered="#{not empty scannedChannelsManager.workingChannelTransponder}">
-						<h:panelGrid columns="2">
-							<h:outputLabel value="Source:" styleClass="preformattedtext" />
+							value="#{channelVar.scannedName} SID = #{channelVar.sid} APID = #{channelVar.apid}"
+							styleClass="preformattedtext" />
+						<ui:fragment rendered="#{empty sourceParam}">
 							<h:outputText
-								value="#{scannedChannelsManager.workingChannelSource.name} (#{scannedChannelsManager.workingChannelSource.description})"
+								value=" - IMPOSSIBLE: Source with name '#{channelVar.sourceName}' not found"
 								styleClass="preformattedtext" />
-							<h:outputLabel value="Transponder:" styleClass="preformattedtext" />
+						</ui:fragment>
+						<ui:fragment
+							rendered="#{not empty sourceParam and empty transponderParam}">
 							<h:outputText
-								value="#{scannedChannelsManager.workingChannelTransponder.frequency} #{scannedChannelsManager.workingChannelTransponder.polarization}#{not empty scannedChannelsManager.workingChannelTransponder.streamIdNullable ? ' stream '.concat(scannedChannelsManager.workingChannelTransponder.streamIdNullable) : ''}"
+								value=" - IMPOSSIBLE: Transponder with frequency '#{channelVar.frequency}', polarization '#{channelVar.polarization}'#{not empty channelVar.streamIdNullable ? ', stream \''.concat(channelVar.streamIdNullable).concat('\'') : ''} not found"
 								styleClass="preformattedtext" />
-							<h:outputLabel value="Service ID:" styleClass="preformattedtext" />
-							<h:outputText
-								value="#{scannedChannelsManager.workingChannel.sid}"
-								styleClass="preformattedtext" />
-							<h:outputLabel value="Video PID:" styleClass="preformattedtext" />
-							<h:outputText
-								value="#{scannedChannelsManager.workingChannel.vpid}"
-								styleClass="preformattedtext" />
-							<h:outputLabel value="Audio PID:" styleClass="preformattedtext" />
-							<h:outputText
-								value="#{scannedChannelsManager.workingChannel.apid}"
-								styleClass="preformattedtext" />
-							<h:outputLabel value="Conditional Access ID:"
-								styleClass="preformattedtext" />
-							<h:outputText
-								value="#{scannedChannelsManager.workingChannel.caid}"
-								styleClass="preformattedtext" />
-							<h:outputLabel value="Scanned as:" styleClass="preformattedtext" />
-							<h:outputText
-								value="#{scannedChannelsManager.workingChannel.scannedName}"
-								styleClass="preformattedtext" />
-						</h:panelGrid>
-						<!-- Action buttons -->
-						<h:panelGrid columns="2">
-							<a4j:commandButton id="okAddButton" value="OK"
-								onclick="this.disabled=true"
-								oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('addToIgnoredChannelsPanel')}.hide();document.getElementById('addToIgnoredChannelsPanelForm:okAddButton').disabled=false"
-								action="#{scannedChannelsBacking.doAddToIgnoredChannels()}"
-								render="scannedChannelsContent" />
-							<a4j:commandButton id="cancelButton" value="Cancel"
-								immediate="true"
-								action="#{formResetter.resetForm(rich:findComponent('addToIgnoredChannelsPanelForm'))}"
-								onclick="#{rich:component('addToIgnoredChannelsPanel')}.hide()" />
-						</h:panelGrid>
-					</ui:fragment>
+						</ui:fragment>
+						<ui:fragment rendered="#{!loopVar.last}">
+							<br />
+						</ui:fragment>
+						<ui:fragment rendered="#{loopVar.last}">
+							<br />
+							<br />
+						</ui:fragment>
+					</ui:repeat>
+					<!-- Action buttons -->
+					<h:panelGrid columns="2">
+						<a4j:commandButton id="okButton" value="OK"
+							onclick="this.disabled=true"
+							oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('addToIgnoredChannelsPanel')}.hide();document.getElementById('addToIgnoredChannelsPanelForm:okButton').disabled=false"
+							action="#{scannedChannelsBacking.doAddToIgnoredChannels()}"
+							render="scannedChannelsContent" />
+						<a4j:commandButton id="cancelButton" value="Cancel"
+							immediate="true"
+							action="#{formResetter.resetForm(rich:findComponent('addToIgnoredChannelsPanelForm'))}"
+							onclick="#{rich:component('addToIgnoredChannelsPanel')}.hide()" />
+					</h:panelGrid>
 				</rich:popupPanel>
 			</h:form>
 			<!-- Outer form for the Update In Main List panel -->

@@ -215,7 +215,8 @@
 							binding="#{transponderSourceFrequencyPolarizationStreamUniquenessValidator}" />
 						<f:attribute name="sourceId" value="editPanelForm:sourcesMenu" />
 						<f:attribute name="frequency" value="editPanelForm:frequencyInput" />
-						<f:attribute name="polarization" value="editPanelForm:polarizationMenu" />
+						<f:attribute name="polarization"
+							value="editPanelForm:polarizationMenu" />
 						<f:attribute name="streamId" value="editPanelForm:streamIdInput" />
 					</h:inputHidden>
 					<!-- Transponder data inputs -->
@@ -368,12 +369,16 @@
 					<br />
 					<ui:repeat value="#{transpondersManager.checkedTransponders}"
 						var="transponderVar" varStatus="loopVar">
-				            #{transponderVar.frequency} #{transponderVar.polarization}#{not empty transponderVar.streamIdNullable ? ' stream '.concat(transponderVar.streamIdNullable) : ''}
+						<h:outputText
+							value="#{transponderVar.frequency} #{transponderVar.polarization}#{not empty transponderVar.streamIdNullable ? ' stream '.concat(transponderVar.streamIdNullable) : ''}"
+							styleClass="preformattedtext" />
 						<ui:param name="sourceParam"
 							value="#{sourceRepository.findById(transponderVar.sourceId)}">
 						</ui:param>
-							at #{sourceParam.name} (#{sourceParam.description})
-				        <ui:fragment rendered="#{!loopVar.last}">
+						<h:outputText
+							value="at #{sourceParam.name} (#{sourceParam.description})"
+							styleClass="preformattedtext" />
+						<ui:fragment rendered="#{!loopVar.last}">
 							<br />
 						</ui:fragment>
 						<ui:fragment rendered="#{loopVar.last}">
