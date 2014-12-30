@@ -331,7 +331,8 @@ public class FilesManager implements Serializable {
 				sb.append(":@").append(group.getStartChannelNo()).append(' ')
 						.append(group.getDescription()).append('\n');
 
-				channels = channelRepository.findAllInGroup(group.getId());
+				channels = channelRepository.findAllInGroup(group.getId(), -1,
+						-1);
 
 				for (Channel channel : channels) {
 					if (!channel.getLocked() || lockedChannelsExported) {

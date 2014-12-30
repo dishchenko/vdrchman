@@ -309,25 +309,53 @@ public class ChannelRepository {
 	}
 
 	/**
-	 * Builds a list of channels in the group with given ID belonging to the
-	 * current application user. Channels are added to the list in ascending
-	 * sequence number order.
+	 * Builds a full or partial list of channels in the group with given ID
+	 * belonging to the current application user depending on values of sourceId
+	 * and transpId. Channels are added to the list in ascending sequence number
+	 * order.
 	 * 
 	 * @param groupId
 	 *            the ID of the group which channels are added to the list
+	 * @param sourceId
+	 *            the ID of the source which channels are added to the list, if
+	 *            both sourceId and transpId are negative then all group
+	 *            channels are added
+	 * @param transpId
+	 *            the ID of the transponder which channels are added to the
+	 *            list, if transpId is negative then sourceId value is taken
+	 *            into account
 	 * @return the list of channels found in the group for the current
 	 *         application user
 	 */
-	public List<Channel> findAllInGroup(long groupId) {
+	public List<Channel> findAllInGroup(long groupId, long sourceId,
+			long transpId) {
 		List<Channel> result;
 		TypedQuery<Object[]> query;
 		List<Object[]> queryResult;
 
-		query = em
-				.createQuery(
-						"select c, cg.seqno from Channel c, ChannelGroup cg where c.id = cg.channelId and cg.groupId = :groupId order by cg.seqno",
-						Object[].class);
-		query.setParameter("groupId", groupId);
+		if (transpId < 0) {
+			if (sourceId < 0) {
+				query = em
+						.createQuery(
+								"select c, cg.seqno from Channel c, ChannelGroup cg where c.id = cg.channelId and cg.groupId = :groupId order by cg.seqno",
+								Object[].class);
+				query.setParameter("groupId", groupId);
+			} else {
+				query = em
+						.createQuery(
+								"select c, cg.seqno from Channel c, ChannelGroup cg, Transponder t where c.id = cg.channelId and c.transpId = t.id and cg.groupId = :groupId and t.sourceId = :sourceId order by cg.seqno",
+								Object[].class);
+				query.setParameter("groupId", groupId);
+				query.setParameter("sourceId", sourceId);
+			}
+		} else {
+			query = em
+					.createQuery(
+							"select c, cg.seqno from Channel c, ChannelGroup cg where c.id = cg.channelId and cg.groupId = :groupId and c.transpId = :transpId order by cg.seqno",
+							Object[].class);
+			query.setParameter("groupId", groupId);
+			query.setParameter("transpId", transpId);
+		}
 
 		queryResult = query.getResultList();
 
@@ -366,14 +394,23 @@ public class ChannelRepository {
 	 *            the group ID to find a channel's maximum sequence number
 	 * @return the maximum channel sequence number or null if no channels found
 	 */
-	public Integer findMaxGroupSeqno(long groupId) {
+	public Integer findMaxGroupSeqno(long groupId, long transpId) {
 		TypedQuery<Integer> query;
 
-		query = em
-				.createQuery(
-						"select max(cg.seqno) from ChannelGroup cg where cg.groupId = :groupId",
-						Integer.class);
-		query.setParameter("groupId", groupId);
+		if (transpId < 0) {
+			query = em
+					.createQuery(
+							"select max(cg.seqno) from ChannelGroup cg where cg.groupId = :groupId",
+							Integer.class);
+			query.setParameter("groupId", groupId);
+		} else {
+			query = em
+					.createQuery(
+							"select max(cg.seqno) from ChannelGroup cg, Channel c where c.id = cg.channelId and cg.groupId = :groupId and c.transpId = :transpId",
+							Integer.class);
+			query.setParameter("groupId", groupId);
+			query.setParameter("transpId", transpId);
+		}
 
 		return query.getSingleResult();
 	}
@@ -686,7 +723,7 @@ public class ChannelRepository {
 			}
 
 			if (!isMember) {
-				maxGroupSeqno = findMaxGroupSeqno(group.getId());
+				maxGroupSeqno = findMaxGroupSeqno(group.getId(), -1);
 
 				if (maxGroupSeqno != null) {
 					seqno = maxGroupSeqno + 1;

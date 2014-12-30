@@ -19,6 +19,7 @@ import di.vdrchman.event.SourceAction;
 import di.vdrchman.event.TransponderAction;
 import di.vdrchman.model.Channel;
 import di.vdrchman.model.Group;
+import di.vdrchman.model.Source;
 import di.vdrchman.model.Transponder;
 
 @SessionScoped
@@ -26,6 +27,9 @@ import di.vdrchman.model.Transponder;
 public class GroupChannelsManager implements Serializable {
 
 	private static final long serialVersionUID = -8886902714319782369L;
+
+	@Inject
+	private SourceRepository sourceRepository;
 
 	@Inject
 	private TransponderRepository transponderRepository;
@@ -39,7 +43,20 @@ public class GroupChannelsManager implements Serializable {
 	// The ID of the group which channels are shown in the table
 	private long shownGroupId = -1;
 
-	// Group channel list for the current application user
+	// ID of the source to filter channel list on.
+	// No filtering if it's negative.
+	private long filteredSourceId = -1;
+	// ID of the transponder to filter channel list on.
+	// No filtering if it's negative.
+	private long filteredTranspId = -1;
+
+	// List of filtered source transponders
+	private List<Transponder> filteredSourceTransponders = new ArrayList<Transponder>();
+
+	// Indicates that filtered source transponder list refresh is suggested
+	private boolean filteredSourceTranspondersRefreshNeeded = false;
+
+	// (Filtered) Group channel list for the current application user
 	private List<Channel> channels;
 
 	// Indicates that channels list refresh is suggested
@@ -84,8 +101,24 @@ public class GroupChannelsManager implements Serializable {
 
 	// Find and set the table scroller page to show the channel given
 	public void turnScrollerPage(Channel channel) {
-		scrollerPage = (channelRepository.findSeqno(channel.getId(),
-				shownGroupId) - 1) / rowsPerPage + 1;
+		List<Channel> channels;
+		int i;
+
+		if ((filteredSourceId >= 0) || (filteredTranspId >= 0)) {
+			channels = channelRepository.findAllInGroup(shownGroupId,
+					filteredSourceId, filteredTranspId);
+			i = 0;
+			for (Channel theChannel : channels) {
+				if (theChannel.getId().equals(channel.getId())) {
+					scrollerPage = i / rowsPerPage + 1;
+					break;
+				}
+				++i;
+			}
+		} else {
+			scrollerPage = (channelRepository.findSeqno(channel.getId(),
+					shownGroupId) - 1) / rowsPerPage + 1;
+		}
 	}
 
 	// Set scroller page value to the last page if it is beyond now.
@@ -100,12 +133,54 @@ public class GroupChannelsManager implements Serializable {
 
 	// Calculate the sequence number for the channel to be placed on top
 	// of the current channel list. If current channel list is not empty
-	// then it is the sequence number of its top channel. Otherwise it is 1
+	// then it is the sequence number of its top channel. Otherwise it is
+	// calculated the way the channel to be placed right after the last existing
+	// channel of previous transponders
 	public int calculateOnTopSeqno() {
 		int result;
+		Transponder transponder;
+		Integer maxChannelSeqnoWithinTransponder;
+		Source source;
+		Integer maxTranspSeqnoWithinSource;
 
 		if (channels.isEmpty()) {
 			result = 1;
+			if (filteredTranspId >= 0) {
+				transponder = transponderRepository
+						.findPrevious(filteredTranspId);
+				while (transponder != null) {
+					maxChannelSeqnoWithinTransponder = channelRepository
+							.findMaxGroupSeqno(shownGroupId,
+									transponder.getId());
+					if (maxChannelSeqnoWithinTransponder != null) {
+						result = maxChannelSeqnoWithinTransponder + 1;
+						break;
+					}
+					transponder = transponderRepository
+							.findPrevious(transponder);
+				}
+			} else {
+				if (filteredSourceId >= 0) {
+					source = sourceRepository.findPrevious(filteredSourceId);
+					while (source != null) {
+						maxTranspSeqnoWithinSource = transponderRepository
+								.findMaxSeqno(source.getId());
+						if (maxTranspSeqnoWithinSource != null) {
+							maxChannelSeqnoWithinTransponder = channelRepository
+									.findMaxGroupSeqno(
+											shownGroupId,
+											transponderRepository.findBySeqno(
+													maxTranspSeqnoWithinSource)
+													.getId());
+							if (maxChannelSeqnoWithinTransponder != null) {
+								result = maxChannelSeqnoWithinTransponder + 1;
+								break;
+							}
+						}
+						source = sourceRepository.findPrevious(source.getId());
+					}
+				}
+			}
 		} else {
 			result = channelRepository.findSeqno(channels.get(0).getId(),
 					shownGroupId);
@@ -117,17 +192,25 @@ public class GroupChannelsManager implements Serializable {
 	// Cleanup the GroupChannelsManager's data on SourceAction if needed
 	public void onSourceAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final SourceAction sourceAction) {
+		long sourceId;
 		Transponder transponder;
 
 		if (sourceAction.getAction() == SourceAction.Action.DELETE) {
-			channelsRefreshNeeded = true;
+			sourceId = sourceAction.getSource().getId();
+
+			if (sourceId == filteredSourceId) {
+				filteredSourceId = -1;
+				filteredSourceTranspondersRefreshNeeded = true;
+			}
+			if (filteredSourceId < 0) {
+				channelsRefreshNeeded = true;
+			}
 
 			if (takenChannel != null) {
 				transponder = transponderRepository.findById(takenChannel
 						.getId());
 				if (transponder != null) {
-					if (sourceAction.getSource().getId()
-							.equals(transponder.getSourceId())) {
+					if (sourceId == transponder.getSourceId()) {
 						takenChannel = null;
 					}
 				} else {
@@ -140,12 +223,24 @@ public class GroupChannelsManager implements Serializable {
 	// Cleanup the GroupChannelsManager's data on TransponderAction if needed
 	public void onTransponderAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final TransponderAction transponderAction) {
+		long transpId;
+
+		if (transponderAction.getTransponder().getSourceId() == filteredSourceId) {
+			filteredSourceTranspondersRefreshNeeded = true;
+		}
+
 		if (transponderAction.getAction() == TransponderAction.Action.DELETE) {
-			channelsRefreshNeeded = true;
+			transpId = transponderAction.getTransponder().getId();
+
+			if (transpId == filteredTranspId) {
+				filteredTranspId = -1;
+			}
+			if (filteredTranspId < 0) {
+				channelsRefreshNeeded = true;
+			}
 
 			if (takenChannel != null) {
-				if (transponderAction.getTransponder().getId()
-						.equals(takenChannel.getTranspId())) {
+				if (transpId == takenChannel.getTranspId()) {
 					takenChannel = null;
 				}
 			}
@@ -155,31 +250,88 @@ public class GroupChannelsManager implements Serializable {
 	// Cleanup the GroupChannelsManager's data on ChannelAction if needed
 	public void onChannelAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final ChannelAction channelAction) {
-		if (channelAction.getAction() == ChannelAction.Action.DELETE) {
-			channelsRefreshNeeded = true;
+		long transpId;
+		long sourceId;
 
-			if (takenChannel != null) {
-				if (channelAction.getChannel().getId()
-						.equals(takenChannel.getId())) {
-					takenChannel = null;
+		if ((channelAction.getAction() == ChannelAction.Action.DELETE)
+				|| (channelAction.getAction() == ChannelAction.Action.UPDATE)
+				|| (channelAction.getAction() == ChannelAction.Action.UPDATE_GROUPS)) {
+			transpId = channelAction.getChannel().getTranspId();
+			if (filteredTranspId == transpId) {
+				channelsRefreshNeeded = true;
+			} else {
+				if (filteredTranspId < 0) {
+					if (filteredSourceId >= 0) {
+						sourceId = transponderRepository.findById(transpId)
+								.getSourceId();
+						if (filteredSourceId == sourceId) {
+							channelsRefreshNeeded = true;
+						}
+					} else {
+						channelsRefreshNeeded = true;
+					}
 				}
 			}
-		}
 
-		if ((channelAction.getAction() == ChannelAction.Action.UPDATE)
-				|| (channelAction.getAction() == ChannelAction.Action.UPDATE_GROUPS)) {
-			channelsRefreshNeeded = true;
+			if (channelAction.getAction() == ChannelAction.Action.DELETE) {
+				if (takenChannel != null) {
+					if (channelAction.getChannel().getId()
+							.equals(takenChannel.getId())) {
+						takenChannel = null;
+					}
+				}
+			}
 		}
 	}
 
 	// Cleanup the GroupChannelsManager's data on ScannedChannelAction if needed
 	public void onScannedChannelAction(
 			@Observes(notifyObserver = Reception.IF_EXISTS) final ScannedChannelAction scannedChannelAction) {
-		if ((scannedChannelAction.getAction() == ScannedChannelAction.Action.SCAN_PROCESSED)
-				|| (scannedChannelAction.getAction() == ScannedChannelAction.Action.CHANNEL_UPDATED)
+		if (scannedChannelAction.getAction() == ScannedChannelAction.Action.SCAN_PROCESSED) {
+			if ((filteredSourceId == scannedChannelAction.getSourceId())
+					|| (filteredSourceId < 0)) {
+				channelsRefreshNeeded = true;
+			}
+		}
+
+		if ((scannedChannelAction.getAction() == ScannedChannelAction.Action.CHANNEL_UPDATED)
 				|| (scannedChannelAction.getAction() == ScannedChannelAction.Action.CHANNEL_REMOVED)) {
-			channelsRefreshNeeded = true;
-			takenChannel = null;
+			if (filteredSourceId < 0) {
+				channelsRefreshNeeded = true;
+			} else {
+				if (filteredSourceId == scannedChannelAction.getSourceId()) {
+					if ((filteredTranspId == scannedChannelAction.getTranspId())
+							|| (filteredTranspId < 0)) {
+						channelsRefreshNeeded = true;
+					}
+				}
+			}
+		}
+
+		if (channelsRefreshNeeded) {
+			if (scannedChannelAction.getAction() == ScannedChannelAction.Action.CHANNEL_REMOVED) {
+				takenChannel = null;
+			}
+		}
+	}
+
+	// Re(Fill) in the filtered source transponder list only if it is suggested
+	public void refreshFilteredSourceTranspondersIfNeeded() {
+		if (filteredSourceTranspondersRefreshNeeded) {
+			retrieveOrClearFilteredSourceTransponders();
+
+			filteredSourceTranspondersRefreshNeeded = false;
+		}
+	}
+
+	// Re(Fill) in the filtered source transponder list. Clear the list
+	// if there is no filtered source (negative source ID value)
+	public void retrieveOrClearFilteredSourceTransponders() {
+		if (filteredSourceId >= 0) {
+			filteredSourceTransponders = transponderRepository
+					.findAll(filteredSourceId);
+		} else {
+			filteredSourceTransponders.clear();
 		}
 	}
 
@@ -225,7 +377,8 @@ public class GroupChannelsManager implements Serializable {
 			}
 		}
 
-		channels = channelRepository.findAllInGroup(shownGroupId);
+		channels = channelRepository.findAllInGroup(shownGroupId,
+				filteredSourceId, filteredTranspId);
 	}
 
 	public long getShownGroupId() {
@@ -235,6 +388,29 @@ public class GroupChannelsManager implements Serializable {
 
 	public void setShownGroupId(long shownGroupId) {
 		this.shownGroupId = shownGroupId;
+	}
+
+	public long getFilteredSourceId() {
+
+		return filteredSourceId;
+	}
+
+	public void setFilteredSourceId(long filteredSourceId) {
+		this.filteredSourceId = filteredSourceId;
+	}
+
+	public long getFilteredTranspId() {
+
+		return filteredTranspId;
+	}
+
+	public void setFilteredTranspId(long filteredTranspId) {
+		this.filteredTranspId = filteredTranspId;
+	}
+
+	public List<Transponder> getFilteredSourceTransponders() {
+
+		return filteredSourceTransponders;
 	}
 
 	public List<Channel> getChannels() {
