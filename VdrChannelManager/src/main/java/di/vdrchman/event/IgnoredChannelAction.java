@@ -21,6 +21,7 @@ public class IgnoredChannelAction {
 	}
 
 	public IgnoredChannel getChannel() {
+
 		return channel;
 	}
 
@@ -29,6 +30,7 @@ public class IgnoredChannelAction {
 	}
 
 	public Action getAction() {
+
 		return action;
 	}
 

@@ -21,6 +21,7 @@ public class SourceAction {
 	}
 
 	public Source getSource() {
+
 		return source;
 	}
 
@@ -29,6 +30,7 @@ public class SourceAction {
 	}
 
 	public Action getAction() {
+
 		return action;
 	}
 

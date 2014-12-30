@@ -21,6 +21,7 @@ public class ChannelAction {
 	}
 
 	public Channel getChannel() {
+
 		return channel;
 	}
 
@@ -29,6 +30,7 @@ public class ChannelAction {
 	}
 
 	public Action getAction() {
+
 		return action;
 	}
 

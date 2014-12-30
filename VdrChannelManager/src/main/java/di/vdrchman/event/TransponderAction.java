@@ -21,6 +21,7 @@ public class TransponderAction {
 	}
 
 	public Transponder getTransponder() {
+
 		return transponder;
 	}
 
@@ -29,6 +30,7 @@ public class TransponderAction {
 	}
 
 	public Action getAction() {
+
 		return action;
 	}
 

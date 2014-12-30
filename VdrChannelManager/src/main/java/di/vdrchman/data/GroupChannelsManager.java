@@ -170,7 +170,6 @@ public class GroupChannelsManager implements Serializable {
 				|| (channelAction.getAction() == ChannelAction.Action.UPDATE_GROUPS)) {
 			channelsRefreshNeeded = true;
 		}
-
 	}
 
 	// Cleanup the GroupChannelsManager's data on ScannedChannelAction if needed
@@ -182,7 +181,6 @@ public class GroupChannelsManager implements Serializable {
 			channelsRefreshNeeded = true;
 			takenChannel = null;
 		}
-
 	}
 
 	// Re(Fill) in the channel list only if it is suggested. Also try to

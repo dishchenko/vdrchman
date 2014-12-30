@@ -18,6 +18,7 @@ import di.vdrchman.data.ScannedChannelRepository;
 import di.vdrchman.data.SourceRepository;
 import di.vdrchman.data.TransponderRepository;
 import di.vdrchman.event.ChannelAction;
+import di.vdrchman.event.SeqnoRenumberRequest;
 import di.vdrchman.model.Biss;
 import di.vdrchman.model.Channel;
 import di.vdrchman.model.Source;
@@ -43,6 +44,9 @@ public class ChannelsBacking {
 
 	@Inject
 	private Event<ChannelAction> channelActionEvent;
+
+	@Inject
+	private Event<SeqnoRenumberRequest> seqnoRenumberRequestEvent;
 
 	// The user is going to add a new channel on top of the current channel list
 	public void intendAddChannelOnTop() {
@@ -178,6 +182,8 @@ public class ChannelsBacking {
 			channelActionEvent.fire(new ChannelAction(channel,
 					ChannelAction.Action.DELETE));
 		}
+		seqnoRenumberRequestEvent.fire(new SeqnoRenumberRequest(
+				SeqnoRenumberRequest.Target.CHANNEL_GROUPS));
 		channelsManager.retrieveAllChannels();
 		channelsManager.clearCheckedChannels();
 		channelsManager.clearChannelCheckboxes();

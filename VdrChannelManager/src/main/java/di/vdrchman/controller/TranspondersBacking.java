@@ -9,6 +9,7 @@ import org.richfaces.event.DataScrollEvent;
 
 import di.vdrchman.data.TransponderRepository;
 import di.vdrchman.data.TranspondersManager;
+import di.vdrchman.event.SeqnoRenumberRequest;
 import di.vdrchman.event.TransponderAction;
 import di.vdrchman.model.Transponder;
 
@@ -23,6 +24,9 @@ public class TranspondersBacking {
 
 	@Inject
 	private Event<TransponderAction> transponderActionEvent;
+
+	@Inject
+	private Event<SeqnoRenumberRequest> seqnoRenumberRequestEvent;
 
 	// The user is going to add a new transponder on top of
 	// the current transponder list
@@ -93,6 +97,10 @@ public class TranspondersBacking {
 			transponderActionEvent.fire(new TransponderAction(transponder,
 					TransponderAction.Action.DELETE));
 		}
+		seqnoRenumberRequestEvent.fire(new SeqnoRenumberRequest(
+				SeqnoRenumberRequest.Target.CHANNELS));
+		seqnoRenumberRequestEvent.fire(new SeqnoRenumberRequest(
+				SeqnoRenumberRequest.Target.CHANNEL_GROUPS));
 		transpondersManager.retrieveAllTransponders();
 		transpondersManager.clearCheckedTransponders();
 		transpondersManager.clearTransponderCheckboxes();

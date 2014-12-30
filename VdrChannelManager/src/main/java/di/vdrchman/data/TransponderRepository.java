@@ -368,4 +368,31 @@ public class TransponderRepository {
 		em.remove(em.merge(transponder));
 	}
 
+	/**
+	 * Renumbers (makes exactly sequentially ordered) transponders' sequence
+	 * numbers
+	 */
+	public void renumberSeqnos() {
+		TypedQuery<TranspSeqno> query;
+		List<TranspSeqno> transpSeqnos;
+		int orderedSeqno;
+
+		query = em
+				.createQuery(
+						"select ts from TranspSeqno ts where ts.userId = :userId order by ts.seqno",
+						TranspSeqno.class);
+		query.setParameter("userId", sessionUser.getId());
+
+		transpSeqnos = query.getResultList();
+
+		orderedSeqno = 1;
+
+		for (TranspSeqno transpSeqno : transpSeqnos) {
+			if (transpSeqno.getSeqno() != orderedSeqno) {
+				transpSeqno.setSeqno(orderedSeqno);
+			}
+			++orderedSeqno;
+		}
+	}
+
 }

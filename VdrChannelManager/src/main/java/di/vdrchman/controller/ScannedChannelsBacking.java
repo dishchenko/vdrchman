@@ -15,6 +15,7 @@ import di.vdrchman.data.ScannedChannelsManager;
 import di.vdrchman.data.SourceRepository;
 import di.vdrchman.data.TransponderRepository;
 import di.vdrchman.event.ScannedChannelAction;
+import di.vdrchman.event.SeqnoRenumberRequest;
 import di.vdrchman.model.Channel;
 import di.vdrchman.model.IgnoredChannel;
 import di.vdrchman.model.ScannedChannel;
@@ -44,6 +45,9 @@ public class ScannedChannelsBacking {
 
 	@Inject
 	private Event<ScannedChannelAction> scannedChannelActionEvent;
+
+	@Inject
+	private Event<SeqnoRenumberRequest> seqnoRenumberRequestEvent;
 
 	// Process all uploaded scanned channel files (scans) one by one. Store
 	// results of processing in the scanned channels table
@@ -242,6 +246,8 @@ public class ScannedChannelsBacking {
 				ScannedChannelAction.Action.CHANNEL_REMOVED,
 				editedChannelTransponder.getSourceId(),
 				editedChannelTransponder.getId()));
+		seqnoRenumberRequestEvent.fire(new SeqnoRenumberRequest(
+				SeqnoRenumberRequest.Target.CHANNEL_GROUPS));
 		scannedChannelsManager.retrieveAllChannels();
 		scannedChannelsManager.clearCheckedChannels();
 		scannedChannelsManager.clearChannelCheckboxes();
