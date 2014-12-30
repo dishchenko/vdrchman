@@ -8,7 +8,6 @@ import org.richfaces.event.DataScrollEvent;
 
 import di.vdrchman.data.SourceRepository;
 import di.vdrchman.data.SourcesManager;
-import di.vdrchman.event.SeqnoRenumberRequest;
 import di.vdrchman.event.SourceAction;
 import di.vdrchman.model.Source;
 
@@ -23,9 +22,6 @@ public class SourcesBacking {
 
 	@Inject
 	private Event<SourceAction> sourceActionEvent;
-
-	@Inject
-	private Event<SeqnoRenumberRequest> seqnoRenumberRequestEvent;
 
 	// The user is going to add a new source
 	public void intendAddSource() {
@@ -71,12 +67,6 @@ public class SourcesBacking {
 			sourceActionEvent.fire(new SourceAction(source,
 					SourceAction.Action.DELETE));
 		}
-		seqnoRenumberRequestEvent.fire(new SeqnoRenumberRequest(
-				SeqnoRenumberRequest.Target.TRANSPONDERS));
-		seqnoRenumberRequestEvent.fire(new SeqnoRenumberRequest(
-				SeqnoRenumberRequest.Target.CHANNELS));
-		seqnoRenumberRequestEvent.fire(new SeqnoRenumberRequest(
-				SeqnoRenumberRequest.Target.CHANNEL_GROUPS));
 		sourcesManager.retrieveAllSources();
 		sourcesManager.clearCheckedSources();
 		sourcesManager.clearSourceCheckboxes();

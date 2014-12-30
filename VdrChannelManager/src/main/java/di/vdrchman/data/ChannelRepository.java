@@ -478,17 +478,27 @@ public class ChannelRepository {
 
 	/**
 	 * Deletes the channel from the persisted list of channels (deletes it from
-	 * the database).
+	 * the database). Also deletes the channel from all channel groups.
 	 * 
 	 * @param channel
 	 *            the channel to delete
 	 */
 	public void delete(Channel channel) {
+		long channelId;
+		List<Group> groups;
 		ChannelSeqno channelSeqno;
 		int seqno;
 		Query query;
 
-		channelSeqno = em.find(ChannelSeqno.class, channel.getId());
+		channelId = channel.getId();
+
+		groups = findGroups(channelId);
+
+		for (Group group : groups) {
+			delete(channelId, group.getId());
+		}
+
+		channelSeqno = em.find(ChannelSeqno.class, channelId);
 
 		if (channelSeqno != null) {
 			seqno = channelSeqno.getSeqno();
@@ -697,70 +707,6 @@ public class ChannelRepository {
 	 */
 	public void addOrUpdateBissKeys(Biss biss) {
 		em.merge(biss);
-	}
-
-	/**
-	 * Renumbers (makes exactly sequentially ordered) channels' sequence numbers
-	 * in main list
-	 */
-	public void renumberSeqnos() {
-		TypedQuery<ChannelSeqno> query;
-		List<ChannelSeqno> channelSeqnos;
-		int orderedSeqno;
-
-		query = em
-				.createQuery(
-						"select cs from ChannelSeqno cs where cs.userId = :userId order by cs.seqno",
-						ChannelSeqno.class);
-		query.setParameter("userId", sessionUser.getId());
-
-		channelSeqnos = query.getResultList();
-
-		orderedSeqno = 1;
-
-		for (ChannelSeqno channelSeqno : channelSeqnos) {
-			if (channelSeqno.getSeqno() != orderedSeqno) {
-				channelSeqno.setSeqno(orderedSeqno);
-			}
-			++orderedSeqno;
-		}
-	}
-
-	/**
-	 * Renumbers (makes exactly sequentially ordered) channels' sequence numbers
-	 * in channel groups
-	 */
-	public void renumberSeqnosInGroups() {
-		TypedQuery<Group> gQuery;
-		List<Group> groups;
-		TypedQuery<ChannelGroup> cgQuery;
-		List<ChannelGroup> channelGroups;
-		int orderedSeqno;
-
-		gQuery = em.createQuery(
-				"select g from Group g where g.userId = :userId", Group.class);
-		gQuery.setParameter("userId", sessionUser.getId());
-
-		groups = gQuery.getResultList();
-
-		for (Group group : groups) {
-			cgQuery = em
-					.createQuery(
-							"select cg from ChannelGroup cg where cg.groupId = :groupId order by cg.seqno",
-							ChannelGroup.class);
-			cgQuery.setParameter("groupId", group.getId());
-
-			channelGroups = cgQuery.getResultList();
-
-			orderedSeqno = 1;
-
-			for (ChannelGroup channelGroup : channelGroups) {
-				if (channelGroup.getSeqno() != orderedSeqno) {
-					channelGroup.setSeqno(orderedSeqno);
-				}
-				++orderedSeqno;
-			}
-		}
 	}
 
 	// Move the (merged into EM) channel to group relation to the new sequence

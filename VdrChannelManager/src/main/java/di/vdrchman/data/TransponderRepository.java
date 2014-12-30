@@ -1,5 +1,7 @@
 package di.vdrchman.data;
 
+import static di.vdrchman.util.Tools.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +17,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import di.vdrchman.model.Channel;
 import di.vdrchman.model.TranspSeqno;
 import di.vdrchman.model.Transponder;
 
@@ -27,6 +30,9 @@ public class TransponderRepository {
 
 	@Inject
 	private SessionUser sessionUser;
+
+	@Inject
+	private ChannelRepository channelRepository;
 
 	/**
 	 * Builds a full or partial list of transponders belonging to the current
@@ -335,17 +341,29 @@ public class TransponderRepository {
 
 	/**
 	 * Deletes the transponder from the persisted list of transponders (deletes
-	 * it from the database).
+	 * it from the database). Also deletes all channels related to the
+	 * transponder.
 	 * 
 	 * @param transponder
 	 *            the transponder to delete
 	 */
 	public void delete(Transponder transponder) {
+		long transpId;
+		List<Channel> channels;
 		TranspSeqno transpSeqno;
 		int seqno;
 		Query query;
 
-		transpSeqno = em.find(TranspSeqno.class, transponder.getId());
+		transpId = transponder.getId();
+
+		channels = channelRepository.findAll(transponder.getSourceId(),
+				transpId, COMPARISON_NONE);
+
+		for (Channel channel : channels) {
+			channelRepository.delete(channel);
+		}
+
+		transpSeqno = em.find(TranspSeqno.class, transpId);
 
 		if (transpSeqno != null) {
 			seqno = transpSeqno.getSeqno();
@@ -366,33 +384,6 @@ public class TransponderRepository {
 		}
 
 		em.remove(em.merge(transponder));
-	}
-
-	/**
-	 * Renumbers (makes exactly sequentially ordered) transponders' sequence
-	 * numbers
-	 */
-	public void renumberSeqnos() {
-		TypedQuery<TranspSeqno> query;
-		List<TranspSeqno> transpSeqnos;
-		int orderedSeqno;
-
-		query = em
-				.createQuery(
-						"select ts from TranspSeqno ts where ts.userId = :userId order by ts.seqno",
-						TranspSeqno.class);
-		query.setParameter("userId", sessionUser.getId());
-
-		transpSeqnos = query.getResultList();
-
-		orderedSeqno = 1;
-
-		for (TranspSeqno transpSeqno : transpSeqnos) {
-			if (transpSeqno.getSeqno() != orderedSeqno) {
-				transpSeqno.setSeqno(orderedSeqno);
-			}
-			++orderedSeqno;
-		}
 	}
 
 }

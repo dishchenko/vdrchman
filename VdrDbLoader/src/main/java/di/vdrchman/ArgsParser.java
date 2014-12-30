@@ -36,6 +36,9 @@ public class ArgsParser {
 					if (argCommand.equals("loadGroups")) {
 						command = Command.LOAD_GROUPS;
 					}
+					if (argCommand.equals("renumberSeqnos")) {
+						command = Command.RENUMBER_SEQNOS;
+					}
 				} else {
 					sourceName = args[2];
 

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import di.vdrchman.model.Source;
+import di.vdrchman.model.Transponder;
 
 @Stateless
 @Named
@@ -23,6 +24,9 @@ public class SourceRepository {
 
 	@Inject
 	private SessionUser sessionUser;
+
+	@Inject
+	private TransponderRepository transponderRepository;
 
 	/**
 	 * Builds a list of sources belonging to the current application user. First
@@ -198,12 +202,20 @@ public class SourceRepository {
 
 	/**
 	 * Deletes the source from the persisted list of sources (deletes it from
-	 * the database).
+	 * the database). Also deletes all transponders related to the source.
 	 * 
 	 * @param source
 	 *            the source to delete
 	 */
 	public void delete(Source source) {
+		List<Transponder> transponders;
+
+		transponders = transponderRepository.findAll(source.getId());
+
+		for (Transponder transponder : transponders) {
+			transponderRepository.delete(transponder);
+		}
+
 		em.remove(em.merge(source));
 	}
 

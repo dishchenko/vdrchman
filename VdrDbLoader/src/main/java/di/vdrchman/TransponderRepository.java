@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -215,6 +216,31 @@ public class TransponderRepository {
 					"Exception while processing line " + lineNo + "\n\n");
 
 			throw ex;
+		}
+	}
+
+	// Renumber (makes exactly sequentially ordered) transponders' sequence
+	// numbers
+	public void renumberSeqnos(Long userId) {
+		TypedQuery<TranspSeqno> query;
+		List<TranspSeqno> transpSeqnos;
+		int orderedSeqno;
+
+		query = em
+				.createQuery(
+						"select ts from TranspSeqno ts where ts.userId = :userId order by ts.seqno",
+						TranspSeqno.class);
+		query.setParameter("userId", userId);
+
+		transpSeqnos = query.getResultList();
+
+		orderedSeqno = 1;
+
+		for (TranspSeqno transpSeqno : transpSeqnos) {
+			if (transpSeqno.getSeqno() != orderedSeqno) {
+				transpSeqno.setSeqno(orderedSeqno);
+			}
+			++orderedSeqno;
 		}
 	}
 

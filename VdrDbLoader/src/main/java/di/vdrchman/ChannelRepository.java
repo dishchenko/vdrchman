@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -453,6 +454,66 @@ public class ChannelRepository {
 					"Exception while processing line " + lineNo + "\n\n");
 
 			throw ex;
+		}
+	}
+
+	// Renumbers (makes exactly sequentially ordered) channels' sequence numbers
+	// in main list
+	public void renumberSeqnos(Long userId) {
+		TypedQuery<ChannelSeqno> query;
+		List<ChannelSeqno> channelSeqnos;
+		int orderedSeqno;
+
+		query = em
+				.createQuery(
+						"select cs from ChannelSeqno cs where cs.userId = :userId order by cs.seqno",
+						ChannelSeqno.class);
+		query.setParameter("userId", userId);
+
+		channelSeqnos = query.getResultList();
+
+		orderedSeqno = 1;
+
+		for (ChannelSeqno channelSeqno : channelSeqnos) {
+			if (channelSeqno.getSeqno() != orderedSeqno) {
+				channelSeqno.setSeqno(orderedSeqno);
+			}
+			++orderedSeqno;
+		}
+	}
+
+	// Renumbers (makes exactly sequentially ordered) channels' sequence numbers
+	// in channel groups
+	public void renumberSeqnosInGroups(Long userId) {
+		TypedQuery<Group> gQuery;
+		List<Group> groups;
+		TypedQuery<ChannelGroup> cgQuery;
+		List<ChannelGroup> channelGroups;
+		int orderedSeqno;
+
+		gQuery = em.createQuery(
+				"select g from Group g where g.userId = :userId", Group.class);
+		gQuery.setParameter("userId", userId);
+
+		groups = gQuery.getResultList();
+
+		for (Group group : groups) {
+			cgQuery = em
+					.createQuery(
+							"select cg from ChannelGroup cg where cg.groupId = :groupId order by cg.seqno",
+							ChannelGroup.class);
+			cgQuery.setParameter("groupId", group.getId());
+
+			channelGroups = cgQuery.getResultList();
+
+			orderedSeqno = 1;
+
+			for (ChannelGroup channelGroup : channelGroups) {
+				if (channelGroup.getSeqno() != orderedSeqno) {
+					channelGroup.setSeqno(orderedSeqno);
+				}
+				++orderedSeqno;
+			}
 		}
 	}
 

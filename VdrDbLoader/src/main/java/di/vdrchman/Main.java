@@ -41,6 +41,7 @@ public class Main {
 					.println("                       loadChannelGroups <userId> <sourceName|ALL_SOURCES>");
 			System.err
 					.println("                       loadIgnoredChannels <userId> <sourceName|ALL_SOURCES>");
+			System.err.println("                       renumberSeqnos <userId>");
 			System.exit(0);
 		}
 
@@ -100,6 +101,9 @@ public class Main {
 			}
 			if (ap.getCommand() == Command.LOAD_IGNORED_CHANNELS) {
 				loadIgnoredChannels();
+			}
+			if (ap.getCommand() == Command.RENUMBER_SEQNOS) {
+				renumberSeqnos();
 			}
 
 			em.getTransaction().commit();
@@ -422,6 +426,19 @@ public class Main {
 				channelsIgnored.close();
 			}
 		}
+	}
+
+	// Renumber transponders' and channels' sequence numbers for the current User
+	private void renumberSeqnos() {
+		TransponderRepository tr;
+		ChannelRepository cr;
+
+		tr = new TransponderRepository(em);
+		tr.renumberSeqnos(ap.getUserId());
+
+		cr = new ChannelRepository(em);
+		cr.renumberSeqnos(ap.getUserId());
+		cr.renumberSeqnosInGroups(ap.getUserId());
 	}
 
 }
