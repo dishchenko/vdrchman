@@ -276,6 +276,15 @@ public class ChannelsBacking {
 				ChannelAction.Action.UPDATE_GROUPS));
 	}
 
+	// The user have chosen to sort channels
+	public void doSort() {
+		channelRepository.sort(channelsManager.getSortMode());
+		channelsManager.retrieveAllChannels();
+		channelsManager.clearCheckedChannels();
+		channelsManager.clearChannelCheckboxes();
+		channelsManager.setScrollerPage(1);
+	}
+
 	// On changing the source filter selection clear the transponder filter if a
 	// source is selected and it is not the one selected transponder relates to.
 	// Also try to stay on the scroller page which includes the previous shown

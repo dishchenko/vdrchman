@@ -33,6 +33,15 @@ public class Tools {
 	// JSF EL accessible map of comparison constants
 	public static final Map<String, Integer> comparisonConst = new HashMap<String, Integer>();
 
+	// Sort modes
+	// 0 - (in groups) by mainlist channel sequence number
+	public static final int SORT_MAIN_LIST_SEQNO = 0;
+	// 1 - by transponder seqno, TV/Radio, sid, apid
+	public static final int SORT_TRANSPONDER_TVRADIO_SID_APID = 1;
+
+	// JSF EL accessible map of sort constants
+	public static final Map<String, Integer> sortConst = new HashMap<String, Integer>();
+
 	// Initialize the above map etc.
 	static {
 		comparisonConst.put("NONE", COMPARISON_NONE);
@@ -40,6 +49,10 @@ public class Tools {
 		comparisonConst.put("CHANGED_MAIN", COMPARISON_CHANGED_MAIN);
 		comparisonConst.put("CHANGED_IGNORED", COMPARISON_CHANGED_IGNORED);
 		comparisonConst.put("NOT_SCANNED", COMPARISON_NOT_SCANNED);
+
+		sortConst.put("MAIN_LIST_SEQNO", SORT_MAIN_LIST_SEQNO);
+		sortConst.put("TRANSPONDER_TVRADIO_SID_APID",
+				SORT_TRANSPONDER_TVRADIO_SID_APID);
 	}
 
 	// Build a string consisting of comma delimited group names
@@ -152,6 +165,11 @@ public class Tools {
 	public Map<String, Integer> getComparisonConst() {
 
 		return comparisonConst;
+	}
+
+	public Map<String, Integer> getSortConst() {
+
+		return sortConst;
 	}
 
 }

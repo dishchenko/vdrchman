@@ -23,7 +23,7 @@
 					style="overflow: visible !important; height: 0 !important; width: 0 !important; margin: 0 !important; border: 0 !important; padding: 0 !important; display: block !important;"
 					type="submit" value="default action" />
 				<!-- 'Add', 'Remove' etc. buttons panel -->
-				<h:panelGrid columns="8">
+				<h:panelGrid columns="9">
 					<ui:param name="takenChannelSourceId"
 						value="#{not empty channelsManager.takenChannel ? transponderRepository.findById(channelsManager.takenChannel.transpId).sourceId : null}">
 					</ui:param>
@@ -71,6 +71,11 @@
 						onclick="this.disabled=true"
 						oncomplete="document.getElementById('channelsForm:moveAfterButton').disabled=!isExactlyOneChannelCheckboxChecked()"
 						render="channelsContent" />
+					<a4j:commandButton id="sortButton" value="Sort..."
+						rendered="#{not empty channelsManager.channels and channelsManager.filteredSourceId lt 0 and channelsManager.filteredTranspId lt 0 and channelsManager.comparisonFilter eq tools.comparisonConst['NONE']}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('sortPanel')}.show();document.getElementById('sortPanelForm:sortModeMenu').focus();document.getElementById('channelsForm:sortButton').disabled=false"
+						render="sortPanel, channelsContent" />
 				</h:panelGrid>
 				<!-- Filter(s) panel -->
 				<h:panelGrid columns="7">
@@ -257,7 +262,60 @@
 			</h:outputScript>
 		</h:panelGroup>
 		<!-- Pop-up forms panel -->
-		<h:panelGrid columns="4">
+		<h:panelGrid columns="6">
+			<!-- Outer form for the Sort panel -->
+			<h:form id="sortPanelForm" styleClass="zerosize"
+				onkeypress="return sortPanelFormKeyPressHandler(event)">
+				<!-- The Sort panel -->
+				<rich:popupPanel id="sortPanel" modal="true" autosized="true"
+					domElementAttachment="form">
+					<!-- Header -->
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Sort channels" />
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<a4j:commandLink value="Close" immediate="true"
+								onclick="#{rich:component('sortPanel')}.hide()"
+								action="#{formResetter.resetForm(rich:findComponent('sortPanelForm'))}" />
+						</h:panelGroup>
+					</f:facet>
+					<!-- Content -->
+					<h:panelGrid columns="2">
+						<h:outputLabel value="Sort by:" styleClass="preformattedtext" />
+						<h:selectOneMenu id="sortModeMenu"
+							value="#{channelsManager.sortMode}">
+							<f:selectItem
+								itemValue="#{tools.sortConst['TRANSPONDER_TVRADIO_SID_APID']}"
+								itemLabel="Transponder, TV/Radio, SID, APID" />
+						</h:selectOneMenu>
+					</h:panelGrid>
+					<br />
+					<!-- Action buttons -->
+					<h:panelGrid columns="2">
+						<a4j:commandButton id="okButton" value="OK"
+							onclick="this.disabled=true;#{rich:component('sortPanel')}.hide();#{rich:component('sortingPanel')}.show()"
+							oncomplete="document.getElementById('sortPanelForm:okButton').disabled=false;#{rich:component('sortingPanel')}.hide()"
+							action="#{channelsBacking.doSort()}" render="channelsContent" />
+						<a4j:commandButton id="cancelButton" value="Cancel"
+							immediate="true"
+							action="#{formResetter.resetForm(rich:findComponent('sortPanelForm'))}"
+							onclick="#{rich:component('sortPanel')}.hide()" />
+					</h:panelGrid>
+				</rich:popupPanel>
+			</h:form>
+			<!-- Outer form for the Sorting panel -->
+			<h:form id="sortingPanelForm" styleClass="zerosize">
+				<!-- The Sorting panel -->
+				<rich:popupPanel id="sortingPanel" modal="true" autosized="true"
+					domElementAttachment="form">
+					<!-- Content -->
+					<h:outputText value="Sorting channels. Please wait..." />
+					<br />
+				</rich:popupPanel>
+			</h:form>
 			<!-- Outer form for the Update BISS Keys panel -->
 			<h:form id="updateBissKeysPanelForm" styleClass="zerosize"
 				onkeypress="return updateBissKeysPanelFormKeyPressHandler(event)">

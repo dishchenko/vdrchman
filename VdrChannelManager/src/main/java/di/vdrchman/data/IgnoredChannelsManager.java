@@ -21,6 +21,7 @@ import di.vdrchman.event.TransponderAction;
 import di.vdrchman.model.IgnoredChannel;
 import di.vdrchman.model.ScannedChannel;
 import di.vdrchman.model.Transponder;
+import di.vdrchman.util.Tools;
 
 @SessionScoped
 @Named
@@ -64,7 +65,7 @@ public class IgnoredChannelsManager implements Serializable {
 	private List<IgnoredChannel> checkedChannels = new ArrayList<IgnoredChannel>();
 
 	// Comparison result filter value. See Tools.COMPARISON_*
-	private int comparisonFilter = 0;
+	private int comparisonFilter = Tools.COMPARISON_NONE;
 
 	// The channel which the user is going to add/update
 	private IgnoredChannel editedChannel = new IgnoredChannel();

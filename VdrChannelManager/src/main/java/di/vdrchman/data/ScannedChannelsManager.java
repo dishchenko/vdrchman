@@ -32,6 +32,7 @@ import di.vdrchman.model.IgnoredChannel;
 import di.vdrchman.model.ScannedChannel;
 import di.vdrchman.model.Source;
 import di.vdrchman.model.Transponder;
+import di.vdrchman.util.Tools;
 
 @SessionScoped
 @Named
@@ -92,7 +93,7 @@ public class ScannedChannelsManager implements Serializable {
 	private List<String[]> scanProcessingReports = new ArrayList<String[]>();
 
 	// Comparison result filter value. See Tools.COMPARISON_*
-	private int comparisonFilter = 0;
+	private int comparisonFilter = Tools.COMPARISON_NONE;
 
 	// Scanned channel selected for adding to other channel lists or
 	// updating their content

@@ -29,7 +29,7 @@
 					style="overflow: visible !important; height: 0 !important; width: 0 !important; margin: 0 !important; border: 0 !important; padding: 0 !important; display: block !important;"
 					type="submit" value="default action" />
 				<!-- Group selection and 'Remove', 'Take' etc. buttons panel -->
-				<h:panelGrid columns="6">
+				<h:panelGrid columns="7">
 					<h:outputLabel styleClass="preformattedtext" value="Group" />
 					<h:selectOneMenu value="#{groupChannelsManager.shownGroupId}"
 						valueChangeListener="#{groupChannelsBacking.onGroupMenuSelection}"
@@ -63,6 +63,11 @@
 						onclick="this.disabled=true"
 						oncomplete="document.getElementById('groupChannelsForm:moveAfterButton').disabled=!isExactlyOneChannelCheckboxChecked()"
 						render="groupChannelsContent" />
+					<a4j:commandButton id="sortButton" value="Sort..."
+						rendered="#{not empty groupChannelsManager.channels and groupChannelsManager.filteredSourceId lt 0 and groupChannelsManager.filteredTranspId lt 0}"
+						onclick="this.disabled=true"
+						oncomplete="#{rich:component('sortPanel')}.show();document.getElementById('sortPanelForm:sortModeMenu').focus();document.getElementById('groupChannelsForm:sortButton').disabled=false"
+						render="sortPanel, groupChannelsContent" />
 				</h:panelGrid>
 				<!-- Filter(s) panel -->
 				<h:panelGrid columns="5">
@@ -198,7 +203,65 @@
 			</h:outputScript>
 		</h:panelGroup>
 		<!-- Pop-up forms panel -->
-		<h:panelGrid columns="1">
+		<h:panelGrid columns="3">
+			<!-- Outer form for the Sort panel -->
+			<h:form id="sortPanelForm" styleClass="zerosize"
+				onkeypress="return sortPanelFormKeyPressHandler(event)">
+				<!-- The Sort panel -->
+				<rich:popupPanel id="sortPanel" modal="true" autosized="true"
+					domElementAttachment="form">
+					<!-- Header -->
+					<f:facet name="header">
+						<h:panelGroup>
+							<h:outputText value="Sort channels" />
+						</h:panelGroup>
+					</f:facet>
+					<f:facet name="controls">
+						<h:panelGroup>
+							<a4j:commandLink value="Close" immediate="true"
+								onclick="#{rich:component('sortPanel')}.hide()"
+								action="#{formResetter.resetForm(rich:findComponent('sortPanelForm'))}" />
+						</h:panelGroup>
+					</f:facet>
+					<!-- Content -->
+					<h:panelGrid columns="2">
+						<h:outputLabel value="Sort by:" styleClass="preformattedtext" />
+						<h:selectOneMenu id="sortModeMenu"
+							value="#{groupChannelsManager.sortMode}">
+							<f:selectItem itemValue="#{tools.sortConst['MAIN_LIST_SEQNO']}"
+								itemLabel="Main list channel Seq No" />
+						</h:selectOneMenu>
+						<h:outputLabel value="Sort in all groups:"
+							styleClass="preformattedtext" />
+						<h:selectBooleanCheckbox
+							value="#{groupChannelsManager.allGroupsSorting}"
+							styleClass="preformattedtext" />
+					</h:panelGrid>
+					<br />
+					<!-- Action buttons -->
+					<h:panelGrid columns="2">
+						<a4j:commandButton id="okButton" value="OK"
+							onclick="this.disabled=true;#{rich:component('sortPanel')}.hide();#{rich:component('sortingPanel')}.show()"
+							oncomplete="document.getElementById('sortPanelForm:okButton').disabled=false;#{rich:component('sortingPanel')}.hide()"
+							action="#{groupChannelsBacking.doSort()}"
+							render="groupChannelsContent" />
+						<a4j:commandButton id="cancelButton" value="Cancel"
+							immediate="true"
+							action="#{formResetter.resetForm(rich:findComponent('sortPanelForm'))}"
+							onclick="#{rich:component('sortPanel')}.hide()" />
+					</h:panelGrid>
+				</rich:popupPanel>
+			</h:form>
+			<!-- Outer form for the Sorting panel -->
+			<h:form id="sortingPanelForm" styleClass="zerosize">
+				<!-- The Sorting panel -->
+				<rich:popupPanel id="sortingPanel" modal="true" autosized="true"
+					domElementAttachment="form">
+					<!-- Content -->
+					<h:outputText value="Sorting channels. Please wait..." />
+					<br />
+				</rich:popupPanel>
+			</h:form>
 			<!-- Outer form for the Remove panel -->
 			<h:form id="removePanelForm" styleClass="zerosize"
 				onkeypress="return removePanelFormKeyPressHandler(event)">

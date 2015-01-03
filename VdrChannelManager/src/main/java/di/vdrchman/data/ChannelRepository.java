@@ -22,6 +22,7 @@ import di.vdrchman.model.Channel;
 import di.vdrchman.model.ChannelGroup;
 import di.vdrchman.model.ChannelSeqno;
 import di.vdrchman.model.Group;
+import di.vdrchman.model.TranspSeqno;
 
 @Stateless
 @Named
@@ -744,6 +745,150 @@ public class ChannelRepository {
 	 */
 	public void addOrUpdateBissKeys(Biss biss) {
 		em.merge(biss);
+	}
+
+	/**
+	 * Sorts main channel list depending on value of sortMode parameter.
+	 * 
+	 * @param sortMode
+	 *            the variant of channel list sorting
+	 *            (SORT_TRANSPONDER_TVRADIO_SID_APID - at first channels are
+	 *            grouped by transponder sequence number, then TV channels in
+	 *            groups are sorted by SID and APID, and at last radio channels
+	 *            in groups are sorted the same way)
+	 */
+	public void sort(int sortMode) {
+		List<Long> channelIds;
+		Long userId;
+		TypedQuery<TranspSeqno> tsQuery;
+		List<TranspSeqno> transpSeqnos;
+		Long transpId;
+		TypedQuery<Channel> cQuery;
+		List<Channel> channels;
+		Query query;
+		int seqno;
+		ChannelSeqno channelSeqno;
+
+		switch (sortMode) {
+		case SORT_TRANSPONDER_TVRADIO_SID_APID:
+			channelIds = new ArrayList<Long>();
+
+			userId = sessionUser.getId();
+
+			tsQuery = em
+					.createQuery(
+							"select ts from TranspSeqno ts where ts.userId = :userId order by ts.seqno",
+							TranspSeqno.class);
+			tsQuery.setParameter("userId", userId);
+
+			transpSeqnos = tsQuery.getResultList();
+
+			for (TranspSeqno transpSeqno : transpSeqnos) {
+				transpId = transpSeqno.getTranspId();
+
+				cQuery = em
+						.createQuery(
+								"select c from Channel c where c.transpId = :transpId and c.vpid is not null order by c.sid, c.apid",
+								Channel.class);
+				cQuery.setParameter("transpId", transpId);
+
+				channels = cQuery.getResultList();
+
+				for (Channel channel : channels) {
+					channelIds.add(channel.getId());
+				}
+
+				cQuery = em
+						.createQuery(
+								"select c from Channel c where c.transpId = :transpId and c.vpid is null order by c.sid, c.apid",
+								Channel.class);
+				cQuery.setParameter("transpId", transpId);
+
+				channels = cQuery.getResultList();
+
+				for (Channel channel : channels) {
+					channelIds.add(channel.getId());
+				}
+			}
+
+			query = em
+					.createQuery("delete from ChannelSeqno cs where userId = :userId");
+			query.setParameter("userId", userId);
+
+			query.executeUpdate();
+
+			seqno = 1;
+
+			for (Long channelId : channelIds) {
+				channelSeqno = new ChannelSeqno();
+
+				channelSeqno.setUserId(userId);
+				channelSeqno.setChannelId(channelId);
+				channelSeqno.setSeqno(seqno);
+
+				em.merge(channelSeqno);
+
+				++seqno;
+			}
+			break;
+		default:
+			throw new IllegalArgumentException("Wrong 'sortMode' value: "
+					+ sortMode);
+		}
+	}
+
+	/**
+	 * Sorts channels in the group with given ID depending on value of sortMode
+	 * parameter.
+	 * 
+	 * @param groupId
+	 *            the ID of the groupto sort channels in
+	 * 
+	 * @param sortMode
+	 *            the variant of channel list sorting (SORT_MAIN_LIST_SEQNO -
+	 *            channels are sorted by their main list sequence numbers)
+	 */
+	public void sortGroup(long groupId, int sortMode) {
+		Query query;
+		TypedQuery<ChannelSeqno> csQuery;
+		List<ChannelSeqno> channelSeqnos;
+		int seqno;
+
+		switch (sortMode) {
+		case SORT_MAIN_LIST_SEQNO:
+			query = em
+					.createQuery("update ChannelGroup cg set cg.seqno = -cg.seqno where cg.groupId = :groupId");
+			query.setParameter("groupId", groupId);
+
+			query.executeUpdate();
+
+			csQuery = em
+					.createQuery(
+							"select cs from ChannelSeqno cs, ChannelGroup cg where cs.channelId = cg.channelId and cs.userId = :userId and cg.groupId = :groupId order by cs.seqno",
+							ChannelSeqno.class);
+			csQuery.setParameter("userId", sessionUser.getId());
+			csQuery.setParameter("groupId", groupId);
+
+			channelSeqnos = csQuery.getResultList();
+
+			seqno = 1;
+
+			for (ChannelSeqno channelSeqno : channelSeqnos) {
+				query = em
+						.createQuery("update ChannelGroup cg set cg.seqno = :seqno where cg.channelId = :channelId and cg.groupId = :groupId");
+				query.setParameter("seqno", seqno);
+				query.setParameter("channelId", channelSeqno.getChannelId());
+				query.setParameter("groupId", groupId);
+
+				query.executeUpdate();
+
+				++seqno;
+			}
+			break;
+		default:
+			throw new IllegalArgumentException("Wrong 'sortMode' value: "
+					+ sortMode);
+		}
 	}
 
 	// Move the (merged into EM) channel to group relation to the new sequence

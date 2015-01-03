@@ -1,5 +1,7 @@
 package di.vdrchman.data;
 
+import static di.vdrchman.util.Tools.*;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,6 +76,12 @@ public class GroupChannelsManager implements Serializable {
 
 	// The "clipboard": the place to store the channel taken by user
 	private Channel takenChannel = null;
+
+	// Channels sort mode
+	private int sortMode = SORT_MAIN_LIST_SEQNO;
+
+	// Indicates that channels must be sorted in all groups,not only in the shown one
+	private boolean allGroupsSorting = false;
 
 	// Fill in checkedChannels list with channels corresponding
 	// to checkboxes checked in the data table on the page
@@ -449,6 +457,24 @@ public class GroupChannelsManager implements Serializable {
 
 	public void setTakenChannel(Channel takenChannel) {
 		this.takenChannel = takenChannel;
+	}
+
+	public int getSortMode() {
+
+		return sortMode;
+	}
+
+	public void setSortMode(int sortMode) {
+		this.sortMode = sortMode;
+	}
+
+	public boolean isAllGroupsSorting() {
+
+		return allGroupsSorting;
+	}
+
+	public void setAllGroupsSorting(boolean allGroupsSorting) {
+		this.allGroupsSorting = allGroupsSorting;
 	}
 
 }

@@ -79,3 +79,48 @@ function removePanelFormKeyPressHandler(event) {
 
 	return result;
 }
+
+//The Sort panel form key press listener
+//Emulates 'OK' button click on hitting the 'Enter' key
+//Emulates 'Cancel' button click on hitting the 'Esc' key
+//Loops input focus through the form inputs on pressing 'Tab' / 'Shift+Tab'
+function sortPanelFormKeyPressHandler(event) {
+	var result;
+	var element;
+
+	result = true;
+
+	event = event || window.event;
+
+	if (event.keyCode == 13) {
+		if (document.activeElement != document
+				.getElementById('sortPanelForm:cancelButton')) {
+			element = document.getElementById('sortPanelForm:okButton');
+			element.click();
+			result = false;
+		}
+	}
+
+	if (event.keyCode == 27) {
+		document.getElementById('sortPanelForm:cancelButton').click();
+		result = false;
+	}
+
+	if (event.keyCode == 9) {
+		if (event.shiftKey) {
+			if (document.activeElement == document
+					.getElementById('sortPanelForm:sortModeMenu')) {
+				document.getElementById('sortPanelForm:cancelButton').focus();
+				result = false;
+			}
+		} else {
+			if (document.activeElement == document
+					.getElementById('sortPanelForm:cancelButton')) {
+				document.getElementById('sortPanelForm:sortModeMenu').focus();
+				result = false;
+			}
+		}
+	}
+
+	return result;
+}

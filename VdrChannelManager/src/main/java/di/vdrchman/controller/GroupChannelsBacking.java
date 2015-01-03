@@ -1,5 +1,7 @@
 package di.vdrchman.controller;
 
+import java.util.List;
+
 import javax.enterprise.inject.Model;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
@@ -8,8 +10,10 @@ import org.richfaces.event.DataScrollEvent;
 
 import di.vdrchman.data.ChannelRepository;
 import di.vdrchman.data.GroupChannelsManager;
+import di.vdrchman.data.GroupRepository;
 import di.vdrchman.data.TransponderRepository;
 import di.vdrchman.model.Channel;
+import di.vdrchman.model.Group;
 
 @Model
 public class GroupChannelsBacking {
@@ -22,6 +26,9 @@ public class GroupChannelsBacking {
 
 	@Inject
 	private ChannelRepository channelRepository;
+
+	@Inject
+	private GroupRepository groupRepository;
 
 	// The user is going to remove some checked channels
 	public void intendRemoveChannels() {
@@ -85,6 +92,27 @@ public class GroupChannelsBacking {
 		groupChannelsManager.clearChannelCheckboxes();
 		groupChannelsManager.turnScrollerPage(groupChannelsManager
 				.getTakenChannel());
+	}
+
+	// The user have chosen to sort channels
+	public void doSort() {
+		List<Group> groups;
+
+		if (groupChannelsManager.isAllGroupsSorting()) {
+			groups = groupRepository.findAll();
+
+			for (Group group : groups) {
+				channelRepository.sortGroup(group.getId(),
+						groupChannelsManager.getSortMode());
+			}
+		} else {
+			channelRepository.sortGroup(groupChannelsManager.getShownGroupId(),
+					groupChannelsManager.getSortMode());
+		}
+		groupChannelsManager.retrieveAllChannels();
+		groupChannelsManager.clearCheckedChannels();
+		groupChannelsManager.clearChannelCheckboxes();
+		groupChannelsManager.setScrollerPage(1);
 	}
 
 	// On changing the group menu selection clear the "clipboard" and turn the

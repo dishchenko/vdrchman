@@ -24,6 +24,7 @@ import di.vdrchman.model.Group;
 import di.vdrchman.model.ScannedChannel;
 import di.vdrchman.model.Source;
 import di.vdrchman.model.Transponder;
+import di.vdrchman.util.Tools;
 
 @SessionScoped
 @Named
@@ -96,13 +97,16 @@ public class ChannelsManager implements Serializable {
 	private List<Group> checkedChannelGroups = new ArrayList<Group>();
 
 	// Comparison result filter value. See Tools.COMPARISON_*
-	private int comparisonFilter = 0;
+	private int comparisonFilter = Tools.COMPARISON_NONE;
 
 	// The scanned channel corresponding to the edited channel
 	private ScannedChannel comparedScannedChannel;
 
 	// BISS keys the user is updating
 	private Biss editedBiss;
+
+	// Channels sort mode
+	private int sortMode = Tools.SORT_TRANSPONDER_TVRADIO_SID_APID;
 
 	// Fill in checkedChannels list with channels corresponding
 	// to checkboxes checked in the data table on the page
@@ -584,6 +588,15 @@ public class ChannelsManager implements Serializable {
 
 	public void setEditedBiss(Biss editedBiss) {
 		this.editedBiss = editedBiss;
+	}
+
+	public int getSortMode() {
+
+		return sortMode;
+	}
+
+	public void setSortMode(int sortMode) {
+		this.sortMode = sortMode;
 	}
 
 }
