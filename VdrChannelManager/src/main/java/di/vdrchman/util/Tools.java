@@ -38,6 +38,14 @@ public class Tools {
 	public static final int SORT_MAIN_LIST_SEQNO = 0;
 	// 1 - by transponder seqno, TV/Radio, sid, apid
 	public static final int SORT_TRANSPONDER_TVRADIO_SID_APID = 1;
+	// 2 - by name
+	public static final int SORT_NAME = 2;
+	// 3 - by language, name
+	public static final int SORT_LANG_NAME = 3;
+	// 4 - by source, name
+	public static final int SORT_SOURCE_NAME = 4;
+	// 5 - by source, language, name
+	public static final int SORT_SOURCE_LANG_NAME = 5;
 
 	// JSF EL accessible map of sort constants
 	public static final Map<String, Integer> sortConst = new HashMap<String, Integer>();
@@ -53,6 +61,10 @@ public class Tools {
 		sortConst.put("MAIN_LIST_SEQNO", SORT_MAIN_LIST_SEQNO);
 		sortConst.put("TRANSPONDER_TVRADIO_SID_APID",
 				SORT_TRANSPONDER_TVRADIO_SID_APID);
+		sortConst.put("NAME", SORT_NAME);
+		sortConst.put("LANG_NAME", SORT_LANG_NAME);
+		sortConst.put("SOURCE_NAME", SORT_SOURCE_NAME);
+		sortConst.put("SOURCE_LANG_NAME", SORT_SOURCE_LANG_NAME);
 	}
 
 	// Build a string consisting of comma delimited group names

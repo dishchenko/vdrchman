@@ -5,6 +5,7 @@ import static di.vdrchman.util.Tools.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -22,6 +23,7 @@ import di.vdrchman.model.Channel;
 import di.vdrchman.model.ChannelGroup;
 import di.vdrchman.model.ChannelSeqno;
 import di.vdrchman.model.Group;
+import di.vdrchman.model.Source;
 import di.vdrchman.model.TranspSeqno;
 
 @Stateless
@@ -33,6 +35,9 @@ public class ChannelRepository {
 
 	@Inject
 	private SessionUser sessionUser;
+
+	@EJB
+	private SourceRepository sourceRepository;
 
 	/**
 	 * Builds a full or partial list of channels belonging to the current
@@ -753,9 +758,15 @@ public class ChannelRepository {
 	 * @param sortMode
 	 *            the variant of channel list sorting
 	 *            (SORT_TRANSPONDER_TVRADIO_SID_APID - at first channels are
-	 *            grouped by transponder sequence number, then TV channels in
-	 *            groups are sorted by SID and APID, and at last radio channels
-	 *            in groups are sorted the same way)
+	 *            selected by transponder sequence number, then TV channels in
+	 *            selections are sorted by SID and APID, and at last radio
+	 *            channels in selections are sorted the same way, SORT_NAME -
+	 *            channels are sorted by their name, SORT_LANG_NAME - channels
+	 *            are selected by language, then channels in selections are
+	 *            sorted by name, SORT_SOURCE_NAME - channels are selected by
+	 *            source, then channels in selections are sorted by name,
+	 *            SORT_SOURCE_LANG_NAME - channels are selected by source, then
+	 *            channels in selections are sorted by language and name)
 	 */
 	public void sort(int sortMode) {
 		List<Long> channelIds;
@@ -768,12 +779,13 @@ public class ChannelRepository {
 		Query query;
 		int seqno;
 		ChannelSeqno channelSeqno;
+		List<Source> sources;
+
+		userId = sessionUser.getId();
 
 		switch (sortMode) {
 		case SORT_TRANSPONDER_TVRADIO_SID_APID:
 			channelIds = new ArrayList<Long>();
-
-			userId = sessionUser.getId();
 
 			tsQuery = em
 					.createQuery(
@@ -831,6 +843,142 @@ public class ChannelRepository {
 				++seqno;
 			}
 			break;
+		case SORT_NAME:
+			cQuery = em
+					.createQuery(
+							"select c from Channel c, ChannelSeqno cs where c.id = cs.channelId and cs.userId = :userId order by c.name",
+							Channel.class);
+			cQuery.setParameter("userId", userId);
+
+			channels = cQuery.getResultList();
+
+			query = em
+					.createQuery("delete from ChannelSeqno cs where userId = :userId");
+			query.setParameter("userId", userId);
+
+			query.executeUpdate();
+
+			seqno = 1;
+
+			for (Channel channel : channels) {
+				channelSeqno = new ChannelSeqno();
+
+				channelSeqno.setUserId(userId);
+				channelSeqno.setChannelId(channel.getId());
+				channelSeqno.setSeqno(seqno);
+
+				em.merge(channelSeqno);
+
+				++seqno;
+			}
+			break;
+		case SORT_LANG_NAME:
+			cQuery = em
+					.createQuery(
+							"select c from Channel c, ChannelSeqno cs where c.id = cs.channelId and cs.userId = :userId order by c.lang, c.name",
+							Channel.class);
+			cQuery.setParameter("userId", userId);
+
+			channels = cQuery.getResultList();
+
+			query = em
+					.createQuery("delete from ChannelSeqno cs where userId = :userId");
+			query.setParameter("userId", userId);
+
+			query.executeUpdate();
+
+			seqno = 1;
+
+			for (Channel channel : channels) {
+				channelSeqno = new ChannelSeqno();
+
+				channelSeqno.setUserId(userId);
+				channelSeqno.setChannelId(channel.getId());
+				channelSeqno.setSeqno(seqno);
+
+				em.merge(channelSeqno);
+
+				++seqno;
+			}
+			break;
+		case SORT_SOURCE_NAME:
+			channelIds = new ArrayList<Long>();
+
+			sources = sourceRepository.findAll();
+
+			for (Source source : sources) {
+				cQuery = em
+						.createQuery(
+								"select c from Channel c, Transponder t where c.transpId = t.id and t.sourceId = :sourceId order by c.name",
+								Channel.class);
+				cQuery.setParameter("sourceId", source.getId());
+
+				channels = cQuery.getResultList();
+
+				for (Channel channel : channels) {
+					channelIds.add(channel.getId());
+				}
+			}
+
+			query = em
+					.createQuery("delete from ChannelSeqno cs where userId = :userId");
+			query.setParameter("userId", userId);
+
+			query.executeUpdate();
+
+			seqno = 1;
+
+			for (Long channelId : channelIds) {
+				channelSeqno = new ChannelSeqno();
+
+				channelSeqno.setUserId(userId);
+				channelSeqno.setChannelId(channelId);
+				channelSeqno.setSeqno(seqno);
+
+				em.merge(channelSeqno);
+
+				++seqno;
+			}
+			break;
+		case SORT_SOURCE_LANG_NAME:
+			channelIds = new ArrayList<Long>();
+
+			sources = sourceRepository.findAll();
+
+			for (Source source : sources) {
+				cQuery = em
+						.createQuery(
+								"select c from Channel c, Transponder t where c.transpId = t.id and t.sourceId = :sourceId order by c.lang, c.name",
+								Channel.class);
+				cQuery.setParameter("sourceId", source.getId());
+
+				channels = cQuery.getResultList();
+
+				for (Channel channel : channels) {
+					channelIds.add(channel.getId());
+				}
+			}
+
+			query = em
+					.createQuery("delete from ChannelSeqno cs where userId = :userId");
+			query.setParameter("userId", userId);
+
+			query.executeUpdate();
+
+			seqno = 1;
+
+			for (Long channelId : channelIds) {
+				channelSeqno = new ChannelSeqno();
+
+				channelSeqno.setUserId(userId);
+				channelSeqno.setChannelId(channelId);
+				channelSeqno.setSeqno(seqno);
+
+				em.merge(channelSeqno);
+
+				++seqno;
+			}
+			break;
 		default:
 			throw new IllegalArgumentException("Wrong 'sortMode' value: "
 					+ sortMode);
@@ -846,13 +994,31 @@ public class ChannelRepository {
 	 * 
 	 * @param sortMode
 	 *            the variant of channel list sorting (SORT_MAIN_LIST_SEQNO -
-	 *            channels are sorted by their main list sequence numbers)
+	 *            channels are sorted by their main list sequence number,
+	 *            SORT_TRANSPONDER_TVRADIO_SID_APID - at first channels are
+	 *            selected by transponder sequence number, then TV channels in
+	 *            selections are sorted by SID and APID, and at last radio
+	 *            channels in selections are sorted the same way, SORT_NAME -
+	 *            channels are sorted by their name, SORT_LANG_NAME - channels
+	 *            are selected by language, then channels in selections are
+	 *            sorted by name, SORT_SOURCE_NAME - channels are selected by
+	 *            source, then channels in selections are sorted by name,
+	 *            SORT_SOURCE_LANG_NAME - channels are selected by source, then
+	 *            channels in selections are sorted by language and name)
 	 */
 	public void sortGroup(long groupId, int sortMode) {
 		Query query;
 		TypedQuery<ChannelSeqno> csQuery;
 		List<ChannelSeqno> channelSeqnos;
 		int seqno;
+		List<Long> channelIds;
+		Long userId;
+		TypedQuery<TranspSeqno> tsQuery;
+		List<TranspSeqno> transpSeqnos;
+		Long transpId;
+		TypedQuery<Channel> cQuery;
+		List<Channel> channels;
+		List<Source> sources;
 
 		switch (sortMode) {
 		case SORT_MAIN_LIST_SEQNO:
@@ -878,6 +1044,207 @@ public class ChannelRepository {
 						.createQuery("update ChannelGroup cg set cg.seqno = :seqno where cg.channelId = :channelId and cg.groupId = :groupId");
 				query.setParameter("seqno", seqno);
 				query.setParameter("channelId", channelSeqno.getChannelId());
+				query.setParameter("groupId", groupId);
+
+				query.executeUpdate();
+
+				++seqno;
+			}
+			break;
+		case SORT_TRANSPONDER_TVRADIO_SID_APID:
+			query = em
+					.createQuery("update ChannelGroup cg set cg.seqno = -cg.seqno where cg.groupId = :groupId");
+			query.setParameter("groupId", groupId);
+
+			query.executeUpdate();
+
+			channelIds = new ArrayList<Long>();
+
+			userId = sessionUser.getId();
+
+			tsQuery = em
+					.createQuery(
+							"select ts from TranspSeqno ts where ts.userId = :userId order by ts.seqno",
+							TranspSeqno.class);
+			tsQuery.setParameter("userId", userId);
+
+			transpSeqnos = tsQuery.getResultList();
+
+			for (TranspSeqno transpSeqno : transpSeqnos) {
+				transpId = transpSeqno.getTranspId();
+
+				cQuery = em
+						.createQuery(
+								"select c from Channel c, ChannelGroup cg where c.id = cg.channelId and cg.groupId = :groupId and c.transpId = :transpId and c.vpid is not null order by c.sid, c.apid",
+								Channel.class);
+				cQuery.setParameter("groupId", groupId);
+				cQuery.setParameter("transpId", transpId);
+
+				channels = cQuery.getResultList();
+
+				for (Channel channel : channels) {
+					channelIds.add(channel.getId());
+				}
+
+				cQuery = em
+						.createQuery(
+								"select c from Channel c, ChannelGroup cg where c.id = cg.channelId and cg.groupId = :groupId and c.transpId = :transpId and c.vpid is null order by c.sid, c.apid",
+								Channel.class);
+				cQuery.setParameter("groupId", groupId);
+				cQuery.setParameter("transpId", transpId);
+
+				channels = cQuery.getResultList();
+
+				for (Channel channel : channels) {
+					channelIds.add(channel.getId());
+				}
+			}
+
+			seqno = 1;
+
+			for (Long channelId : channelIds) {
+				query = em
+						.createQuery("update ChannelGroup cg set cg.seqno = :seqno where cg.channelId = :channelId and cg.groupId = :groupId");
+				query.setParameter("seqno", seqno);
+				query.setParameter("channelId", channelId);
+				query.setParameter("groupId", groupId);
+
+				query.executeUpdate();
+
+				++seqno;
+			}
+			break;
+		case SORT_NAME:
+			query = em
+					.createQuery("update ChannelGroup cg set cg.seqno = -cg.seqno where cg.groupId = :groupId");
+			query.setParameter("groupId", groupId);
+
+			query.executeUpdate();
+
+			cQuery = em
+					.createQuery(
+							"select c from Channel c, ChannelGroup cg where c.id = cg.channelId and cg.groupId = :groupId order by c.name",
+							Channel.class);
+			cQuery.setParameter("groupId", groupId);
+
+			channels = cQuery.getResultList();
+
+			seqno = 1;
+
+			for (Channel channel : channels) {
+				query = em
+						.createQuery("update ChannelGroup cg set cg.seqno = :seqno where cg.channelId = :channelId and cg.groupId = :groupId");
+				query.setParameter("seqno", seqno);
+				query.setParameter("channelId", channel.getId());
+				query.setParameter("groupId", groupId);
+
+				query.executeUpdate();
+
+				++seqno;
+			}
+			break;
+		case SORT_LANG_NAME:
+			query = em
+					.createQuery("update ChannelGroup cg set cg.seqno = -cg.seqno where cg.groupId = :groupId");
+			query.setParameter("groupId", groupId);
+
+			query.executeUpdate();
+
+			cQuery = em
+					.createQuery(
+							"select c from Channel c, ChannelGroup cg where c.id = cg.channelId and cg.groupId = :groupId order by c.lang, c.name",
+							Channel.class);
+			cQuery.setParameter("groupId", groupId);
+
+			channels = cQuery.getResultList();
+
+			seqno = 1;
+
+			for (Channel channel : channels) {
+				query = em
+						.createQuery("update ChannelGroup cg set cg.seqno = :seqno where cg.channelId = :channelId and cg.groupId = :groupId");
+				query.setParameter("seqno", seqno);
+				query.setParameter("channelId", channel.getId());
+				query.setParameter("groupId", groupId);
+
+				query.executeUpdate();
+
+				++seqno;
+			}
+			break;
+		case SORT_SOURCE_NAME:
+			query = em
+					.createQuery("update ChannelGroup cg set cg.seqno = -cg.seqno where cg.groupId = :groupId");
+			query.setParameter("groupId", groupId);
+
+			query.executeUpdate();
+
+			channelIds = new ArrayList<Long>();
+
+			sources = sourceRepository.findAll();
+
+			for (Source source : sources) {
+				cQuery = em
+						.createQuery(
+								"select c from Channel c, Transponder t, ChannelGroup cg where c.id = cg.channelId and c.transpId = t.id and t.sourceId = :sourceId and cg.groupId = :groupId order by c.name",
+								Channel.class);
+				cQuery.setParameter("sourceId", source.getId());
+				cQuery.setParameter("groupId", groupId);
+
+				channels = cQuery.getResultList();
+
+				for (Channel channel : channels) {
+					channelIds.add(channel.getId());
+				}
+			}
+
+			seqno = 1;
+
+			for (Long channelId : channelIds) {
+				query = em
+						.createQuery("update ChannelGroup cg set cg.seqno = :seqno where cg.channelId = :channelId and cg.groupId = :groupId");
+				query.setParameter("seqno", seqno);
+				query.setParameter("channelId", channelId);
+				query.setParameter("groupId", groupId);
+
+				query.executeUpdate();
+
+				++seqno;
+			}
+			break;
+		case SORT_SOURCE_LANG_NAME:
+			query = em
+					.createQuery("update ChannelGroup cg set cg.seqno = -cg.seqno where cg.groupId = :groupId");
+			query.setParameter("groupId", groupId);
+
+			query.executeUpdate();
+
+			channelIds = new ArrayList<Long>();
+
+			sources = sourceRepository.findAll();
+
+			for (Source source : sources) {
+				cQuery = em
+						.createQuery(
+								"select c from Channel c, Transponder t, ChannelGroup cg where c.id = cg.channelId and c.transpId = t.id and t.sourceId = :sourceId and cg.groupId = :groupId order by c.lang, c.name",
+								Channel.class);
+				cQuery.setParameter("sourceId", source.getId());
+				cQuery.setParameter("groupId", groupId);
+
+				channels = cQuery.getResultList();
+
+				for (Channel channel : channels) {
+					channelIds.add(channel.getId());
+				}
+			}
+
+			seqno = 1;
+
+			for (Long channelId : channelIds) {
+				query = em
+						.createQuery("update ChannelGroup cg set cg.seqno = :seqno where cg.channelId = :channelId and cg.groupId = :groupId");
+				query.setParameter("seqno", seqno);
+				query.setParameter("channelId", channelId);
 				query.setParameter("groupId", groupId);
 
 				query.executeUpdate();

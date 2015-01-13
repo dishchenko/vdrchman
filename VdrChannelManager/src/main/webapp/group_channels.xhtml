@@ -230,6 +230,17 @@
 							value="#{groupChannelsManager.sortMode}">
 							<f:selectItem itemValue="#{tools.sortConst['MAIN_LIST_SEQNO']}"
 								itemLabel="Main list channel Seq No" />
+							<f:selectItem
+								itemValue="#{tools.sortConst['TRANSPONDER_TVRADIO_SID_APID']}"
+								itemLabel="Transponder, TV/Radio, SID, APID" />
+							<f:selectItem itemValue="#{tools.sortConst['NAME']}"
+								itemLabel="Name" />
+							<f:selectItem itemValue="#{tools.sortConst['LANG_NAME']}"
+								itemLabel="Language, Name" />
+							<f:selectItem itemValue="#{tools.sortConst['SOURCE_NAME']}"
+								itemLabel="Source, Name" />
+							<f:selectItem itemValue="#{tools.sortConst['SOURCE_LANG_NAME']}"
+								itemLabel="Source, Language, Name" />
 						</h:selectOneMenu>
 						<h:outputLabel value="Sort in all groups:"
 							styleClass="preformattedtext" />

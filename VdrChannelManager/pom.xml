@@ -5,7 +5,7 @@
 
 	<groupId>di.vdrchman</groupId>
 	<artifactId>VdrChannelManager</artifactId>
-	<version>0.9.0-ALPHA</version>
+	<version>0.9.5-ALPHA</version>
 	<packaging>war</packaging>
 	<name>VdrChannelManager</name>
 	<description>VDR Channel Manager</description>
