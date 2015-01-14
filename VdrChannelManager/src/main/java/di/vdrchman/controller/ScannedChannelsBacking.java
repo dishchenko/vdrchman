@@ -211,11 +211,15 @@ public class ScannedChannelsBacking {
 	// data
 	public void doUpdateInChannels() {
 		Channel editedChannel;
+		ScannedChannel workingChannel;
 		Transponder editedChannelTransponder;
 
 		editedChannel = scannedChannelsManager.getEditedChannel();
-		editedChannel.setScannedName(scannedChannelsManager.getWorkingChannel()
-				.getScannedName());
+		workingChannel = scannedChannelsManager.getWorkingChannel();
+		editedChannel.setPcr(workingChannel.getPcr());
+		editedChannel.setRid(workingChannel.getRid());
+		editedChannel.setScannedName(workingChannel.getScannedName());
+		editedChannel.setProviderName(workingChannel.getProviderName());
 		channelRepository.update(editedChannel);
 		editedChannelTransponder = transponderRepository.findById(editedChannel
 				.getTranspId());

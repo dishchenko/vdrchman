@@ -20,6 +20,7 @@ import di.vdrchman.data.TransponderRepository;
 import di.vdrchman.event.ChannelAction;
 import di.vdrchman.model.Biss;
 import di.vdrchman.model.Channel;
+import di.vdrchman.model.ScannedChannel;
 import di.vdrchman.model.Source;
 import di.vdrchman.model.Transponder;
 
@@ -128,11 +129,18 @@ public class ChannelsBacking {
 	// Really updating the channel
 	public void doUpdateChannel() {
 		Channel editedChannel;
+		ScannedChannel comparedScannedChannel;
 
 		editedChannel = channelsManager.getEditedChannel();
 		if (channelsManager.getComparisonFilter() == COMPARISON_CHANGED_MAIN) {
-			editedChannel.setScannedName(channelsManager
-					.getComparedScannedChannel().getScannedName());
+			comparedScannedChannel = channelsManager
+					.getComparedScannedChannel();
+			editedChannel.setPcr(comparedScannedChannel.getPcr());
+			editedChannel.setRid(comparedScannedChannel.getRid());
+			editedChannel.setScannedName(comparedScannedChannel
+					.getScannedName());
+			editedChannel.setProviderName(comparedScannedChannel
+					.getProviderName());
 		}
 		channelRepository.update(editedChannel);
 		channelActionEvent.fire(new ChannelAction(editedChannel,
