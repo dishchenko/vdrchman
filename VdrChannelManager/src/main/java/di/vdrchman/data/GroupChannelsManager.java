@@ -80,7 +80,8 @@ public class GroupChannelsManager implements Serializable {
 	// Channels sort mode
 	private int sortMode = SORT_MAIN_LIST_SEQNO;
 
-	// Indicates that channels must be sorted in all groups,not only in the shown one
+	// Indicates that channels must be sorted in all groups,not only in the
+	// shown one
 	private boolean allGroupsSorting = false;
 
 	// Fill in checkedChannels list with channels corresponding
@@ -303,7 +304,8 @@ public class GroupChannelsManager implements Serializable {
 		}
 
 		if ((scannedChannelAction.getAction() == ScannedChannelAction.Action.CHANNEL_UPDATED)
-				|| (scannedChannelAction.getAction() == ScannedChannelAction.Action.CHANNEL_REMOVED)) {
+				|| (scannedChannelAction.getAction() == ScannedChannelAction.Action.CHANNEL_REMOVED)
+				|| (scannedChannelAction.getAction() == ScannedChannelAction.Action.GROUPS_UPDATED)) {
 			if (filteredSourceId < 0) {
 				channelsRefreshNeeded = true;
 			} else {

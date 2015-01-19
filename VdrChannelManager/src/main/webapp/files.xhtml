@@ -23,7 +23,7 @@
 					<h:panelGrid columns="1">
 						<h:outputText styleClass="preformattedtext"
 							value="Upload scans (scanned channels in files named '&lt;sourceName&gt;.scanned') here" />
-						<ui:fragment rendered="#{filesManager.scans.size() > 0}">
+						<ui:fragment rendered="#{filesManager.scans.size() gt 0}">
 							<h:outputText style="font-weight: bold;"
 								value="Scans uploaded: #{tools.buildUploadedScanFileNamesString(filesManager.scans)}" />
 						</ui:fragment>
@@ -62,7 +62,7 @@
 						</h:panelGrid>
 						<br />
 						<h:panelGrid columns="10">
-							<c:forEach items="#{sourceRepository.findAll()}" var="sourceVar">
+							<c:forEach items="#{sourcesManager.sources}" var="sourceVar">
 								<h:commandButton
 									action="#{filesBacking.downloadFreq(sourceVar)}"
 									value="#{sourceVar.name}.freq" />

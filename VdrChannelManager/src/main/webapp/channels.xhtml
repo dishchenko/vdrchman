@@ -384,7 +384,7 @@
 				onkeypress="return updateGroupsPanelFormKeyPressHandler(event)">
 				<!-- The Update Groups panel -->
 				<rich:popupPanel id="updateGroupsPanel" modal="true" width="480"
-					height="600" domElementAttachment="form">
+					height="610" domElementAttachment="form">
 					<!-- Header -->
 					<f:facet name="header">
 						<h:panelGroup>
@@ -401,7 +401,7 @@
 					<!-- Content -->
 					<div style="width: 450px; height: 520px; overflow: auto;">
 						<h:dataTable id="updateGroupsTable" var="groupVar"
-							value="#{groupRepository.findAll()}">
+							value="#{groupsManager.groups}">
 							<h:column>
 								<h:selectBooleanCheckbox id="groupCheckbox#{groupVar.id}"
 									value="#{channelsManager.channelGroupCheckboxes[groupVar.id]}"
@@ -639,6 +639,23 @@
 							value="#{channelsManager.editedChannel.locked}"
 							styleClass="preformattedtext" />
 						<h:outputText value="" />
+						<ui:fragment rendered="#{empty channelsManager.editedChannel.id}">
+							<h:outputLabel value="Initial Group:"
+								styleClass="preformattedtext" />
+						</ui:fragment>
+						<ui:fragment rendered="#{empty channelsManager.editedChannel.id}">
+							<h:selectOneMenu id="groupsMenu"
+								value="#{channelsManager.addedChannelGroupId}">
+								<f:selectItem itemValue="-1" itemLabel="--"
+									itemDisabled="#{groupsManager.groups.size() eq 1}" />
+								<f:selectItems value="#{groupsManager.groups}" var="groupVar"
+									itemValue="#{groupVar.id}"
+									itemLabel="#{groupVar.name} (#{groupVar.description})" />
+							</h:selectOneMenu>
+						</ui:fragment>
+						<ui:fragment rendered="#{empty channelsManager.editedChannel.id}">
+							<h:outputText value="" />
+						</ui:fragment>
 					</h:panelGrid>
 					<!-- Action buttons -->
 					<h:panelGrid columns="2">

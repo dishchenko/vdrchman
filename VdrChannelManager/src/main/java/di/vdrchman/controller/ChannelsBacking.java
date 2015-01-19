@@ -2,6 +2,7 @@ package di.vdrchman.controller;
 
 import static di.vdrchman.util.Tools.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.event.Event;
@@ -14,12 +15,14 @@ import org.richfaces.event.DataScrollEvent;
 
 import di.vdrchman.data.ChannelRepository;
 import di.vdrchman.data.ChannelsManager;
+import di.vdrchman.data.GroupRepository;
 import di.vdrchman.data.ScannedChannelRepository;
 import di.vdrchman.data.SourceRepository;
 import di.vdrchman.data.TransponderRepository;
 import di.vdrchman.event.ChannelAction;
 import di.vdrchman.model.Biss;
 import di.vdrchman.model.Channel;
+import di.vdrchman.model.Group;
 import di.vdrchman.model.ScannedChannel;
 import di.vdrchman.model.Source;
 import di.vdrchman.model.Transponder;
@@ -43,12 +46,16 @@ public class ChannelsBacking {
 	private ScannedChannelRepository scannedChannelRepository;
 
 	@Inject
+	private GroupRepository groupRepository;
+
+	@Inject
 	private Event<ChannelAction> channelActionEvent;
 
 	// The user is going to add a new channel on top of the current channel list
 	public void intendAddChannelOnTop() {
 		Channel channel;
 		List<Source> sources;
+		List<Group> groups;
 
 		channel = new Channel();
 		channel.setTranspId(channelsManager.getFilteredTranspId());
@@ -65,6 +72,12 @@ public class ChannelsBacking {
 					.getFilteredSourceId());
 		}
 		channelsManager.retrieveOrClearEditedSourceTransponders();
+		groups = groupRepository.findAll();
+		if (groups.size() == 1) {
+			channelsManager.setAddedChannelGroupId(groups.get(0).getId());
+		} else {
+			channelsManager.setAddedChannelGroupId(-1);
+		}
 	}
 
 	// The user is going to add a new channel and place it right after
@@ -72,6 +85,7 @@ public class ChannelsBacking {
 	public void intendAddChannelAfter() {
 		Channel channel;
 		List<Source> sources;
+		List<Group> groups;
 
 		channel = new Channel();
 		channel.setTranspId(channelsManager.getFilteredTranspId());
@@ -89,17 +103,34 @@ public class ChannelsBacking {
 					.getFilteredSourceId());
 		}
 		channelsManager.retrieveOrClearEditedSourceTransponders();
+		groups = groupRepository.findAll();
+		if (groups.size() == 1) {
+			channelsManager.setAddedChannelGroupId(groups.get(0).getId());
+		} else {
+			channelsManager.setAddedChannelGroupId(-1);
+		}
 	}
 
 	// Really adding a new channel to the place specified
 	public void doAddChannel() {
 		Channel editedChannel;
+		long channelGroupId;
+		List<Group> channelGroups;
 
 		editedChannel = channelsManager.getEditedChannel();
 		channelRepository.add(editedChannel,
 				channelsManager.getEditedChannelSeqno());
 		channelActionEvent.fire(new ChannelAction(editedChannel,
 				ChannelAction.Action.ADD));
+		channelGroupId = channelsManager.getAddedChannelGroupId();
+		if (channelGroupId != -1) {
+			channelGroups = new ArrayList<Group>();
+			channelGroups.add(groupRepository.findById(channelGroupId));
+			channelRepository
+					.updateGroups(editedChannel.getId(), channelGroups);
+			channelActionEvent.fire(new ChannelAction(editedChannel,
+					ChannelAction.Action.UPDATE_GROUPS));
+		}
 		channelsManager.retrieveAllChannels();
 		channelsManager.clearCheckedChannels();
 		channelsManager.clearChannelCheckboxes();
@@ -204,6 +235,8 @@ public class ChannelsBacking {
 	// The user's gonna add a new channel on top of the list
 	// using data from the "clipboard"
 	public void intendCopyChannelOnTop() {
+		List<Group> groups;
+
 		channelsManager.setEditedChannel(new Channel(channelsManager
 				.getTakenChannel()));
 		channelsManager.getEditedChannel().setId(null);
@@ -214,11 +247,19 @@ public class ChannelsBacking {
 						channelsManager.getEditedChannel().getTranspId())
 						.getSourceId());
 		channelsManager.retrieveOrClearEditedSourceTransponders();
+		groups = groupRepository.findAll();
+		if (groups.size() == 1) {
+			channelsManager.setAddedChannelGroupId(groups.get(0).getId());
+		} else {
+			channelsManager.setAddedChannelGroupId(-1);
+		}
 	}
 
 	// The user is going to add a new channel using data from the
 	// "clipboard" and place it right after the checked channel in the list
 	public void intendCopyChannelAfter() {
+		List<Group> groups;
+
 		channelsManager.collectCheckedChannels();
 		channelsManager.setEditedChannel(new Channel(channelsManager
 				.getTakenChannel()));
@@ -230,6 +271,12 @@ public class ChannelsBacking {
 						channelsManager.getEditedChannel().getTranspId())
 						.getSourceId());
 		channelsManager.retrieveOrClearEditedSourceTransponders();
+		groups = groupRepository.findAll();
+		if (groups.size() == 1) {
+			channelsManager.setAddedChannelGroupId(groups.get(0).getId());
+		} else {
+			channelsManager.setAddedChannelGroupId(-1);
+		}
 	}
 
 	// Remember the channel taken on the "clipboard"?

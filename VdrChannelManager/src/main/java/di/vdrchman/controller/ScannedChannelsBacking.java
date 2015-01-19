@@ -1,5 +1,8 @@
 package di.vdrchman.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Model;
 import javax.faces.event.ValueChangeEvent;
@@ -9,6 +12,7 @@ import org.richfaces.event.DataScrollEvent;
 
 import di.vdrchman.data.ChannelRepository;
 import di.vdrchman.data.FilesManager;
+import di.vdrchman.data.GroupRepository;
 import di.vdrchman.data.IgnoredChannelRepository;
 import di.vdrchman.data.Scan;
 import di.vdrchman.data.ScannedChannelsManager;
@@ -16,6 +20,7 @@ import di.vdrchman.data.SourceRepository;
 import di.vdrchman.data.TransponderRepository;
 import di.vdrchman.event.ScannedChannelAction;
 import di.vdrchman.model.Channel;
+import di.vdrchman.model.Group;
 import di.vdrchman.model.IgnoredChannel;
 import di.vdrchman.model.ScannedChannel;
 import di.vdrchman.model.Source;
@@ -41,6 +46,9 @@ public class ScannedChannelsBacking {
 
 	@Inject
 	private IgnoredChannelRepository ignoredChannelRepository;
+
+	@Inject
+	private GroupRepository groupRepository;
 
 	@Inject
 	private Event<ScannedChannelAction> scannedChannelActionEvent;
@@ -76,6 +84,7 @@ public class ScannedChannelsBacking {
 		Source workingChannelSource;
 		Transponder workingChannelTransponder;
 		Channel editedChannel;
+		List<Group> groups;
 
 		scannedChannelsManager.collectCheckedChannels();
 		workingChannel = scannedChannelsManager.getCheckedChannels().get(0);
@@ -100,6 +109,13 @@ public class ScannedChannelsBacking {
 		editedChannel.setVenc(workingChannel.getVenc());
 		editedChannel.setAenc(workingChannel.getAenc());
 		scannedChannelsManager.setEditedChannel(editedChannel);
+		groups = groupRepository.findAll();
+		if (groups.size() == 1) {
+			scannedChannelsManager
+					.setAddedChannelGroupId(groups.get(0).getId());
+		} else {
+			scannedChannelsManager.setAddedChannelGroupId(-1);
+		}
 	}
 
 	// Really adding the new channel based on the scanned channel data to main
@@ -108,6 +124,8 @@ public class ScannedChannelsBacking {
 		Channel editedChannel;
 		Transponder workingChannelTransponder;
 		ScannedChannel workingChannel;
+		long channelGroupId;
+		List<Group> channelGroups;
 
 		editedChannel = scannedChannelsManager.getEditedChannel();
 		workingChannelTransponder = scannedChannelsManager
@@ -128,6 +146,17 @@ public class ScannedChannelsBacking {
 				ScannedChannelAction.Action.CHANNEL_ADDED,
 				workingChannelTransponder.getSourceId(),
 				workingChannelTransponder.getId()));
+		channelGroupId = scannedChannelsManager.getAddedChannelGroupId();
+		if (channelGroupId != -1) {
+			channelGroups = new ArrayList<Group>();
+			channelGroups.add(groupRepository.findById(channelGroupId));
+			channelRepository
+					.updateGroups(editedChannel.getId(), channelGroups);
+			scannedChannelActionEvent.fire(new ScannedChannelAction(
+					ScannedChannelAction.Action.GROUPS_UPDATED,
+					workingChannelTransponder.getSourceId(),
+					workingChannelTransponder.getId()));
+		}
 		scannedChannelsManager.retrieveAllChannels();
 		scannedChannelsManager.clearCheckedChannels();
 		scannedChannelsManager.clearChannelCheckboxes();

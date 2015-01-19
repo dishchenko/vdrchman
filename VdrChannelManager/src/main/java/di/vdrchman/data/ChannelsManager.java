@@ -79,6 +79,9 @@ public class ChannelsManager implements Serializable {
 	// Sequence number of the edited channel
 	private int editedChannelSeqno;
 
+	// ID of the group the newly added channel will be a member of. -1 if none
+	private long addedChannelGroupId = -1;
+
 	// ID of the source the new channel relates to
 	private long editedSourceId = -1;
 
@@ -519,6 +522,15 @@ public class ChannelsManager implements Serializable {
 
 	public void setEditedChannelSeqno(int editedChannelSeqno) {
 		this.editedChannelSeqno = editedChannelSeqno;
+	}
+
+	public long getAddedChannelGroupId() {
+
+		return addedChannelGroupId;
+	}
+
+	public void setAddedChannelGroupId(long addedChannelGroupId) {
+		this.addedChannelGroupId = addedChannelGroupId;
 	}
 
 	public long getEditedSourceId() {

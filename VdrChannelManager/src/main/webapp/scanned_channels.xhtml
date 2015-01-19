@@ -361,6 +361,16 @@
 							<h:selectBooleanCheckbox id="lockedCheckbox"
 								value="#{scannedChannelsManager.editedChannel.locked}"
 								styleClass="preformattedtext" />
+							<h:outputLabel value="Initial Group:"
+								styleClass="preformattedtext" />
+							<h:selectOneMenu id="groupsMenu"
+								value="#{scannedChannelsManager.addedChannelGroupId}">
+								<f:selectItem itemValue="-1" itemLabel="--"
+									itemDisabled="#{groupsManager.groups.size() eq 1}" />
+								<f:selectItems value="#{groupsManager.groups}" var="groupVar"
+									itemValue="#{groupVar.id}"
+									itemLabel="#{groupVar.name} (#{groupVar.description})" />
+							</h:selectOneMenu>
 						</h:panelGrid>
 						<!-- Action buttons -->
 						<h:panelGrid columns="2">

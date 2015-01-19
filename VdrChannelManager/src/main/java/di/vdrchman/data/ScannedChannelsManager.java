@@ -111,6 +111,10 @@ public class ScannedChannelsManager implements Serializable {
 	// Channel which is to be added or updated in the ignored channel list
 	private IgnoredChannel editedIgnoredChannel;
 
+	// ID of the group the newly added to main list channel will be a member of.
+	// -1 if none
+	private long addedChannelGroupId = -1;
+
 	// Fill in checkedChannels list with channels corresponding
 	// to checkboxes checked in the data table on the page
 	public void collectCheckedChannels() {
@@ -874,6 +878,15 @@ public class ScannedChannelsManager implements Serializable {
 
 	public void setEditedIgnoredChannel(IgnoredChannel editedIgnoredChannel) {
 		this.editedIgnoredChannel = editedIgnoredChannel;
+	}
+
+	public long getAddedChannelGroupId() {
+
+		return addedChannelGroupId;
+	}
+
+	public void setAddedChannelGroupId(long addedChannelGroupId) {
+		this.addedChannelGroupId = addedChannelGroupId;
 	}
 
 }
