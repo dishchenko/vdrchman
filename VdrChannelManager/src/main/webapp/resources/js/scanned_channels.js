@@ -45,6 +45,43 @@ function isExactlyOneChannelCheckboxChecked() {
 	return result;
 }
 
+// Return true if all channel checkboxes within the table are checked
+function areAllChannelCheckboxesChecked() {
+	var result = true;
+	var checkboxNameSuffix = 'channelCheckbox';
+	var elements = document.getElementsByTagName('input');
+
+	for (var i = 0; i < elements.length; ++i) {
+		if (elements[i].type == 'checkbox') {
+			if (elements[i].name.indexOf(checkboxNameSuffix,
+					elements[i].name.length - checkboxNameSuffix.length) !== -1) {
+				if (!elements[i].checked) {
+					result = false;
+					break;
+				}
+			}
+		}
+	}
+
+	return result;
+}
+
+// Check/uncheck all channel checkboxes within the table depending on 'value'
+// parameter
+function toggleAllChannelCheckboxes(value) {
+	var checkboxNameSuffix = 'channelCheckbox';
+	var elements = document.getElementsByTagName('input');
+
+	for (var i = 0; i < elements.length; ++i) {
+		if (elements[i].type == 'checkbox') {
+			if (elements[i].name.indexOf(checkboxNameSuffix,
+					elements[i].name.length - checkboxNameSuffix.length) !== -1) {
+				elements[i].checked = value;
+			}
+		}
+	}
+}
+
 // The Add To Main List panel form key press listener
 // Emulates 'OK' button click on hitting the 'Enter' key
 // Emulates 'Cancel' button click on hitting the 'Esc' key
@@ -198,7 +235,8 @@ function updateInIgnoredChannelsPanelFormKeyPressHandler(event) {
 	event = event || window.event;
 
 	if (event.keyCode == 27) {
-		document.getElementById('updateInIgnoredChannelsPanelForm:cancelButton')
+		document
+				.getElementById('updateInIgnoredChannelsPanelForm:cancelButton')
 				.click();
 		result = false;
 	}
@@ -208,14 +246,16 @@ function updateInIgnoredChannelsPanelFormKeyPressHandler(event) {
 			if (document.activeElement == document
 					.getElementById('updateInIgnoredChannelsPanelForm:okUpdateButton')) {
 				document.getElementById(
-						'updateInIgnoredChannelsPanelForm:cancelButton').focus();
+						'updateInIgnoredChannelsPanelForm:cancelButton')
+						.focus();
 				result = false;
 			}
 		} else {
 			if (document.activeElement == document
 					.getElementById('updateInIgnoredChannelsPanelForm:cancelButton')) {
 				document.getElementById(
-						'updateInIgnoredChannelsPanelForm:okUpdateButton').focus();
+						'updateInIgnoredChannelsPanelForm:okUpdateButton')
+						.focus();
 				result = false;
 			}
 		}

@@ -122,11 +122,16 @@
 						styleClass="simpletablestyle" id="channelsTable"
 						rows="#{channelsManager.rowsPerPage}">
 						<h:column>
-							<f:facet name="header" />
+							<f:facet name="header">
+								<h:selectBooleanCheckbox id="allChannelsCheckbox"
+									value="false"
+									styleClass="preformattedtext"
+									onclick="toggleAllChannelCheckboxes(this.checked);document.getElementById('channelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();document.getElementById('channelsForm:addAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();document.getElementById('channelsForm:takeButton').disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('channelsForm:copyAfterButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('channelsForm:moveAfterButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked()" />
+							</f:facet>
 							<h:selectBooleanCheckbox id="channelCheckbox"
 								value="#{channelsManager.channelCheckboxes[channelVar.id]}"
 								styleClass="preformattedtext"
-								onclick="document.getElementById('channelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();document.getElementById('channelsForm:addAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();document.getElementById('channelsForm:takeButton').disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('channelsForm:copyAfterButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('channelsForm:moveAfterButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked()" />
+								onclick="document.getElementById('channelsForm:channelsTable:allChannelsCheckbox').checked=areAllChannelCheckboxesChecked();document.getElementById('channelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();document.getElementById('channelsForm:addAfterButton').disabled=!isExactlyOneChannelCheckboxChecked();document.getElementById('channelsForm:takeButton').disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('channelsForm:copyAfterButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('channelsForm:moveAfterButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked()" />
 							<h:outputText styleClass="preformattedtext" value="T"
 								rendered="#{not empty channelsManager.takenChannel and channelsManager.takenChannel.id eq channelVar.id}" />
 						</h:column>

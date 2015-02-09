@@ -52,11 +52,16 @@
 						styleClass="simpletablestyle" id="groupsTable"
 						rows="#{groupsManager.rowsPerPage}">
 						<h:column>
-							<f:facet name="header" />
+							<f:facet name="header">
+								<h:selectBooleanCheckbox id="allGroupsCheckbox"
+									value="false"
+									styleClass="preformattedtext"
+									onclick="toggleAllGroupCheckboxes(this.checked);document.getElementById('groupsForm:removeButton').disabled=!isAtLeastOneGroupCheckboxChecked();document.getElementById('groupsForm:takeButton').disabled=!isExactlyOneGroupCheckboxChecked()" />
+							</f:facet>
 							<h:selectBooleanCheckbox id="groupCheckbox"
 								value="#{groupsManager.groupCheckboxes[groupVar.id]}"
 								styleClass="preformattedtext"
-								onclick="document.getElementById('groupsForm:removeButton').disabled=!isAtLeastOneGroupCheckboxChecked();document.getElementById('groupsForm:takeButton').disabled=!isExactlyOneGroupCheckboxChecked()" />
+								onclick="document.getElementById('groupsForm:groupsTable:allGroupsCheckbox').checked=areAllGroupCheckboxesChecked();document.getElementById('groupsForm:removeButton').disabled=!isAtLeastOneGroupCheckboxChecked();document.getElementById('groupsForm:takeButton').disabled=!isExactlyOneGroupCheckboxChecked()" />
 							<h:outputText styleClass="preformattedtext" value="T"
 								rendered="#{not empty groupsManager.takenGroup and groupsManager.takenGroup.id eq groupVar.id}" />
 						</h:column>

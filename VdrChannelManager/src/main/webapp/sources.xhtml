@@ -53,11 +53,16 @@
 						styleClass="simpletablestyle" id="sourcesTable"
 						rows="#{sourcesManager.rowsPerPage}">
 						<h:column>
-							<f:facet name="header" />
+							<f:facet name="header">
+								<h:selectBooleanCheckbox id="allSourcesCheckbox"
+									value="false"
+									styleClass="preformattedtext"
+									onclick="toggleAllSourceCheckboxes(this.checked);document.getElementById('sourcesForm:removeButton').disabled=!isAtLeastOneSourceCheckboxChecked();document.getElementById('sourcesForm:takeButton').disabled=!isExactlyOneSourceCheckboxChecked()" />
+							</f:facet>
 							<h:selectBooleanCheckbox id="sourceCheckbox"
 								value="#{sourcesManager.sourceCheckboxes[sourceVar.id]}"
 								styleClass="preformattedtext"
-								onclick="document.getElementById('sourcesForm:removeButton').disabled=!isAtLeastOneSourceCheckboxChecked();document.getElementById('sourcesForm:takeButton').disabled=!isExactlyOneSourceCheckboxChecked()" />
+								onclick="document.getElementById('sourcesForm:sourcesTable:allSourcesCheckbox').checked=areAllSourceCheckboxesChecked();document.getElementById('sourcesForm:removeButton').disabled=!isAtLeastOneSourceCheckboxChecked();document.getElementById('sourcesForm:takeButton').disabled=!isExactlyOneSourceCheckboxChecked()" />
 							<h:outputText styleClass="preformattedtext" value="T"
 								rendered="#{not empty sourcesManager.takenSource and sourcesManager.takenSource.id eq sourceVar.id}" />
 						</h:column>

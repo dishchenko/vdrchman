@@ -19,7 +19,8 @@ function isAtLeastOneSourceCheckboxChecked() {
 	return result;
 }
 
-// Return true if exactly one of the source checkboxes within the table is checked
+// Return true if exactly one of the source checkboxes within the table is
+// checked
 function isExactlyOneSourceCheckboxChecked() {
 	var result = false;
 	var checkboxNameSuffix = 'sourceCheckbox';
@@ -42,6 +43,43 @@ function isExactlyOneSourceCheckboxChecked() {
 	}
 
 	return result;
+}
+
+// Return true if all source checkboxes within the table are checked
+function areAllSourceCheckboxesChecked() {
+	var result = true;
+	var checkboxNameSuffix = 'sourceCheckbox';
+	var elements = document.getElementsByTagName('input');
+
+	for (var i = 0; i < elements.length; ++i) {
+		if (elements[i].type == 'checkbox') {
+			if (elements[i].name.indexOf(checkboxNameSuffix,
+					elements[i].name.length - checkboxNameSuffix.length) !== -1) {
+				if (!elements[i].checked) {
+					result = false;
+					break;
+				}
+			}
+		}
+	}
+
+	return result;
+}
+
+// Check/uncheck all source checkboxes within the table depending on 'value'
+// parameter
+function toggleAllSourceCheckboxes(value) {
+	var checkboxNameSuffix = 'sourceCheckbox';
+	var elements = document.getElementsByTagName('input');
+
+	for (var i = 0; i < elements.length; ++i) {
+		if (elements[i].type == 'checkbox') {
+			if (elements[i].name.indexOf(checkboxNameSuffix,
+					elements[i].name.length - checkboxNameSuffix.length) !== -1) {
+				elements[i].checked = value;
+			}
+		}
+	}
 }
 
 // The Edit panel form key press listener
@@ -94,7 +132,8 @@ function editPanelFormKeyPressHandler(event) {
 
 // The Remove panel form key press listener
 // Emulates 'Cancel' button click on hitting the 'Esc' key
-// Loops input focus through 'OK' and 'Cancel' buttons on pressing 'Tab' / 'Shift+Tab'
+// Loops input focus through 'OK' and 'Cancel' buttons on pressing 'Tab' /
+// 'Shift+Tab'
 function removePanelFormKeyPressHandler(event) {
 	var result;
 

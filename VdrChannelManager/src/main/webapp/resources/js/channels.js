@@ -45,6 +45,43 @@ function isExactlyOneChannelCheckboxChecked() {
 	return result;
 }
 
+// Return true if all channel checkboxes within the table are checked
+function areAllChannelCheckboxesChecked() {
+	var result = true;
+	var checkboxNameSuffix = 'channelCheckbox';
+	var elements = document.getElementsByTagName('input');
+
+	for (var i = 0; i < elements.length; ++i) {
+		if (elements[i].type == 'checkbox') {
+			if (elements[i].name.indexOf(checkboxNameSuffix,
+					elements[i].name.length - checkboxNameSuffix.length) !== -1) {
+				if (!elements[i].checked) {
+					result = false;
+					break;
+				}
+			}
+		}
+	}
+
+	return result;
+}
+
+// Check/uncheck all channel checkboxes within the table depending on 'value'
+// parameter
+function toggleAllChannelCheckboxes(value) {
+	var checkboxNameSuffix = 'channelCheckbox';
+	var elements = document.getElementsByTagName('input');
+
+	for (var i = 0; i < elements.length; ++i) {
+		if (elements[i].type == 'checkbox') {
+			if (elements[i].name.indexOf(checkboxNameSuffix,
+					elements[i].name.length - checkboxNameSuffix.length) !== -1) {
+				elements[i].checked = value;
+			}
+		}
+	}
+}
+
 // The Edit panel form key press listener
 // Emulates 'OK' button click on hitting the 'Enter' key
 // Emulates 'Cancel' button click on hitting the 'Esc' key
@@ -209,10 +246,10 @@ function updateGroupsPanelFormKeyPressHandler(event) {
 	return result;
 }
 
-//The Update BISS Keys panel form key press listener
-//Emulates 'OK' button click on hitting the 'Enter' key
-//Emulates 'Cancel' button click on hitting the 'Esc' key
-//Loops input focus through the form inputs on pressing 'Tab' / 'Shift+Tab'
+// The Update BISS Keys panel form key press listener
+// Emulates 'OK' button click on hitting the 'Enter' key
+// Emulates 'Cancel' button click on hitting the 'Esc' key
+// Loops input focus through the form inputs on pressing 'Tab' / 'Shift+Tab'
 function updateBissKeysPanelFormKeyPressHandler(event) {
 	var result;
 	var element;
@@ -224,7 +261,8 @@ function updateBissKeysPanelFormKeyPressHandler(event) {
 	if (event.keyCode == 13) {
 		if (document.activeElement != document
 				.getElementById('updateBissKeysPanelForm:cancelButton')) {
-			element = document.getElementById('updateBissKeysPanelForm:okButton');
+			element = document
+					.getElementById('updateBissKeysPanelForm:okButton');
 			element.click();
 			result = false;
 		}
@@ -239,13 +277,15 @@ function updateBissKeysPanelFormKeyPressHandler(event) {
 		if (event.shiftKey) {
 			if (document.activeElement == document
 					.getElementById('updateBissKeysPanelForm:vkeyInput')) {
-				document.getElementById('updateBissKeysPanelForm:cancelButton').focus();
+				document.getElementById('updateBissKeysPanelForm:cancelButton')
+						.focus();
 				result = false;
 			}
 		} else {
 			if (document.activeElement == document
 					.getElementById('updateBissKeysPanelForm:cancelButton')) {
-				document.getElementById('updateBissKeysPanelForm:vkeyInput').focus();
+				document.getElementById('updateBissKeysPanelForm:vkeyInput')
+						.focus();
 				result = false;
 			}
 		}
@@ -254,10 +294,10 @@ function updateBissKeysPanelFormKeyPressHandler(event) {
 	return result;
 }
 
-//The Sort panel form key press listener
-//Emulates 'OK' button click on hitting the 'Enter' key
-//Emulates 'Cancel' button click on hitting the 'Esc' key
-//Loops input focus through the form inputs on pressing 'Tab' / 'Shift+Tab'
+// The Sort panel form key press listener
+// Emulates 'OK' button click on hitting the 'Enter' key
+// Emulates 'Cancel' button click on hitting the 'Esc' key
+// Loops input focus through the form inputs on pressing 'Tab' / 'Shift+Tab'
 function sortPanelFormKeyPressHandler(event) {
 	var result;
 	var element;

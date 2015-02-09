@@ -19,7 +19,8 @@ function isAtLeastOneGroupCheckboxChecked() {
 	return result;
 }
 
-// Return true if exactly one of the group checkboxes within the table is checked
+// Return true if exactly one of the group checkboxes within the table is
+// checked
 function isExactlyOneGroupCheckboxChecked() {
 	var result = false;
 	var checkboxNameSuffix = 'groupCheckbox';
@@ -42,6 +43,43 @@ function isExactlyOneGroupCheckboxChecked() {
 	}
 
 	return result;
+}
+
+// Return true if all group checkboxes within the table are checked
+function areAllGroupCheckboxesChecked() {
+	var result = true;
+	var checkboxNameSuffix = 'groupCheckbox';
+	var elements = document.getElementsByTagName('input');
+
+	for (var i = 0; i < elements.length; ++i) {
+		if (elements[i].type == 'checkbox') {
+			if (elements[i].name.indexOf(checkboxNameSuffix,
+					elements[i].name.length - checkboxNameSuffix.length) !== -1) {
+				if (!elements[i].checked) {
+					result = false;
+					break;
+				}
+			}
+		}
+	}
+
+	return result;
+}
+
+// Check/uncheck all group checkboxes within the table depending on 'value'
+// parameter
+function toggleAllGroupCheckboxes(value) {
+	var checkboxNameSuffix = 'groupCheckbox';
+	var elements = document.getElementsByTagName('input');
+
+	for (var i = 0; i < elements.length; ++i) {
+		if (elements[i].type == 'checkbox') {
+			if (elements[i].name.indexOf(checkboxNameSuffix,
+					elements[i].name.length - checkboxNameSuffix.length) !== -1) {
+				elements[i].checked = value;
+			}
+		}
+	}
 }
 
 // The Edit panel form key press listener
@@ -94,7 +132,8 @@ function editPanelFormKeyPressHandler(event) {
 
 // The Remove panel form key press listener
 // Emulates 'Cancel' button click on hitting the 'Esc' key
-// Loops input focus through 'OK' and 'Cancel' buttons on pressing 'Tab' / 'Shift+Tab'
+// Loops input focus through 'OK' and 'Cancel' buttons on pressing 'Tab' /
+// 'Shift+Tab'
 function removePanelFormKeyPressHandler(event) {
 	var result;
 

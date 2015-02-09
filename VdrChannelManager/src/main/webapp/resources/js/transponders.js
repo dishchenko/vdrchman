@@ -19,7 +19,8 @@ function isAtLeastOneTransponderCheckboxChecked() {
 	return result;
 }
 
-// Return true if exactly one of the transponder checkboxes within the table is checked
+// Return true if exactly one of the transponder checkboxes within the table is
+// checked
 function isExactlyOneTransponderCheckboxChecked() {
 	var result = false;
 	var checkboxNameSuffix = 'transponderCheckbox';
@@ -42,6 +43,44 @@ function isExactlyOneTransponderCheckboxChecked() {
 	}
 
 	return result;
+}
+
+// Return true if all transponder checkboxes within the table are checked
+function areAllTransponderCheckboxesChecked() {
+	var result = true;
+	var checkboxNameSuffix = 'transponderCheckbox';
+	var elements = document.getElementsByTagName('input');
+
+	for (var i = 0; i < elements.length; ++i) {
+		if (elements[i].type == 'checkbox') {
+			if (elements[i].name.indexOf(checkboxNameSuffix,
+					elements[i].name.length - checkboxNameSuffix.length) !== -1) {
+				if (!elements[i].checked) {
+					result = false;
+					break;
+				}
+			}
+		}
+	}
+
+	return result;
+}
+
+// Check/uncheck all transponder checkboxes within the table depending on
+// 'value'
+// parameter
+function toggleAllTransponderCheckboxes(value) {
+	var checkboxNameSuffix = 'transponderCheckbox';
+	var elements = document.getElementsByTagName('input');
+
+	for (var i = 0; i < elements.length; ++i) {
+		if (elements[i].type == 'checkbox') {
+			if (elements[i].name.indexOf(checkboxNameSuffix,
+					elements[i].name.length - checkboxNameSuffix.length) !== -1) {
+				elements[i].checked = value;
+			}
+		}
+	}
 }
 
 // The Edit panel form key press listener
@@ -111,7 +150,8 @@ function editPanelFormKeyPressHandler(event) {
 
 // The Remove panel form key press listener
 // Emulates 'Cancel' button click on hitting the 'Esc' key
-// Loops input focus through 'OK' and 'Cancel' buttons on pressing 'Tab' / 'Shift+Tab'
+// Loops input focus through 'OK' and 'Cancel' buttons on pressing 'Tab' /
+// 'Shift+Tab'
 function removePanelFormKeyPressHandler(event) {
 	var result;
 
