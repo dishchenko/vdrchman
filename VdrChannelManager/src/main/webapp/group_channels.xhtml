@@ -104,8 +104,7 @@
 						rows="#{groupChannelsManager.rowsPerPage}">
 						<h:column>
 							<f:facet name="header">
-								<h:selectBooleanCheckbox id="allChannelsCheckbox"
-									value="false"
+								<h:selectBooleanCheckbox id="allChannelsCheckbox" value="false"
 									styleClass="preformattedtext"
 									onclick="toggleAllChannelCheckboxes(this.checked);document.getElementById('groupChannelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();document.getElementById('groupChannelsForm:takeButton').disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('groupChannelsForm:moveAfterButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked()" />
 							</f:facet>
@@ -202,6 +201,7 @@
 			</h:form>
 			<!-- Set buttons enable/disable state on panel rendering -->
 			<h:outputScript library="js">
+					element = document.getElementById('groupChannelsForm:groupChannelsTable:allChannelsCheckbox'); if (element != null) element.checked=areAllChannelCheckboxesChecked();
 					document.getElementById('groupChannelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();
 					document.getElementById('groupChannelsForm:takeButton').disabled=!isExactlyOneChannelCheckboxChecked();
 					element = document.getElementById('groupChannelsForm:moveAfterButton'); if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();

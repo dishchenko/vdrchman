@@ -111,6 +111,7 @@
 			</h:form>
 			<!-- Set buttons enable/disable state on panel rendering -->
 			<h:outputScript library="js">
+				element = document.getElementById('sourcesForm:sourcesTable:allSourcesCheckbox'); if (element != null) element.checked=areAllSourceCheckboxesChecked();
 				document.getElementById('sourcesForm:removeButton').disabled=!isAtLeastOneSourceCheckboxChecked();
 				document.getElementById('sourcesForm:takeButton').disabled=!isExactlyOneSourceCheckboxChecked();
 			</h:outputScript>

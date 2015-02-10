@@ -179,6 +179,7 @@
 			</h:form>
 			<!-- Set buttons enable/disable state on panel rendering -->
 			<h:outputScript library="js">
+					element = document.getElementById('transpondersForm:transpondersTable:allTranspondersCheckbox'); if (element != null) element.checked=areAllTransponderCheckboxesChecked();
 					document.getElementById('transpondersForm:removeButton').disabled=!isAtLeastOneTransponderCheckboxChecked();
 					document.getElementById('transpondersForm:addAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();
 					document.getElementById('transpondersForm:takeButton').disabled=!isExactlyOneTransponderCheckboxChecked();

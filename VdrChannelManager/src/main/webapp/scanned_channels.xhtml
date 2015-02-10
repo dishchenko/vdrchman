@@ -176,6 +176,7 @@
 			</h:form>
 			<!-- Set buttons enable/disable state on panel rendering -->
 			<h:outputScript library="js">
+			element = document.getElementById('scannedChannelsForm:scannedChannelsTable:allChannelsCheckbox'); if (element != null) element.checked=areAllChannelCheckboxesChecked();
 			document.getElementById('scannedChannelsForm:processUploadedScansButton').disabled = (#{filesManager.scans.size() le 0});
 			element = document.getElementById('scannedChannelsForm:addToChannelsButton'); if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();
 			element = document.getElementById('scannedChannelsForm:addToIgnoredChannelsButton'); if (element != null) element.disabled=!isAtLeastOneChannelCheckboxChecked();
@@ -426,7 +427,7 @@
 							value="#{sourceParam != null ? transponderRepository.findBySourceFrequencyPolarizationStream(sourceParam.id, channelVar.frequency, channelVar.polarization, channelVar.streamId) : null}">
 						</ui:param>
 						<h:outputText
-							value="#{channelVar.scannedName} SID = #{channelVar.sid} APID = #{channelVar.apid}"
+							value="#{channelVar.scannedName} (SID = #{channelVar.sid}, APID = #{channelVar.apid})"
 							styleClass="preformattedtext" />
 						<ui:fragment rendered="#{empty sourceParam}">
 							<h:outputText

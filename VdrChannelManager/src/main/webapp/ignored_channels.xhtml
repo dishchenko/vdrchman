@@ -152,6 +152,7 @@
 			</h:form>
 			<!-- Set buttons enable/disable state on panel rendering -->
 			<h:outputScript library="js">
+			element = document.getElementById('ignoredChannelsForm:ignoredChannelsTable:allChannelsCheckbox'); if (element != null) element.checked=areAllChannelCheckboxesChecked();
 			document.getElementById('ignoredChannelsForm:removeButton').disabled=!isAtLeastOneChannelCheckboxChecked();
 			element = document.getElementById('ignoredChannelsForm:updateButton'); if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();
 			</h:outputScript>

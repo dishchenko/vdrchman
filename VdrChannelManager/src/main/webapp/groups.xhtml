@@ -97,6 +97,7 @@
 			</h:form>
 			<!-- Set buttons enable/disable state on panel rendering -->
 			<h:outputScript library="js">
+				element = document.getElementById('groupsForm:groupsTable:allGroupsCheckbox'); if (element != null) element.checked=areAllGroupCheckboxesChecked();
 				document.getElementById('groupsForm:removeButton').disabled=!isAtLeastOneGroupCheckboxChecked();
 				document.getElementById('groupsForm:takeButton').disabled=!isExactlyOneGroupCheckboxChecked();
 			</h:outputScript>

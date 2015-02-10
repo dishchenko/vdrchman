@@ -5,7 +5,7 @@
 
 	<groupId>di.vdrchman</groupId>
 	<artifactId>VdrDbLoader</artifactId>
-	<version>0.9.9-ALPHA</version>
+	<version>0.9.9-BETA</version>
 	<packaging>jar</packaging>
 	<name>VdrDbLoader</name>
 	<description>VDR Database Loader</description>
