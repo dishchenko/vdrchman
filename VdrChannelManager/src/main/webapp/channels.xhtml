@@ -349,34 +349,41 @@
 						</h:panelGroup>
 					</f:facet>
 					<!-- Content -->
-					<h:panelGrid columns="2">
-						<h:outputLabel value="Video key:" styleClass="preformattedtext" />
+					<div style="width: 390px">
 						<h:panelGrid columns="2">
-							<h:inputText id="vkeyInput"
-								value="#{channelsManager.editedBiss.vkey}" maxlength="16"
-								size="16">
-								<rich:validator />
-							</h:inputText>
-							<rich:message for="vkeyInput" />
+							<h:outputLabel value="Video key:" styleClass="preformattedtext" />
+							<h:panelGrid columns="2">
+								<h:inputText id="vkeyInput"
+									value="#{channelsManager.editedBiss.vkey}" maxlength="16"
+									size="16">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="vkeyInput" />
+							</h:panelGrid>
+							<h:outputLabel value="Audio key:" styleClass="preformattedtext" />
+							<h:panelGrid columns="2">
+								<h:inputText id="akeyInput"
+									value="#{channelsManager.editedBiss.akey}" maxlength="16"
+									size="16">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="akeyInput" />
+							</h:panelGrid>
 						</h:panelGrid>
-						<h:outputLabel value="Audio key:" styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="akeyInput"
-								value="#{channelsManager.editedBiss.akey}" maxlength="16"
-								size="16">
-								<rich:validator />
-							</h:inputText>
-							<rich:message for="akeyInput" />
-						</h:panelGrid>
-					</h:panelGrid>
+					</div>
 					<br />
 					<!-- Action buttons -->
-					<h:panelGrid columns="2">
+					<h:panelGrid columns="3">
 						<a4j:commandButton id="okButton" value="OK"
 							onclick="this.disabled=true"
 							oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('updateBissKeysPanel')}.hide();document.getElementById('updateBissKeysPanelForm:okButton').disabled=false"
 							action="#{channelsBacking.doUpdateBissKeys()}"
 							render="channelsContent" />
+						<a4j:commandButton id="removeButton" value="Remove"
+							rendered="#{not empty channelsManager.editedBiss.vkey and not empty channelsManager.editedBiss.akey}"
+							immediate="true" onclick="this.disabled=true"
+							oncomplete="#{rich:component('updateBissKeysPanel')}.hide();document.getElementById('updateBissKeysPanelForm:removeButton').disabled=false"
+							action="#{channelsBacking.doRemoveBissKeys()}" />
 						<a4j:commandButton id="cancelButton" value="Cancel"
 							immediate="true"
 							action="#{formResetter.resetForm(rich:findComponent('updateBissKeysPanelForm'))}"
@@ -469,199 +476,202 @@
 						<f:attribute name="apid" value="editPanelForm:apidInput" />
 					</h:inputHidden>
 					<!-- Channel data inputs -->
-					<h:panelGrid columns="3">
-						<h:outputLabel value="Source:" styleClass="preformattedtext" />
-						<ui:fragment
-							rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredSourceId lt 0}">
-							<h:selectOneMenu id="sourcesMenu"
-								value="#{channelsManager.editedSourceId}">
-								<f:selectItems value="#{sourcesManager.sources}" var="sourceVar"
-									itemValue="#{sourceVar.id}"
-									itemLabel="#{sourceVar.name} (#{sourceVar.description})" />
-								<f:ajax
-									listener="#{channelsBacking.onEditedSourceMenuSelection}"
-									render="editPanelForm:transpondersMenu" />
-							</h:selectOneMenu>
-						</ui:fragment>
-						<ui:fragment
-							rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredSourceId ge 0}">
-							<ui:param name="sourceParam"
-								value="#{sourceRepository.findById(channelsManager.filteredSourceId)}">
-							</ui:param>
-							<h:outputText
-								value="#{sourceParam.name} (#{sourceParam.description})"
-								styleClass="preformattedtext" />
-						</ui:fragment>
-						<ui:fragment
-							rendered="#{not empty channelsManager.editedChannel.id}">
-							<ui:param name="sourceParam"
-								value="#{sourceRepository.findById(transponderRepository.findById(channelsManager.editedChannel.transpId).sourceId)}">
-							</ui:param>
-							<h:outputText
-								value="#{sourceParam.name} (#{sourceParam.description})"
-								styleClass="preformattedtext" />
-						</ui:fragment>
-						<h:outputText value="" />
-						<h:outputLabel value="Transponder:" styleClass="preformattedtext" />
-						<ui:fragment
-							rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredTranspId lt 0}">
-							<h:panelGrid columns="2">
-								<h:selectOneMenu id="transpondersMenu"
-									value="#{channelsManager.editedChannel.transpId}">
-									<f:selectItems
-										value="#{channelsManager.editedSourceTransponders}"
-										var="transponderVar" itemValue="#{transponderVar.id}"
-										itemLabel="#{transponderVar.frequency} #{transponderVar.polarization}#{not empty transponderVar.streamIdNullable ? ' stream '.concat(transponderVar.streamIdNullable) : ''}" />
-									<rich:validator />
+					<div style="width: 680px">
+						<h:panelGrid columns="3">
+							<h:outputLabel value="Source:" styleClass="preformattedtext" />
+							<ui:fragment
+								rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredSourceId lt 0}">
+								<h:selectOneMenu id="sourcesMenu"
+									value="#{channelsManager.editedSourceId}">
+									<f:selectItems value="#{sourcesManager.sources}"
+										var="sourceVar" itemValue="#{sourceVar.id}"
+										itemLabel="#{sourceVar.name} (#{sourceVar.description})" />
+									<f:ajax
+										listener="#{channelsBacking.onEditedSourceMenuSelection}"
+										render="editPanelForm:transpondersMenu" />
 								</h:selectOneMenu>
-								<rich:message for="transpondersMenu" />
-							</h:panelGrid>
-						</ui:fragment>
-						<ui:fragment
-							rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredTranspId ge 0}">
-							<ui:param name="transponderParam"
-								value="#{transponderRepository.findById(channelsManager.filteredTranspId)}">
-							</ui:param>
-							<h:outputText
-								value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamIdNullable ? ' stream '.concat(transponderParam.streamIdNullable) : ''}"
-								styleClass="preformattedtext" />
-						</ui:fragment>
-						<ui:fragment
-							rendered="#{not empty channelsManager.editedChannel.id}">
-							<ui:param name="transponderParam"
-								value="#{transponderRepository.findById(channelsManager.editedChannel.transpId)}">
-							</ui:param>
-							<h:outputText
-								value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamIdNullable ? ' stream '.concat(transponderParam.streamIdNullable) : ''}"
-								styleClass="preformattedtext" />
-						</ui:fragment>
-						<h:outputText value="" />
-						<h:outputLabel value="Name:" styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="nameInput"
-								value="#{channelsManager.editedChannel.name}" maxlength="50"
-								size="50">
-								<rich:validator />
-							</h:inputText>
-							<rich:message for="nameInput" />
-						</h:panelGrid>
-						<h:outputText value="" />
-						<h:outputLabel value="Language:" styleClass="preformattedtext" />
-						<h:inputText id="langInput"
-							value="#{channelsManager.editedChannel.lang}" maxlength="5"
-							size="5">
-						</h:inputText>
-						<h:outputText value="" />
-						<h:outputLabel value="Service ID:" styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="sidInput"
-								value="#{channelsManager.editedChannel.sid}" maxlength="5"
-								size="5" converterMessage="Service ID must be a number">
-								<rich:validator />
-							</h:inputText>
-							<rich:message for="sidInput" />
-						</h:panelGrid>
-						<h:outputText value="" />
-						<h:outputLabel value="Video PID:" styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="vpidInput"
-								value="#{channelsManager.editedChannel.vpid}" maxlength="5"
-								size="5" converterMessage="Video PID must be a number">
-								<rich:validator />
-							</h:inputText>
-							<rich:message for="vpidInput" />
-						</h:panelGrid>
-						<h:outputText
-							value="#{not empty channelsManager.comparedScannedChannel and not empty channelsManager.editedChannel.vpid and channelsManager.editedChannel.vpid ne channelsManager.comparedScannedChannel.vpid ? '--&gt; '.concat(channelsManager.comparedScannedChannel.vpid) : ''}"
-							styleClass="preformattedtext" />
-						<h:outputLabel value="Video Encoding:"
-							styleClass="preformattedtext" />
-						<h:selectOneMenu value="#{channelsManager.editedChannel.venc}">
-							<f:selectItem itemValue="" itemLabel="" />
-							<f:selectItem itemValue="1" itemLabel="1 - MPEG-2" />
-							<f:selectItem itemValue="2" itemLabel="2 - MPEG-2" />
-							<f:selectItem itemValue="27" itemLabel="27 - MPEG-4" />
-						</h:selectOneMenu>
-						<h:outputText
-							value="#{not empty channelsManager.comparedScannedChannel and not empty channelsManager.comparedScannedChannel.venc and channelsManager.comparedScannedChannel.venc ne channelsManager.editedChannel.venc ? '--&gt; '.concat(channelsManager.comparedScannedChannel.venc) : ''}"
-							styleClass="preformattedtext" />
-						<h:outputLabel value="Audio PID:" styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="apidInput"
-								value="#{channelsManager.editedChannel.apid}" maxlength="5"
-								size="5" converterMessage="Audio PID must be a number">
-								<rich:validator />
-							</h:inputText>
-							<rich:message for="apidInput" />
-						</h:panelGrid>
-						<h:outputText value="" />
-						<h:outputLabel value="Audio Encoding:"
-							styleClass="preformattedtext" />
-						<h:selectOneMenu value="#{channelsManager.editedChannel.aenc}">
-							<f:selectItem itemValue="" itemLabel="" />
-							<f:selectItem itemValue="3" itemLabel="3 - MPEG" />
-							<f:selectItem itemValue="4" itemLabel="4 - MPEG" />
-							<f:selectItem itemValue="6" itemLabel="6 - AC3" />
-							<f:selectItem itemValue="15" itemLabel="15 - ADTS" />
-							<f:selectItem itemValue="17" itemLabel="17 - LATM" />
-							<f:selectItem itemValue="129" itemLabel="129 - AC3" />
-						</h:selectOneMenu>
-						<h:outputText
-							value="#{not empty channelsManager.comparedScannedChannel and not empty channelsManager.comparedScannedChannel.aenc and channelsManager.comparedScannedChannel.aenc ne channelsManager.editedChannel.aenc ? '--&gt; '.concat(channelsManager.comparedScannedChannel.aenc) : ''}"
-							styleClass="preformattedtext" />
-						<h:outputLabel value="Text PID:" styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="tpidInput"
-								value="#{channelsManager.editedChannel.tpid}" maxlength="5"
-								size="5" converterMessage="Text PID must be a number">
-								<rich:validator />
-							</h:inputText>
-							<rich:message for="tpidInput" />
-						</h:panelGrid>
-						<h:outputText value="" />
-						<h:outputLabel value="Conditional Access ID:"
-							styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="caidInput"
-								value="#{channelsManager.editedChannel.caid}" maxlength="50"
-								size="50" />
-							<h:outputLink value="#"
-								onclick="document.getElementById('editPanelForm:caidInput').value='2600'">
-								<h:outputText value="&lt;-- BISS" styleClass="preformattedtext" />
-							</h:outputLink>
-						</h:panelGrid>
-						<h:outputText
-							value="#{not empty channelsManager.comparedScannedChannel and channelsManager.comparedScannedChannel.caid ne channelsManager.editedChannel.caid ? '--&gt; '.concat(channelsManager.comparedScannedChannel.caid) : ''}"
-							styleClass="preformattedtext" />
-						<h:outputLabel value="Scanned as:" styleClass="preformattedtext" />
-						<h:outputText value="#{channelsManager.editedChannel.scannedName}"
-							styleClass="preformattedtext" />
-						<h:outputText
-							value="#{not empty channelsManager.comparedScannedChannel and channelsManager.comparedScannedChannel.scannedName ne channelsManager.editedChannel.scannedName ? '--&gt; '.concat(channelsManager.comparedScannedChannel.scannedName) : ''}"
-							styleClass="preformattedtext" />
-						<h:outputLabel value="Locked:" styleClass="preformattedtext" />
-						<h:selectBooleanCheckbox id="lockedCheckbox"
-							value="#{channelsManager.editedChannel.locked}"
-							styleClass="preformattedtext" />
-						<h:outputText value="" />
-						<ui:fragment rendered="#{empty channelsManager.editedChannel.id}">
-							<h:outputLabel value="Initial Group:"
-								styleClass="preformattedtext" />
-						</ui:fragment>
-						<ui:fragment rendered="#{empty channelsManager.editedChannel.id}">
-							<h:selectOneMenu id="groupsMenu"
-								value="#{channelsManager.addedChannelGroupId}">
-								<f:selectItem itemValue="-1" itemLabel="--"
-									itemDisabled="#{groupsManager.groups.size() eq 1}" />
-								<f:selectItems value="#{groupsManager.groups}" var="groupVar"
-									itemValue="#{groupVar.id}"
-									itemLabel="#{groupVar.name} (#{groupVar.description})" />
-							</h:selectOneMenu>
-						</ui:fragment>
-						<ui:fragment rendered="#{empty channelsManager.editedChannel.id}">
+							</ui:fragment>
+							<ui:fragment
+								rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredSourceId ge 0}">
+								<ui:param name="sourceParam"
+									value="#{sourceRepository.findById(channelsManager.filteredSourceId)}">
+								</ui:param>
+								<h:outputText
+									value="#{sourceParam.name} (#{sourceParam.description})"
+									styleClass="preformattedtext" />
+							</ui:fragment>
+							<ui:fragment
+								rendered="#{not empty channelsManager.editedChannel.id}">
+								<ui:param name="sourceParam"
+									value="#{sourceRepository.findById(transponderRepository.findById(channelsManager.editedChannel.transpId).sourceId)}">
+								</ui:param>
+								<h:outputText
+									value="#{sourceParam.name} (#{sourceParam.description})"
+									styleClass="preformattedtext" />
+							</ui:fragment>
 							<h:outputText value="" />
-						</ui:fragment>
-					</h:panelGrid>
+							<h:outputLabel value="Transponder:" styleClass="preformattedtext" />
+							<ui:fragment
+								rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredTranspId lt 0}">
+								<h:panelGrid columns="2">
+									<h:selectOneMenu id="transpondersMenu"
+										value="#{channelsManager.editedChannel.transpId}">
+										<f:selectItems
+											value="#{channelsManager.editedSourceTransponders}"
+											var="transponderVar" itemValue="#{transponderVar.id}"
+											itemLabel="#{transponderVar.frequency} #{transponderVar.polarization}#{not empty transponderVar.streamIdNullable ? ' stream '.concat(transponderVar.streamIdNullable) : ''}" />
+										<rich:validator />
+									</h:selectOneMenu>
+									<rich:message for="transpondersMenu" />
+								</h:panelGrid>
+							</ui:fragment>
+							<ui:fragment
+								rendered="#{empty channelsManager.editedChannel.id and channelsManager.filteredTranspId ge 0}">
+								<ui:param name="transponderParam"
+									value="#{transponderRepository.findById(channelsManager.filteredTranspId)}">
+								</ui:param>
+								<h:outputText
+									value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamIdNullable ? ' stream '.concat(transponderParam.streamIdNullable) : ''}"
+									styleClass="preformattedtext" />
+							</ui:fragment>
+							<ui:fragment
+								rendered="#{not empty channelsManager.editedChannel.id}">
+								<ui:param name="transponderParam"
+									value="#{transponderRepository.findById(channelsManager.editedChannel.transpId)}">
+								</ui:param>
+								<h:outputText
+									value="#{transponderParam.frequency} #{transponderParam.polarization}#{not empty transponderParam.streamIdNullable ? ' stream '.concat(transponderParam.streamIdNullable) : ''}"
+									styleClass="preformattedtext" />
+							</ui:fragment>
+							<h:outputText value="" />
+							<h:outputLabel value="Name:" styleClass="preformattedtext" />
+							<h:panelGrid columns="2">
+								<h:inputText id="nameInput"
+									value="#{channelsManager.editedChannel.name}" maxlength="50"
+									size="50">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="nameInput" />
+							</h:panelGrid>
+							<h:outputText value="" />
+							<h:outputLabel value="Language:" styleClass="preformattedtext" />
+							<h:inputText id="langInput"
+								value="#{channelsManager.editedChannel.lang}" maxlength="5"
+								size="5">
+							</h:inputText>
+							<h:outputText value="" />
+							<h:outputLabel value="Service ID:" styleClass="preformattedtext" />
+							<h:panelGrid columns="2">
+								<h:inputText id="sidInput"
+									value="#{channelsManager.editedChannel.sid}" maxlength="5"
+									size="5" converterMessage="Service ID must be a number">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="sidInput" />
+							</h:panelGrid>
+							<h:outputText value="" />
+							<h:outputLabel value="Video PID:" styleClass="preformattedtext" />
+							<h:panelGrid columns="2">
+								<h:inputText id="vpidInput"
+									value="#{channelsManager.editedChannel.vpid}" maxlength="5"
+									size="5" converterMessage="Video PID must be a number">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="vpidInput" />
+							</h:panelGrid>
+							<h:outputText
+								value="#{not empty channelsManager.comparedScannedChannel and not empty channelsManager.editedChannel.vpid and channelsManager.editedChannel.vpid ne channelsManager.comparedScannedChannel.vpid ? '--&gt; '.concat(channelsManager.comparedScannedChannel.vpid) : ''}"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="Video Encoding:"
+								styleClass="preformattedtext" />
+							<h:selectOneMenu value="#{channelsManager.editedChannel.venc}">
+								<f:selectItem itemValue="" itemLabel="" />
+								<f:selectItem itemValue="1" itemLabel="1 - MPEG-2" />
+								<f:selectItem itemValue="2" itemLabel="2 - MPEG-2" />
+								<f:selectItem itemValue="27" itemLabel="27 - MPEG-4" />
+							</h:selectOneMenu>
+							<h:outputText
+								value="#{not empty channelsManager.comparedScannedChannel and not empty channelsManager.comparedScannedChannel.venc and channelsManager.comparedScannedChannel.venc ne channelsManager.editedChannel.venc ? '--&gt; '.concat(channelsManager.comparedScannedChannel.venc) : ''}"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="Audio PID:" styleClass="preformattedtext" />
+							<h:panelGrid columns="2">
+								<h:inputText id="apidInput"
+									value="#{channelsManager.editedChannel.apid}" maxlength="5"
+									size="5" converterMessage="Audio PID must be a number">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="apidInput" />
+							</h:panelGrid>
+							<h:outputText value="" />
+							<h:outputLabel value="Audio Encoding:"
+								styleClass="preformattedtext" />
+							<h:selectOneMenu value="#{channelsManager.editedChannel.aenc}">
+								<f:selectItem itemValue="" itemLabel="" />
+								<f:selectItem itemValue="3" itemLabel="3 - MPEG" />
+								<f:selectItem itemValue="4" itemLabel="4 - MPEG" />
+								<f:selectItem itemValue="6" itemLabel="6 - AC3" />
+								<f:selectItem itemValue="15" itemLabel="15 - ADTS" />
+								<f:selectItem itemValue="17" itemLabel="17 - LATM" />
+								<f:selectItem itemValue="129" itemLabel="129 - AC3" />
+							</h:selectOneMenu>
+							<h:outputText
+								value="#{not empty channelsManager.comparedScannedChannel and not empty channelsManager.comparedScannedChannel.aenc and channelsManager.comparedScannedChannel.aenc ne channelsManager.editedChannel.aenc ? '--&gt; '.concat(channelsManager.comparedScannedChannel.aenc) : ''}"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="Text PID:" styleClass="preformattedtext" />
+							<h:panelGrid columns="2">
+								<h:inputText id="tpidInput"
+									value="#{channelsManager.editedChannel.tpid}" maxlength="5"
+									size="5" converterMessage="Text PID must be a number">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="tpidInput" />
+							</h:panelGrid>
+							<h:outputText value="" />
+							<h:outputLabel value="Conditional Access ID:"
+								styleClass="preformattedtext" />
+							<h:panelGrid columns="2">
+								<h:inputText id="caidInput"
+									value="#{channelsManager.editedChannel.caid}" maxlength="50"
+									size="50" />
+								<h:outputLink value="#"
+									onclick="document.getElementById('editPanelForm:caidInput').value='2600'">
+									<h:outputText value="&lt;-- BISS" styleClass="preformattedtext" />
+								</h:outputLink>
+							</h:panelGrid>
+							<h:outputText
+								value="#{not empty channelsManager.comparedScannedChannel and channelsManager.comparedScannedChannel.caid ne channelsManager.editedChannel.caid ? '--&gt; '.concat(channelsManager.comparedScannedChannel.caid) : ''}"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="Scanned as:" styleClass="preformattedtext" />
+							<h:outputText
+								value="#{channelsManager.editedChannel.scannedName}"
+								styleClass="preformattedtext" />
+							<h:outputText
+								value="#{not empty channelsManager.comparedScannedChannel and channelsManager.comparedScannedChannel.scannedName ne channelsManager.editedChannel.scannedName ? '--&gt; '.concat(channelsManager.comparedScannedChannel.scannedName) : ''}"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="Locked:" styleClass="preformattedtext" />
+							<h:selectBooleanCheckbox id="lockedCheckbox"
+								value="#{channelsManager.editedChannel.locked}"
+								styleClass="preformattedtext" />
+							<h:outputText value="" />
+							<ui:fragment rendered="#{empty channelsManager.editedChannel.id}">
+								<h:outputLabel value="Initial Group:"
+									styleClass="preformattedtext" />
+							</ui:fragment>
+							<ui:fragment rendered="#{empty channelsManager.editedChannel.id}">
+								<h:selectOneMenu id="groupsMenu"
+									value="#{channelsManager.addedChannelGroupId}">
+									<f:selectItem itemValue="-1" itemLabel="--"
+										itemDisabled="#{groupsManager.groups.size() eq 1}" />
+									<f:selectItems value="#{groupsManager.groups}" var="groupVar"
+										itemValue="#{groupVar.id}"
+										itemLabel="#{groupVar.name} (#{groupVar.description})" />
+								</h:selectOneMenu>
+							</ui:fragment>
+							<ui:fragment rendered="#{empty channelsManager.editedChannel.id}">
+								<h:outputText value="" />
+							</ui:fragment>
+						</h:panelGrid>
+					</div>
 					<!-- Action buttons -->
 					<h:panelGrid columns="2">
 						<a4j:commandButton id="okAddButton" value="OK"

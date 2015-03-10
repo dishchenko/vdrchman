@@ -94,8 +94,7 @@
 						<h:column>
 							<f:facet name="header">
 								<h:selectBooleanCheckbox id="allTranspondersCheckbox"
-									value="false"
-									styleClass="preformattedtext"
+									value="false" styleClass="preformattedtext"
 									onclick="toggleAllTransponderCheckboxes(this.checked);document.getElementById('transpondersForm:removeButton').disabled=!isAtLeastOneTransponderCheckboxChecked();document.getElementById('transpondersForm:addAfterButton').disabled=!isExactlyOneTransponderCheckboxChecked();document.getElementById('transpondersForm:takeButton').disabled=!isExactlyOneTransponderCheckboxChecked();element=document.getElementById('transpondersForm:copyAfterButton'); if (element!=null) element.disabled=!isExactlyOneTransponderCheckboxChecked();element=document.getElementById('transpondersForm:moveAfterButton'); if (element!=null) element.disabled=!isExactlyOneTransponderCheckboxChecked()" />
 							</f:facet>
 							<h:selectBooleanCheckbox id="transponderCheckbox"
@@ -226,106 +225,109 @@
 						<f:attribute name="streamId" value="editPanelForm:streamIdInput" />
 					</h:inputHidden>
 					<!-- Transponder data inputs -->
-					<h:panelGrid columns="2">
-						<h:outputLabel value="Source:" styleClass="preformattedtext" />
-						<ui:fragment
-							rendered="#{empty transpondersManager.editedTransponder.id and transpondersManager.filteredSourceId lt 0}">
-							<h:selectOneMenu id="sourcesMenu"
-								value="#{transpondersManager.editedTransponder.sourceId}">
-								<f:selectItems value="#{sourcesManager.sources}" var="sourceVar"
-									itemValue="#{sourceVar.id}"
-									itemLabel="#{sourceVar.name} (#{sourceVar.description})" />
+					<div style="width: 460px">
+						<h:panelGrid columns="2">
+							<h:outputLabel value="Source:" styleClass="preformattedtext" />
+							<ui:fragment
+								rendered="#{empty transpondersManager.editedTransponder.id and transpondersManager.filteredSourceId lt 0}">
+								<h:selectOneMenu id="sourcesMenu"
+									value="#{transpondersManager.editedTransponder.sourceId}">
+									<f:selectItems value="#{sourcesManager.sources}"
+										var="sourceVar" itemValue="#{sourceVar.id}"
+										itemLabel="#{sourceVar.name} (#{sourceVar.description})" />
+								</h:selectOneMenu>
+							</ui:fragment>
+							<ui:fragment
+								rendered="#{empty transpondersManager.editedTransponder.id and transpondersManager.filteredSourceId ge 0}">
+								<ui:param name="sourceParam"
+									value="#{sourceRepository.findById(transpondersManager.filteredSourceId)}">
+								</ui:param>
+								<h:outputText
+									value="#{sourceParam.name} (#{sourceParam.description})"
+									styleClass="preformattedtext" />
+							</ui:fragment>
+							<ui:fragment
+								rendered="#{not empty transpondersManager.editedTransponder.id}">
+								<ui:param name="sourceParam"
+									value="#{sourceRepository.findById(transpondersManager.editedTransponder.sourceId)}">
+								</ui:param>
+								<h:outputText
+									value="#{sourceParam.name} (#{sourceParam.description})"
+									styleClass="preformattedtext" />
+							</ui:fragment>
+							<h:outputLabel value="Frequency, MHz:"
+								styleClass="preformattedtext" />
+							<h:panelGrid columns="2">
+								<h:inputText id="frequencyInput"
+									value="#{transpondersManager.editedTransponder.frequency}"
+									maxlength="5" size="5"
+									converterMessage="Frequency must be a number">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="frequencyInput" />
+							</h:panelGrid>
+							<h:outputLabel value="Polarization:"
+								styleClass="preformattedtext" />
+							<h:selectOneMenu id="polarizationMenu"
+								value="#{transpondersManager.editedTransponder.polarization}">
+								<f:selectItem itemValue="H" itemLabel="Horizontal" />
+								<f:selectItem itemValue="V" itemLabel="Vertical" />
+								<f:selectItem itemValue="L" itemLabel="Left circular" />
+								<f:selectItem itemValue="R" itemLabel="Right circular" />
 							</h:selectOneMenu>
-						</ui:fragment>
-						<ui:fragment
-							rendered="#{empty transpondersManager.editedTransponder.id and transpondersManager.filteredSourceId ge 0}">
-							<ui:param name="sourceParam"
-								value="#{sourceRepository.findById(transpondersManager.filteredSourceId)}">
-							</ui:param>
-							<h:outputText
-								value="#{sourceParam.name} (#{sourceParam.description})"
+							<h:outputLabel value="DVB-S Generation:"
 								styleClass="preformattedtext" />
-						</ui:fragment>
-						<ui:fragment
-							rendered="#{not empty transpondersManager.editedTransponder.id}">
-							<ui:param name="sourceParam"
-								value="#{sourceRepository.findById(transpondersManager.editedTransponder.sourceId)}">
-							</ui:param>
-							<h:outputText
-								value="#{sourceParam.name} (#{sourceParam.description})"
+							<h:selectOneMenu
+								value="#{transpondersManager.editedTransponder.dvbsGen}">
+								<f:selectItem itemValue="1" itemLabel="DVB-S" />
+								<f:selectItem itemValue="2" itemLabel="DVB-S2" />
+							</h:selectOneMenu>
+							<h:outputLabel value="Symbol Rate, ksyms/s:"
 								styleClass="preformattedtext" />
-						</ui:fragment>
-						<h:outputLabel value="Frequency, MHz:"
-							styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="frequencyInput"
-								value="#{transpondersManager.editedTransponder.frequency}"
-								maxlength="5" size="5"
-								converterMessage="Frequency must be a number">
-								<rich:validator />
-							</h:inputText>
-							<rich:message for="frequencyInput" />
+							<h:panelGrid columns="2">
+								<h:inputText id="symbolRateInput"
+									value="#{transpondersManager.editedTransponder.symbolRate}"
+									maxlength="5" size="5"
+									converterMessage="Symbol Rate must be a number">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="symbolRateInput" />
+							</h:panelGrid>
+							<h:outputLabel value="Stream ID:" styleClass="preformattedtext" />
+							<h:panelGrid columns="2">
+								<h:inputText id="streamIdInput"
+									value="#{transpondersManager.editedTransponder.streamIdNullable}"
+									maxlength="5" size="5"
+									converterMessage="Stream ID must be a number">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="streamIdInput" />
+							</h:panelGrid>
+							<h:outputLabel value="NID:" styleClass="preformattedtext" />
+							<h:panelGrid columns="2">
+								<h:inputText id="nidInput"
+									value="#{transpondersManager.editedTransponder.nid}"
+									maxlength="5" size="5"
+									converterMessage="Network ID must be a number">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="nidInput" />
+							</h:panelGrid>
+							<h:outputLabel value="TID:" styleClass="preformattedtext" />
+							<h:panelGrid columns="2">
+								<h:inputText id="tidInput"
+									value="#{transpondersManager.editedTransponder.tid}"
+									maxlength="5" size="5"
+									converterMessage="Transponder ID must be a number">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="tidInput" />
+							</h:panelGrid>
+							<h:outputLabel value="Ignored:" styleClass="preformattedtext" />
+							<h:selectBooleanCheckbox
+								value="#{transpondersManager.editedTransponder.ignored}" />
 						</h:panelGrid>
-						<h:outputLabel value="Polarization:" styleClass="preformattedtext" />
-						<h:selectOneMenu id="polarizationMenu"
-							value="#{transpondersManager.editedTransponder.polarization}">
-							<f:selectItem itemValue="H" itemLabel="Horizontal" />
-							<f:selectItem itemValue="V" itemLabel="Vertical" />
-							<f:selectItem itemValue="L" itemLabel="Left circular" />
-							<f:selectItem itemValue="R" itemLabel="Right circular" />
-						</h:selectOneMenu>
-						<h:outputLabel value="DVB-S Generation:"
-							styleClass="preformattedtext" />
-						<h:selectOneMenu
-							value="#{transpondersManager.editedTransponder.dvbsGen}">
-							<f:selectItem itemValue="1" itemLabel="DVB-S" />
-							<f:selectItem itemValue="2" itemLabel="DVB-S2" />
-						</h:selectOneMenu>
-						<h:outputLabel value="Symbol Rate, ksyms/s:"
-							styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="symbolRateInput"
-								value="#{transpondersManager.editedTransponder.symbolRate}"
-								maxlength="5" size="5"
-								converterMessage="Symbol Rate must be a number">
-								<rich:validator />
-							</h:inputText>
-							<rich:message for="symbolRateInput" />
-						</h:panelGrid>
-						<h:outputLabel value="Stream ID:" styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="streamIdInput"
-								value="#{transpondersManager.editedTransponder.streamIdNullable}"
-								maxlength="5" size="5"
-								converterMessage="Stream ID must be a number">
-								<rich:validator />
-							</h:inputText>
-							<rich:message for="streamIdInput" />
-						</h:panelGrid>
-						<h:outputLabel value="NID:" styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="nidInput"
-								value="#{transpondersManager.editedTransponder.nid}"
-								maxlength="5" size="5"
-								converterMessage="Network ID must be a number">
-								<rich:validator />
-							</h:inputText>
-							<rich:message for="nidInput" />
-						</h:panelGrid>
-						<h:outputLabel value="TID:" styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="tidInput"
-								value="#{transpondersManager.editedTransponder.tid}"
-								maxlength="5" size="5"
-								converterMessage="Transponder ID must be a number">
-								<rich:validator />
-							</h:inputText>
-							<rich:message for="tidInput" />
-						</h:panelGrid>
-						<h:outputLabel value="Ignored:" styleClass="preformattedtext" />
-						<h:selectBooleanCheckbox
-							value="#{transpondersManager.editedTransponder.ignored}" />
-					</h:panelGrid>
+					</div>
 					<!-- Action buttons -->
 					<h:panelGrid columns="2">
 						<a4j:commandButton id="okAddButton" value="OK"

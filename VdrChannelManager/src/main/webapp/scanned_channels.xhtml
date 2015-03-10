@@ -110,8 +110,7 @@
 						rows="#{scannedChannelsManager.rowsPerPage}">
 						<h:column>
 							<f:facet name="header">
-								<h:selectBooleanCheckbox id="allChannelsCheckbox"
-									value="false"
+								<h:selectBooleanCheckbox id="allChannelsCheckbox" value="false"
 									styleClass="preformattedtext"
 									onclick="toggleAllChannelCheckboxes(this.checked);element=document.getElementById('scannedChannelsForm:addToChannelsButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('scannedChannelsForm:addToIgnoredChannelsButton');if (element != null) element.disabled=!isAtLeastOneChannelCheckboxChecked();element=document.getElementById('scannedChannelsForm:updateInChannelsButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();element=document.getElementById('scannedChannelsForm:updateInIgnoredChannelsButton');if (element != null) element.disabled=!isExactlyOneChannelCheckboxChecked();" />
 							</f:facet>
@@ -288,96 +287,99 @@
 					<!-- Channel addition is possible -->
 					<ui:fragment
 						rendered="#{not empty scannedChannelsManager.workingChannelTransponder}">
-						<h:panelGrid columns="2">
-							<h:outputLabel value="Source:" styleClass="preformattedtext" />
-							<h:outputText
-								value="#{scannedChannelsManager.workingChannelSource.name} (#{scannedChannelsManager.workingChannelSource.description})"
-								styleClass="preformattedtext" />
-							<h:outputLabel value="Transponder:" styleClass="preformattedtext" />
-							<h:outputText
-								value="#{scannedChannelsManager.workingChannelTransponder.frequency} #{scannedChannelsManager.workingChannelTransponder.polarization}#{not empty scannedChannelsManager.workingChannelTransponder.streamIdNullable ? ' stream '.concat(scannedChannelsManager.workingChannelTransponder.streamIdNullable) : ''}"
-								styleClass="preformattedtext" />
-							<h:outputLabel value="Name:" styleClass="preformattedtext" />
+						<div style="width: 680px">
 							<h:panelGrid columns="2">
-								<h:inputText id="nameInput"
-									value="#{scannedChannelsManager.editedChannel.name}"
-									maxlength="50" size="50">
-									<rich:validator />
+								<h:outputLabel value="Source:" styleClass="preformattedtext" />
+								<h:outputText
+									value="#{scannedChannelsManager.workingChannelSource.name} (#{scannedChannelsManager.workingChannelSource.description})"
+									styleClass="preformattedtext" />
+								<h:outputLabel value="Transponder:"
+									styleClass="preformattedtext" />
+								<h:outputText
+									value="#{scannedChannelsManager.workingChannelTransponder.frequency} #{scannedChannelsManager.workingChannelTransponder.polarization}#{not empty scannedChannelsManager.workingChannelTransponder.streamIdNullable ? ' stream '.concat(scannedChannelsManager.workingChannelTransponder.streamIdNullable) : ''}"
+									styleClass="preformattedtext" />
+								<h:outputLabel value="Name:" styleClass="preformattedtext" />
+								<h:panelGrid columns="2">
+									<h:inputText id="nameInput"
+										value="#{scannedChannelsManager.editedChannel.name}"
+										maxlength="50" size="50">
+										<rich:validator />
+									</h:inputText>
+									<rich:message for="nameInput" />
+								</h:panelGrid>
+								<h:outputLabel value="Language:" styleClass="preformattedtext" />
+								<h:inputText id="langInput"
+									value="#{scannedChannelsManager.editedChannel.lang}"
+									maxlength="5" size="5">
 								</h:inputText>
-								<rich:message for="nameInput" />
+								<h:outputLabel value="Service ID:" styleClass="preformattedtext" />
+								<h:outputText
+									value="#{scannedChannelsManager.workingChannel.sid}"
+									styleClass="preformattedtext" />
+								<h:outputLabel value="Video PID:" styleClass="preformattedtext" />
+								<h:panelGrid columns="2">
+									<h:inputText id="vpidInput"
+										value="#{scannedChannelsManager.editedChannel.vpid}"
+										maxlength="5" size="5"
+										converterMessage="Video PID must be a number">
+										<rich:validator />
+									</h:inputText>
+									<rich:message for="vpidInput" />
+								</h:panelGrid>
+								<h:outputLabel value="Video Encoding:"
+									styleClass="preformattedtext" />
+								<h:selectOneMenu
+									value="#{scannedChannelsManager.editedChannel.venc}">
+									<f:selectItem itemValue="" itemLabel="" />
+									<f:selectItem itemValue="1" itemLabel="1 - MPEG-2" />
+									<f:selectItem itemValue="2" itemLabel="2 - MPEG-2" />
+									<f:selectItem itemValue="27" itemLabel="27 - MPEG-4" />
+								</h:selectOneMenu>
+								<h:outputLabel value="Audio PID:" styleClass="preformattedtext" />
+								<h:outputText
+									value="#{scannedChannelsManager.workingChannel.apid}"
+									styleClass="preformattedtext" />
+								<h:outputLabel value="Audio Encoding:"
+									styleClass="preformattedtext" />
+								<h:selectOneMenu
+									value="#{scannedChannelsManager.editedChannel.aenc}">
+									<f:selectItem itemValue="" itemLabel="" />
+									<f:selectItem itemValue="3" itemLabel="3 - MPEG" />
+									<f:selectItem itemValue="4" itemLabel="4 - MPEG" />
+									<f:selectItem itemValue="6" itemLabel="6 - AC3" />
+									<f:selectItem itemValue="15" itemLabel="15 - ADTS" />
+									<f:selectItem itemValue="17" itemLabel="17 - LATM" />
+									<f:selectItem itemValue="129" itemLabel="129 - AC3" />
+								</h:selectOneMenu>
+								<h:outputLabel value="Text PID:" styleClass="preformattedtext" />
+								<h:outputText
+									value="#{scannedChannelsManager.workingChannel.tpid}"
+									styleClass="preformattedtext" />
+								<h:outputLabel value="Conditional Access ID:"
+									styleClass="preformattedtext" />
+								<h:outputText
+									value="#{scannedChannelsManager.workingChannel.caid}"
+									styleClass="preformattedtext" />
+								<h:outputLabel value="Scanned as:" styleClass="preformattedtext" />
+								<h:outputText
+									value="#{scannedChannelsManager.workingChannel.scannedName}"
+									styleClass="preformattedtext" />
+								<h:outputLabel value="Locked:" styleClass="preformattedtext" />
+								<h:selectBooleanCheckbox id="lockedCheckbox"
+									value="#{scannedChannelsManager.editedChannel.locked}"
+									styleClass="preformattedtext" />
+								<h:outputLabel value="Initial Group:"
+									styleClass="preformattedtext" />
+								<h:selectOneMenu id="groupsMenu"
+									value="#{scannedChannelsManager.addedChannelGroupId}">
+									<f:selectItem itemValue="-1" itemLabel="--"
+										itemDisabled="#{groupsManager.groups.size() eq 1}" />
+									<f:selectItems value="#{groupsManager.groups}" var="groupVar"
+										itemValue="#{groupVar.id}"
+										itemLabel="#{groupVar.name} (#{groupVar.description})" />
+								</h:selectOneMenu>
 							</h:panelGrid>
-							<h:outputLabel value="Language:" styleClass="preformattedtext" />
-							<h:inputText id="langInput"
-								value="#{scannedChannelsManager.editedChannel.lang}"
-								maxlength="5" size="5">
-							</h:inputText>
-							<h:outputLabel value="Service ID:" styleClass="preformattedtext" />
-							<h:outputText
-								value="#{scannedChannelsManager.workingChannel.sid}"
-								styleClass="preformattedtext" />
-							<h:outputLabel value="Video PID:" styleClass="preformattedtext" />
-							<h:panelGrid columns="2">
-								<h:inputText id="vpidInput"
-									value="#{scannedChannelsManager.editedChannel.vpid}"
-									maxlength="5" size="5"
-									converterMessage="Video PID must be a number">
-									<rich:validator />
-								</h:inputText>
-								<rich:message for="vpidInput" />
-							</h:panelGrid>
-							<h:outputLabel value="Video Encoding:"
-								styleClass="preformattedtext" />
-							<h:selectOneMenu
-								value="#{scannedChannelsManager.editedChannel.venc}">
-								<f:selectItem itemValue="" itemLabel="" />
-								<f:selectItem itemValue="1" itemLabel="1 - MPEG-2" />
-								<f:selectItem itemValue="2" itemLabel="2 - MPEG-2" />
-								<f:selectItem itemValue="27" itemLabel="27 - MPEG-4" />
-							</h:selectOneMenu>
-							<h:outputLabel value="Audio PID:" styleClass="preformattedtext" />
-							<h:outputText
-								value="#{scannedChannelsManager.workingChannel.apid}"
-								styleClass="preformattedtext" />
-							<h:outputLabel value="Audio Encoding:"
-								styleClass="preformattedtext" />
-							<h:selectOneMenu
-								value="#{scannedChannelsManager.editedChannel.aenc}">
-								<f:selectItem itemValue="" itemLabel="" />
-								<f:selectItem itemValue="3" itemLabel="3 - MPEG" />
-								<f:selectItem itemValue="4" itemLabel="4 - MPEG" />
-								<f:selectItem itemValue="6" itemLabel="6 - AC3" />
-								<f:selectItem itemValue="15" itemLabel="15 - ADTS" />
-								<f:selectItem itemValue="17" itemLabel="17 - LATM" />
-								<f:selectItem itemValue="129" itemLabel="129 - AC3" />
-							</h:selectOneMenu>
-							<h:outputLabel value="Text PID:" styleClass="preformattedtext" />
-							<h:outputText
-								value="#{scannedChannelsManager.workingChannel.tpid}"
-								styleClass="preformattedtext" />
-							<h:outputLabel value="Conditional Access ID:"
-								styleClass="preformattedtext" />
-							<h:outputText
-								value="#{scannedChannelsManager.workingChannel.caid}"
-								styleClass="preformattedtext" />
-							<h:outputLabel value="Scanned as:" styleClass="preformattedtext" />
-							<h:outputText
-								value="#{scannedChannelsManager.workingChannel.scannedName}"
-								styleClass="preformattedtext" />
-							<h:outputLabel value="Locked:" styleClass="preformattedtext" />
-							<h:selectBooleanCheckbox id="lockedCheckbox"
-								value="#{scannedChannelsManager.editedChannel.locked}"
-								styleClass="preformattedtext" />
-							<h:outputLabel value="Initial Group:"
-								styleClass="preformattedtext" />
-							<h:selectOneMenu id="groupsMenu"
-								value="#{scannedChannelsManager.addedChannelGroupId}">
-								<f:selectItem itemValue="-1" itemLabel="--"
-									itemDisabled="#{groupsManager.groups.size() eq 1}" />
-								<f:selectItems value="#{groupsManager.groups}" var="groupVar"
-									itemValue="#{groupVar.id}"
-									itemLabel="#{groupVar.name} (#{groupVar.description})" />
-							</h:selectOneMenu>
-						</h:panelGrid>
+						</div>
 						<!-- Action buttons -->
 						<h:panelGrid columns="2">
 							<a4j:commandButton id="okAddButton" value="OK"
@@ -413,7 +415,6 @@
 						</h:panelGroup>
 					</f:facet>
 					<!-- Content -->
-
 					<h:outputText
 						value="Adding the following channel(s) to ignored channel list:" />
 					<br />
@@ -482,103 +483,103 @@
 						</h:panelGroup>
 					</f:facet>
 					<!-- Content -->
-					<h:panelGrid columns="3">
-						<h:outputLabel value="Source:" styleClass="preformattedtext" />
-						<h:outputText
-							value="#{scannedChannelsManager.workingChannelSource.name} (#{scannedChannelsManager.workingChannelSource.description})"
-							styleClass="preformattedtext" />
-						<h:outputText value="" />
-						<h:outputLabel value="Transponder:" styleClass="preformattedtext" />
-						<h:outputText
-							value="#{scannedChannelsManager.workingChannelTransponder.frequency} #{scannedChannelsManager.workingChannelTransponder.polarization}#{not empty scannedChannelsManager.workingChannelTransponder.streamIdNullable ? ' stream '.concat(scannedChannelsManager.workingChannelTransponder.streamIdNullable) : ''}"
-							styleClass="preformattedtext" />
-						<h:outputText value="" />
-						<h:outputLabel value="Name:" styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
+					<div style="width: 680px">
+						<h:panelGrid columns="3">
+							<h:outputLabel value="Source:" styleClass="preformattedtext" />
+							<h:outputText
+								value="#{scannedChannelsManager.workingChannelSource.name} (#{scannedChannelsManager.workingChannelSource.description})"
+								styleClass="preformattedtext" />
+							<h:outputText value="" />
+							<h:outputLabel value="Transponder:" styleClass="preformattedtext" />
+							<h:outputText
+								value="#{scannedChannelsManager.workingChannelTransponder.frequency} #{scannedChannelsManager.workingChannelTransponder.polarization}#{not empty scannedChannelsManager.workingChannelTransponder.streamIdNullable ? ' stream '.concat(scannedChannelsManager.workingChannelTransponder.streamIdNullable) : ''}"
+								styleClass="preformattedtext" />
+							<h:outputText value="" />
+							<h:outputLabel value="Name:" styleClass="preformattedtext" />
 							<h:inputText id="nameInput"
 								value="#{scannedChannelsManager.editedChannel.name}"
 								maxlength="50" size="50">
 								<rich:validator />
 							</h:inputText>
 							<rich:message for="nameInput" />
-						</h:panelGrid>
-						<h:outputText value="" />
-						<h:outputLabel value="Language:" styleClass="preformattedtext" />
-						<h:inputText id="langInput"
-							value="#{scannedChannelsManager.editedChannel.lang}"
-							maxlength="5" size="5">
-						</h:inputText>
-						<h:outputText value="" />
-						<h:outputLabel value="Service ID:" styleClass="preformattedtext" />
-						<h:outputText value="#{scannedChannelsManager.workingChannel.sid}"
-							styleClass="preformattedtext" />
-						<h:outputText value="" />
-						<h:outputLabel value="Video PID:" styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="vpidInput"
-								value="#{scannedChannelsManager.editedChannel.vpid}"
-								maxlength="5" size="5"
-								converterMessage="Video PID must be a number">
-								<rich:validator />
+							<h:outputLabel value="Language:" styleClass="preformattedtext" />
+							<h:inputText id="langInput"
+								value="#{scannedChannelsManager.editedChannel.lang}"
+								maxlength="5" size="5">
 							</h:inputText>
-							<rich:message for="vpidInput" />
+							<h:outputText value="" />
+							<h:outputLabel value="Service ID:" styleClass="preformattedtext" />
+							<h:outputText
+								value="#{scannedChannelsManager.workingChannel.sid}"
+								styleClass="preformattedtext" />
+							<h:outputText value="" />
+							<h:outputLabel value="Video PID:" styleClass="preformattedtext" />
+							<h:panelGrid columns="2">
+								<h:inputText id="vpidInput"
+									value="#{scannedChannelsManager.editedChannel.vpid}"
+									maxlength="5" size="5"
+									converterMessage="Video PID must be a number">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="vpidInput" />
+							</h:panelGrid>
+							<h:outputText
+								value="#{not empty scannedChannelsManager.editedChannel.vpid and scannedChannelsManager.editedChannel.vpid ne scannedChannelsManager.workingChannel.vpid ? '--&gt; '.concat(scannedChannelsManager.workingChannel.vpid) : ''}"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="Video Encoding:"
+								styleClass="preformattedtext" />
+							<h:selectOneMenu
+								value="#{scannedChannelsManager.editedChannel.venc}">
+								<f:selectItem itemValue="" itemLabel="" />
+								<f:selectItem itemValue="1" itemLabel="1 - MPEG-2" />
+								<f:selectItem itemValue="2" itemLabel="2 - MPEG-2" />
+								<f:selectItem itemValue="27" itemLabel="27 - MPEG-4" />
+							</h:selectOneMenu>
+							<h:outputText
+								value="#{not empty scannedChannelsManager.workingChannel.venc and scannedChannelsManager.workingChannel.venc ne scannedChannelsManager.editedChannel.venc ? '--&gt; '.concat(scannedChannelsManager.workingChannel.venc) : ''}"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="Audio PID:" styleClass="preformattedtext" />
+							<h:outputText
+								value="#{scannedChannelsManager.workingChannel.apid}"
+								styleClass="preformattedtext" />
+							<h:outputText value="" />
+							<h:outputLabel value="Audio Encoding:"
+								styleClass="preformattedtext" />
+							<h:selectOneMenu
+								value="#{scannedChannelsManager.editedChannel.aenc}">
+								<f:selectItem itemValue="" itemLabel="" />
+								<f:selectItem itemValue="3" itemLabel="3 - MPEG" />
+								<f:selectItem itemValue="4" itemLabel="4 - MPEG" />
+								<f:selectItem itemValue="6" itemLabel="6 - AC3" />
+								<f:selectItem itemValue="15" itemLabel="15 - ADTS" />
+								<f:selectItem itemValue="17" itemLabel="17 - LATM" />
+								<f:selectItem itemValue="129" itemLabel="129 - AC3" />
+							</h:selectOneMenu>
+							<h:outputText
+								value="#{not empty scannedChannelsManager.workingChannel.aenc and scannedChannelsManager.workingChannel.aenc ne scannedChannelsManager.editedChannel.aenc ? '--&gt; '.concat(scannedChannelsManager.workingChannel.aenc) : ''}"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="Conditional Access ID:"
+								styleClass="preformattedtext" />
+							<h:inputText id="caidInput"
+								value="#{scannedChannelsManager.editedChannel.caid}"
+								maxlength="50" size="50" />
+							<h:outputText
+								value="#{scannedChannelsManager.workingChannel.caid ne scannedChannelsManager.editedChannel.caid ? '--&gt; '.concat(scannedChannelsManager.workingChannel.caid) : ''}"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="Scanned as:" styleClass="preformattedtext" />
+							<h:outputText
+								value="#{scannedChannelsManager.editedChannel.scannedName}"
+								styleClass="preformattedtext" />
+							<h:outputText
+								value="#{scannedChannelsManager.workingChannel.scannedName ne scannedChannelsManager.editedChannel.scannedName ? '--&gt; '.concat(scannedChannelsManager.workingChannel.scannedName) : ''}"
+								styleClass="preformattedtext" />
+							<h:outputLabel value="Locked:" styleClass="preformattedtext" />
+							<h:selectBooleanCheckbox id="lockedCheckbox"
+								value="#{scannedChannelsManager.editedChannel.locked}"
+								styleClass="preformattedtext" />
+							<h:outputText value="" />
 						</h:panelGrid>
-						<h:outputText
-							value="#{not empty scannedChannelsManager.editedChannel.vpid and scannedChannelsManager.editedChannel.vpid ne scannedChannelsManager.workingChannel.vpid ? '--&gt; '.concat(scannedChannelsManager.workingChannel.vpid) : ''}"
-							styleClass="preformattedtext" />
-						<h:outputLabel value="Video Encoding:"
-							styleClass="preformattedtext" />
-						<h:selectOneMenu
-							value="#{scannedChannelsManager.editedChannel.venc}">
-							<f:selectItem itemValue="" itemLabel="" />
-							<f:selectItem itemValue="1" itemLabel="1 - MPEG-2" />
-							<f:selectItem itemValue="2" itemLabel="2 - MPEG-2" />
-							<f:selectItem itemValue="27" itemLabel="27 - MPEG-4" />
-						</h:selectOneMenu>
-						<h:outputText
-							value="#{not empty scannedChannelsManager.workingChannel.venc and scannedChannelsManager.workingChannel.venc ne scannedChannelsManager.editedChannel.venc ? '--&gt; '.concat(scannedChannelsManager.workingChannel.venc) : ''}"
-							styleClass="preformattedtext" />
-						<h:outputLabel value="Audio PID:" styleClass="preformattedtext" />
-						<h:outputText
-							value="#{scannedChannelsManager.workingChannel.apid}"
-							styleClass="preformattedtext" />
-						<h:outputText value="" />
-						<h:outputLabel value="Audio Encoding:"
-							styleClass="preformattedtext" />
-						<h:selectOneMenu
-							value="#{scannedChannelsManager.editedChannel.aenc}">
-							<f:selectItem itemValue="" itemLabel="" />
-							<f:selectItem itemValue="3" itemLabel="3 - MPEG" />
-							<f:selectItem itemValue="4" itemLabel="4 - MPEG" />
-							<f:selectItem itemValue="6" itemLabel="6 - AC3" />
-							<f:selectItem itemValue="15" itemLabel="15 - ADTS" />
-							<f:selectItem itemValue="17" itemLabel="17 - LATM" />
-							<f:selectItem itemValue="129" itemLabel="129 - AC3" />
-						</h:selectOneMenu>
-						<h:outputText
-							value="#{not empty scannedChannelsManager.workingChannel.aenc and scannedChannelsManager.workingChannel.aenc ne scannedChannelsManager.editedChannel.aenc ? '--&gt; '.concat(scannedChannelsManager.workingChannel.aenc) : ''}"
-							styleClass="preformattedtext" />
-						<h:outputLabel value="Conditional Access ID:"
-							styleClass="preformattedtext" />
-						<h:inputText id="caidInput"
-							value="#{scannedChannelsManager.editedChannel.caid}"
-							maxlength="50" size="50" />
-						<h:outputText
-							value="#{scannedChannelsManager.workingChannel.caid ne scannedChannelsManager.editedChannel.caid ? '--&gt; '.concat(scannedChannelsManager.workingChannel.caid) : ''}"
-							styleClass="preformattedtext" />
-						<h:outputLabel value="Scanned as:" styleClass="preformattedtext" />
-						<h:outputText
-							value="#{scannedChannelsManager.editedChannel.scannedName}"
-							styleClass="preformattedtext" />
-						<h:outputText
-							value="#{scannedChannelsManager.workingChannel.scannedName ne scannedChannelsManager.editedChannel.scannedName ? '--&gt; '.concat(scannedChannelsManager.workingChannel.scannedName) : ''}"
-							styleClass="preformattedtext" />
-						<h:outputLabel value="Locked:" styleClass="preformattedtext" />
-						<h:selectBooleanCheckbox id="lockedCheckbox"
-							value="#{scannedChannelsManager.editedChannel.locked}"
-							styleClass="preformattedtext" />
-						<h:outputText value="" />
-					</h:panelGrid>
+					</div>
 					<!-- Action buttons -->
 					<h:panelGrid columns="3">
 						<a4j:commandButton id="okUpdateButton" value="Update"

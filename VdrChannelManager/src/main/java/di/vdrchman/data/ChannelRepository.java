@@ -753,6 +753,16 @@ public class ChannelRepository {
 	}
 
 	/**
+	 * Removes channel BISS keys from the database.
+	 * 
+	 * @param biss
+	 *            the channel BISS keys to remove
+	 */
+	public void removeBissKeys(Biss biss) {
+		em.remove(em.merge(biss));
+	}
+
+	/**
 	 * Sorts main channel list depending on value of sortMode parameter.
 	 * 
 	 * @param sortMode

@@ -53,8 +53,7 @@
 						rows="#{groupsManager.rowsPerPage}">
 						<h:column>
 							<f:facet name="header">
-								<h:selectBooleanCheckbox id="allGroupsCheckbox"
-									value="false"
+								<h:selectBooleanCheckbox id="allGroupsCheckbox" value="false"
 									styleClass="preformattedtext"
 									onclick="toggleAllGroupCheckboxes(this.checked);document.getElementById('groupsForm:removeButton').disabled=!isAtLeastOneGroupCheckboxChecked();document.getElementById('groupsForm:takeButton').disabled=!isExactlyOneGroupCheckboxChecked()" />
 							</f:facet>
@@ -125,44 +124,45 @@
 						</h:panelGroup>
 					</f:facet>
 					<!-- Content -->
-					<br />
-					<!-- Group data inputs -->
-					<h:panelGrid columns="2">
-						<h:outputLabel value="Name:" styleClass="preformattedtext" />
+					<div style="width: 720px">
 						<h:panelGrid columns="2">
-							<h:inputText id="nameInput"
-								value="#{groupsManager.editedGroup.name}" maxlength="20"
-								size="20">
-								<rich:validator />
-								<f:validator binding="#{groupNameUniquenessValidator}" />
-							</h:inputText>
-							<rich:message for="nameInput" />
+							<h:outputLabel value="Name:" styleClass="preformattedtext" />
+							<h:panelGrid columns="2">
+								<h:inputText id="nameInput"
+									value="#{groupsManager.editedGroup.name}" maxlength="20"
+									size="20">
+									<rich:validator />
+									<f:validator binding="#{groupNameUniquenessValidator}" />
+								</h:inputText>
+								<rich:message for="nameInput" />
+							</h:panelGrid>
+							<h:outputLabel value="Starting Channel Number:"
+								styleClass="preformattedtext" />
+							<h:panelGrid columns="2">
+								<h:inputText id="startChannelNoInput"
+									value="#{groupsManager.editedGroup.startChannelNo}"
+									maxlength="5" size="5"
+									converterMessage="Starting channel number must be a number">
+									<rich:validator />
+									<f:validator
+										binding="#{groupStartChannelNoUniquenessValidator}" />
+								</h:inputText>
+								<rich:message for="startChannelNoInput" />
+							</h:panelGrid>
+							<h:outputLabel value="Description:" styleClass="preformattedtext" />
+							<h:panelGrid columns="2">
+								<h:inputText id="descriptionInput"
+									value="#{groupsManager.editedGroup.description}" maxlength="50"
+									size="50">
+									<rich:validator />
+								</h:inputText>
+								<rich:message for="descriptionInput" />
+							</h:panelGrid>
+							<h:outputLabel value="Ignored:" styleClass="preformattedtext" />
+							<h:selectBooleanCheckbox
+								value="#{groupsManager.editedGroup.ignored}" />
 						</h:panelGrid>
-						<h:outputLabel value="Starting Channel Number:"
-							styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="startChannelNoInput"
-								value="#{groupsManager.editedGroup.startChannelNo}"
-								maxlength="5" size="5"
-								converterMessage="Starting channel number must be a number">
-								<rich:validator />
-								<f:validator binding="#{groupStartChannelNoUniquenessValidator}" />
-							</h:inputText>
-							<rich:message for="startChannelNoInput" />
-						</h:panelGrid>
-						<h:outputLabel value="Description:" styleClass="preformattedtext" />
-						<h:panelGrid columns="2">
-							<h:inputText id="descriptionInput"
-								value="#{groupsManager.editedGroup.description}" maxlength="50"
-								size="50">
-								<rich:validator />
-							</h:inputText>
-							<rich:message for="descriptionInput" />
-						</h:panelGrid>
-						<h:outputLabel value="Ignored:" styleClass="preformattedtext" />
-						<h:selectBooleanCheckbox
-							value="#{groupsManager.editedGroup.ignored}" />
-					</h:panelGrid>
+					</div>
 					<!-- Action buttons -->
 					<h:panelGrid columns="2">
 						<a4j:commandButton id="okAddButton" value="OK"

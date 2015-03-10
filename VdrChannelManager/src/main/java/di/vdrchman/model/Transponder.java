@@ -65,6 +65,10 @@ public class Transponder implements Serializable {
 	@Column(columnDefinition = "BIT", length = 1)
 	private Boolean ignored;
 
+	@Transient
+	@Digits(fraction = 0, integer = 5)
+	private Integer streamIdNullable;
+
 	public Transponder() {
 		// do nothing
 	}
@@ -80,17 +84,6 @@ public class Transponder implements Serializable {
 		this.nid = transponder.nid;
 		this.tid = transponder.tid;
 		this.ignored = transponder.ignored;
-	}
-
-	@Transient
-	public Integer getStreamIdNullable() {
-
-		return streamId == null ? null : (streamId == 0 ? null : streamId);
-	}
-
-	@Transient
-	public void setStreamIdNullable(Integer streamId) {
-		this.streamId = streamId == null ? 0 : streamId;
 	}
 
 	public Long getId() {
@@ -181,6 +174,16 @@ public class Transponder implements Serializable {
 
 	public void setIgnored(Boolean ignored) {
 		this.ignored = ignored;
+	}
+
+	public Integer getStreamIdNullable() {
+
+		return streamId == null ? null : (streamId == 0 ? null : streamId);
+	}
+
+	public void setStreamIdNullable(Integer streamId) {
+		this.streamId = streamId == null ? 0 : streamId;
+		this.streamIdNullable = this.streamId;
 	}
 
 }

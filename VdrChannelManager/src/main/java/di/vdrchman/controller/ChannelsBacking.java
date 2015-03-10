@@ -205,6 +205,11 @@ public class ChannelsBacking {
 		channelRepository.addOrUpdateBissKeys(channelsManager.getEditedBiss());
 	}
 
+	// BISS keys removal
+	public void doRemoveBissKeys() {
+		channelRepository.removeBissKeys(channelsManager.getEditedBiss());
+	}
+
 	// Going to remove some checked channels
 	public void intendRemoveChannels() {
 		channelsManager.collectCheckedChannels();
